@@ -1,0 +1,17 @@
+/* Bereiche innerhalb von MyBox: was MyBox gemeinsam übernimmt, wird hier ausgeblendet */
+html.mbx #lock,html.mbx .bxlock{display:none!important}
+html.mbx .ds-remind,html.mbx .ds-boxes,html.mbx .ds-boxwrap,html.mbx .ds-lbl:has(+ .ds-boxes),html.mbx .ds-updbar{display:none!important}
+html.mbx [data-mbx] {position:relative}
+html.mbx [data-mbx]::after{display:none!important}
+/* Haus: Sicherheit, Datensicherung, App-Update, Darstellung stehen in MyBox */
+html.mbx-smart section.acc:has(> .acchd[data-k="Sicherheit"]),
+html.mbx-smart section.acc:has(> .acchd[data-k="Datensicherung"]),
+html.mbx-smart section.acc:has(> .acchd[data-k="App-Update"]),
+html.mbx-smart section.acc:has(> .acchd[data-k="Darstellung"]){display:none!important}
+/* Gesundheit */
+html.mbx-gesund details.acc[data-k="sec"],html.mbx-gesund details.acc[data-k="bk"],html.mbx-gesund details.acc[data-k="upd"],
+html.mbx-gesund details.acc[data-k="look"],html.mbx-gesund details.acc[data-k="erin"],html.mbx .sintro,html.mbx .secline{display:none!important}
+/* Belege */
+html.mbx-beleg details.acc[data-acc="sicher"],html.mbx-beleg details.acc[data-acc="gh"],html.mbx-beleg details.acc[data-acc="erin"],
+html.mbx-beleg details.acc[data-acc="upd"],html.mbx-beleg details.acc[data-acc="look"],html.mbx-beleg details.acc[data-acc="kal"]{display:none!important}
+html.mbx .ds-ver{display:none!important}

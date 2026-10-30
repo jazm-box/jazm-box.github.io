@@ -295,7 +295,7 @@ dialog input,dialog select{width:100%;padding:12px 13px;border:1px solid var(--l
 
 <script>
 'use strict';
-const APP_VERSION='0.1.0';
+const APP_VERSION='0.2.0';
 /* ---------- Bereiche ---------- */
 const AREAS=[
   {id:'smart',name:'Haus',app:'MySmartBox',path:'smart/',img:'boxen/smartbox.png',dir:'smartbox',host:'jazm-smartbox.github.io',def:{owner:'jazm-smartbox',repo:'smartbox-daten'}},
@@ -432,6 +432,10 @@ window.MBX={
   act(){lastAct=Date.now()},
   away(){awayUntil=Date.now()+10*60e3},
   home(){showDash()},
+  api:app=>API[app]||null,
+  go(app,ref){goRef({app,ref})},
+  /* Neuen Beleg/Vertrag zu einem Eintrag aus Haus oder Gesundheit anlegen – direkt im Bereich Belege */
+  linkNew(neu){if(!API.beleg){toast('Der Bereich Belege ist noch nicht bereit.');return}openArea('beleg');setTimeout(()=>{try{API.beleg.linkNew(neu)}catch(e){}},150)},
   bkCfg:app=>CFG&&CFG.gh?{...CFG.gh,dir:AR(app).dir}:null,
   /* Links zu den einzelnen Boxen: in MyBox öffnen */
   route(href){let u;try{u=new URL(href,location.href)}catch{return false}
@@ -452,7 +456,7 @@ function syncArea(app){const api=API[app];if(!api)return;
   try{const v=DS.getTheme();localStorage.setItem(AR(app).dir+'-darstellung',v);if(v==='auto')localStorage.removeItem(AR(app).dir+'-darstellung');FR[app].contentWindow.DS.applyTheme(v)}catch(e){}}
 function sameGh(api,g){try{const c=api.ghCur();
   return !!c&&c.owner===g.owner&&c.repo===g.repo&&c.token===g.token&&(c.dir||'')===(g.dir||'')}catch(e){return false}}
-function openArea(id){if(!UNLOCKED)return;closeSheet(true);const box=$('#areas');
+function openArea(id){if(!UNLOCKED)return;closeSheet(true);const box=$('#areas');try{API[id]&&API[id].refresh&&API[id].refresh()}catch(e){}
   for(const f of Object.values(FR))f.classList.toggle('on',f.dataset.area===id);
   box.classList.remove('off');curArea=id;if(history.state?.mbx!=='area')history.pushState({mbx:'area'},'');updLoad();buzz(6);
   try{FR[id].contentWindow.focus()}catch{}}

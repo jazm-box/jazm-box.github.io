@@ -1,4 +1,4 @@
-# MyBox 0.1.0
+# MyBox 0.2.0
 
 MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensicherung, ein gemeinsames Dashboard, eine Suche, ein Kalender und Erinnerungen für alles. Alle Daten bleiben verschlüsselt auf dem Handy (AES-256). Es gibt keinen Server.
 
@@ -7,7 +7,15 @@ MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensiche
 - **MyBox** (Hauptseite) übernimmt Zugang, Fingerabdruck, Auto-Sperre, Dashboard, Suche, Datensicherung, Erinnerungen, Kalender-Export, Darstellung und App-Update.
 - **Bereiche** `smart/`, `gesund/` und `beleg/` sind die drei bisherigen Apps, unverändert in ihrer Bedienung. Sie werden mit dem MyBox-Passwort entsperrt. Was MyBox gemeinsam erledigt, blenden sie aus.
 - Der Knopf mit dem Würfel oben in jedem Bereich führt zurück zur MyBox-Übersicht.
-- Verknüpfungen zwischen den Boxen (z. B. Brille → Beleg) öffnen sich innerhalb von MyBox.
+- Es wird nichts mehr zwischen Apps geteilt. Verknüpfte Einträge liegen zusammen in MyBox und zeigen sich gegenseitig an (siehe unten).
+
+## Verknüpfte Einträge (neu in 0.2.0)
+
+- **Haus ↔ Belege:** Im Gerät im Bereich Haus steht „Beleg & Garantie“ mit Kaufdatum, Preis, Garantie und ob ein Beleg vorliegt. Ein Tipp öffnet den Beleg. Gibt es noch keinen: „Kaufbeleg anlegen“ legt ihn direkt im Bereich Belege an oder verknüpft ein vorhandenes Gerät.
+- **Belege → Haus / Gesundheit:** Im Beleg steht, zu welchem Gerät (Raum, App) bzw. zu welcher Brille oder welchen Linsen er gehört. Ein Tipp öffnet den Eintrag dort.
+- **Gesundheit ↔ Belege:** Bei Brillen „Als Beleg anlegen“ bzw. „Beleg öffnen“, bei Kontaktlinsen-Abos „Abo als Vertrag anlegen“ bzw. „Abo-Vertrag öffnen“.
+- Gespeichert wird nur die Verknüpfung, keine Kopie der Daten. Wird ein verknüpftes Gerät gelöscht, zeigt der Beleg das an und bietet „Lösen“ an.
+- Bisherige Verknüpfungen aus den Einzel-Apps bleiben beim Umzug erhalten.
 
 ## Einrichten (einmalig)
 
@@ -37,5 +45,5 @@ Die alten Apps bleiben unverändert und laufen parallel weiter. Was du danach in
 
 ## Noch nicht in MyBox (vorerst weiter in den Einzel-Apps)
 
-- „Teilen → MyGesundBox/MyBelegBox“ aus anderen Apps und die App-Verknüpfungen am Symbol.
+- „Teilen → MyGesundBox/MyBelegBox“ aus fremden Apps (z. B. ein PDF aus der Mail) und die Verknüpfungen am App-Symbol.
 - Der Import alter Sicherungen aus „JAZM Meine Geräte“ (vor MySmartBox).
