@@ -1,0 +1,17 @@
+{
+  "name": "MyBox",
+  "short_name": "MyBox",
+  "description": "Haus, Gesundheit und Belege in einer App – verschlüsselt auf deinem Gerät.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F3F4F8",
+  "theme_color": "#F3F4F8",
+  "icons": [
+    {"src": "icons/mybox-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/mybox-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/mybox-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+    {"src": "icons/mybox-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

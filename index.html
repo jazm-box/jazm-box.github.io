@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MyBox</title>
+<meta name="theme-color" content="#F3F4F8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#10131A" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/mybox-192.png">
+<link rel="apple-touch-icon" href="icons/mybox-180.png">
+<style>
+:root{--bg:#F3F4F8;--surface:#FFFFFF;--sunk:#ECEEF3;--ink:#161B26;--muted:#5B6376;--line:#E0E3EA;--accent:#34406B;--accent-ink:#FFFFFF;--accent-soft:#E3E7F3;
+  --crit:#B42318;--crit-soft:#FDE8E6;--warn:#9A5B00;--warn-soft:#FFF0D9;--ok:#1E7F4F;--c-smart:#2456E0;--c-gesund:#8C2F45;--c-beleg:#0E6A5B;--shadow:0 1px 2px rgba(20,24,38,.06),0 4px 14px rgba(20,24,38,.05);
+  color-scheme:light}
+@media (prefers-color-scheme: dark){:root{--bg:#10131A;--surface:#1A1E28;--sunk:#141821;--ink:#EDEFF4;--muted:#A0A7B8;--line:#2A303D;--accent:#AFBAEA;--accent-ink:#151926;--accent-soft:#252C44;
+  --crit:#FF8A80;--crit-soft:#3B1F1E;--warn:#F2B35B;--warn-soft:#382B15;--ok:#6FD39C;--c-smart:#8DB4FF;--c-gesund:#E8A0AE;--c-beleg:#5CC8B1;--shadow:none;color-scheme:dark}}
+/* ds:start */
+:root{--ds-ink:var(--ink);--ds-muted:var(--muted);--ds-line:var(--line);--ds-surface:var(--surface);--ds-sunk:var(--sunk);--ds-accent:var(--accent);--ds-accent-ink:var(--accent-ink);--ds-soft:var(--accent-soft);--ds-crit:var(--crit);--ds-crit-soft:var(--crit-soft);--ds-warn-soft:var(--warn-soft);--ds-ok:var(--ok);--ds-warn:var(--warn)}
+/* ===== Gemeinsamer Baustein „Daten & Sicherheit“ – identisch in MySmartBox, MyGesundBox, MyBelegBox =====
+   Nur die Farbzuordnung (--ds-*) oben unterscheidet sich je App. */
+.ds-lbl{display:block;font-size:12px;line-height:1.3;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--ds-muted);margin:14px 0 8px}
+.ds-lbl.sep{border-top:1px solid var(--ds-line);padding-top:14px;margin-top:18px}
+.ds-hint{display:block;font-size:14px;line-height:1.45;color:var(--ds-muted);font-weight:400;margin:0 0 10px;max-width:none}
+.ds-hint b{color:var(--ds-ink);font-weight:700}
+.ds-stat{font-weight:400;display:flex;align-items:center;gap:8px;font-size:14px;line-height:1.4;color:var(--ds-ink);background:var(--ds-sunk);border-radius:10px;padding:9px 12px;margin:0 0 10px}
+.ds-acts{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 4px}
+.ds-btn{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px;padding:0 16px;border-radius:12px;border:1px solid var(--ds-line);background:var(--ds-surface);color:var(--ds-ink);font-family:inherit;font-size:15px;font-weight:600;line-height:1.1;cursor:pointer;white-space:nowrap;text-align:center}
+.ds-btn:focus-visible{outline:2px solid var(--ds-accent);outline-offset:2px}
+.ds-btn.pri{background:var(--ds-accent);border-color:var(--ds-accent);color:var(--ds-accent-ink)}
+.ds-btn.dng{background:transparent;border-color:var(--ds-crit);color:var(--ds-crit)}
+.ds-btn.dng.sure{background:var(--ds-crit);color:var(--ds-surface)}
+.ds-btn[disabled],.ds-btn[aria-disabled="true"]{opacity:.55;pointer-events:none}
+.ds-btn input[type=file]{display:none}
+.ds-box{font-weight:400!important;border-radius:12px;padding:12px;margin:0 0 10px;font-size:14px;line-height:1.45;color:var(--ds-ink);background:var(--ds-sunk);overflow-wrap:anywhere}
+.ds-box.crit{background:var(--ds-crit-soft)} .ds-box.warn{background:var(--ds-warn-soft)}
+.ds-box .ds-acts{margin:10px 0 0}
+.ds-box a{color:var(--ds-accent);font-weight:700}
+.ds-box .ds-btn{min-height:36px;padding:0 12px;font-size:14px}
+.ds-check{font-weight:400;display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ds-ink);margin:0 0 10px}
+.ds-end{height:4px}
+.ds-ver{text-align:center;color:var(--ds-muted);font-size:12px;line-height:1.5;margin:14px 0 4px}
+/* Akkordeon-Kopf im Blatt: gleiche Maße überall */
+.ds-sheet .ds-acc-ai{width:36px;height:36px;flex:none;border-radius:10px;background:var(--ds-soft);color:var(--ds-accent);display:grid;place-items:center}
+.ds-sheet .ds-acc-ai svg{width:19px;height:19px}
+/* Fenster (GitHub einrichten, Passwort ändern) */
+.ds-dlg-intro{font-size:14px;line-height:1.45;color:var(--ds-muted);margin:0 0 12px}
+.ds-dlg-intro b{color:var(--ds-ink)}
+.ds-err{font-size:14px;line-height:1.4;color:var(--ds-crit);margin:0 0 10px}
+/* Hinweis „Neue Version“ oben */
+.ds-updbar{position:fixed;z-index:120;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 10px);max-width:560px;margin:0 auto;display:flex;align-items:center;gap:8px;padding:8px 6px 8px 16px;border-radius:14px;background:var(--ds-surface);color:var(--ds-ink);border:1px solid var(--ds-line);box-shadow:0 8px 24px rgba(0,0,0,.16);font-size:14px;font-weight:600;line-height:1.35;transform:none}
+.ds-updbar span{flex:1;min-width:0}
+.ds-updbar .ds-btn{min-height:36px;padding:0 12px;font-size:14px}
+.ds-x{all:unset;box-sizing:border-box;cursor:pointer;width:34px;height:34px;flex:none;display:grid;place-items:center;color:var(--ds-muted);border-radius:8px;font-size:16px}
+/* Untertitel der Bereiche nie abschneiden, sondern umbrechen */
+.ds-sheet-sub-wrap{}
+.acc .at small,.accrow .at small,#bxsbody .acchd .at small{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+/* Erinnerung an die Datensicherung oben in der Übersicht */
+.ds-remind{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;margin:0 0 14px;border-radius:16px;background:var(--ds-warn-soft);color:var(--ds-ink);cursor:pointer;text-align:left;font-family:inherit}
+.ds-remind.crit{background:var(--ds-crit-soft)}
+.ds-remind:focus-visible{outline:2px solid var(--ds-accent);outline-offset:2px}
+.ds-remind-i{width:36px;height:36px;flex:none;border-radius:10px;display:grid;place-items:center;background:var(--ds-surface);color:var(--ds-warn)}
+.ds-remind.crit .ds-remind-i{color:var(--ds-crit)}
+.ds-remind-i svg{width:20px;height:20px}
+.ds-remind-t{flex:1;min-width:0;display:grid;gap:2px}
+.ds-remind-t b{font-size:15px;font-weight:700;line-height:1.3}
+.ds-remind-t small{font-size:13px;line-height:1.4;color:var(--ds-muted)}
+.ds-remind-go{flex:none;font-size:14px;font-weight:700;color:var(--ds-surface);background:var(--ds-warn);border-radius:10px;padding:8px 12px}
+.ds-remind.crit .ds-remind-go{background:var(--ds-crit)}
+/* Suche als Blatt von unten – gleich in allen Apps */
+.ds-srch{display:block;margin:0}
+.ds-srch input{width:100%;box-sizing:border-box;margin:0;padding:12px 14px;border:1px solid var(--ds-line);border-radius:12px;background:var(--ds-sunk);color:var(--ds-ink);font:inherit;font-size:17px}
+.ds-qres{display:grid;gap:10px;margin-top:12px}
+.ds-qres .ds-lbl{margin:6px 0 0}
+.ds-qhint{font-size:14px;line-height:1.45;color:var(--ds-muted);padding:8px 2px;margin:0}
+.ds-qlist{display:flex;flex-direction:column;background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:14px;overflow:hidden}
+.ds-qrow{all:unset;box-sizing:border-box;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px;padding:12px 14px;cursor:pointer;color:var(--ds-ink);font-family:inherit;text-align:left}
+.ds-qrow+.ds-qrow{border-top:1px solid var(--ds-line)}
+.ds-qrow:focus-visible{outline:2px solid var(--ds-accent);outline-offset:-2px}
+.ds-qrow .ds-qi{width:40px;height:40px;border-radius:10px;background:var(--ds-soft);color:var(--ds-accent);display:grid;place-items:center}
+.ds-qrow .ds-qi svg{width:20px;height:20px}
+.ds-qrow .ds-qt{min-width:0;display:grid;gap:2px}
+.ds-qrow .ds-qt b{font-size:16px;font-weight:700;overflow-wrap:anywhere}
+.ds-qrow .ds-qt small{font-size:13px;color:var(--ds-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ds-srch .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Darstellung: Umschalter Automatisch / Hell / Dunkel */
+.ds-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:12px;background:var(--ds-sunk)}
+.ds-seg button{all:unset;box-sizing:border-box;text-align:center;padding:9px 6px;border-radius:9px;font-family:inherit;font-size:14px;font-weight:600;color:var(--ds-muted);cursor:pointer}
+.ds-seg button[aria-checked="true"]{background:var(--ds-surface);color:var(--ds-ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.ds-seg button:focus-visible{outline:2px solid var(--ds-accent)}
+/* Feier-Effekt mit Konfetti */
+.ds-yay{position:fixed;inset:0;z-index:140;display:grid;place-items:center;pointer-events:none;overflow:hidden}
+.ds-yay-card{position:relative;background:var(--ds-surface);color:var(--ds-ink);border-radius:24px;padding:22px 28px 16px;display:grid;justify-items:center;gap:8px;min-width:150px;box-shadow:0 18px 50px rgba(0,0,0,.28);animation:dsYayIn .45s cubic-bezier(.3,1.35,.5,1) both,dsYayOut .28s ease-in 1.2s forwards}
+.ds-yay svg{width:64px;height:64px}
+.ds-yay .yc{fill:none;stroke:var(--ds-ok);stroke-width:3;stroke-dasharray:145;stroke-dashoffset:145;animation:dsInk .45s ease-out .08s forwards}
+.ds-yay .yk{fill:none;stroke:var(--ds-ok);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:34;stroke-dashoffset:34;animation:dsInk .28s ease-out .42s forwards}
+.ds-yay b{font-size:15px;font-weight:700}
+.ds-yay i{position:absolute;left:50%;top:54px;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--c);opacity:0;animation:dsSpark .65s ease-out .5s}
+.ds-yay em{position:absolute;top:-16px;left:var(--x);width:8px;height:13px;border-radius:2px;background:var(--c);transform:scale(var(--s));animation:dsFall 2.2s cubic-bezier(.25,.6,.5,1) var(--d) forwards;opacity:0}
+@keyframes dsInk{to{stroke-dashoffset:0}}
+@keyframes dsSpark{0%{opacity:1;transform:rotate(var(--a)) translateY(-30px) scale(1)}100%{opacity:0;transform:rotate(var(--a)) translateY(-64px) scale(.3)}}
+@keyframes dsYayIn{from{opacity:0;transform:scale(.6)}}
+@keyframes dsYayOut{to{opacity:0;transform:scale(.92)}}
+@keyframes dsFall{0%{opacity:1;transform:translateY(0) rotate(0) scale(var(--s))}85%{opacity:1}100%{opacity:0;transform:translateY(105vh) rotate(var(--r)) scale(var(--s))}}
+/* Entsperr-Animation */
+.ds-unl{position:fixed;z-index:130;width:0;height:0;pointer-events:none}
+.ds-unl span{position:absolute;left:0;top:0;border-radius:50%;transform:translate(-50%,-50%)}
+.ds-unl-light .glow{width:72px;height:72px;background:radial-gradient(circle,rgba(255,214,90,.95) 0%,rgba(255,196,60,.45) 45%,rgba(255,196,60,0) 72%);animation:dsGlow .7s ease-out forwards}
+.ds-unl-light .ray{width:72px;height:72px;background:conic-gradient(from 0deg,rgba(255,206,84,.55) 0 8deg,transparent 8deg 30deg,rgba(255,206,84,.55) 30deg 38deg,transparent 38deg 60deg,rgba(255,206,84,.55) 60deg 68deg,transparent 68deg 90deg);
+  -webkit-mask:radial-gradient(circle,transparent 42%,#000 44%,#000 70%,transparent 72%);mask:radial-gradient(circle,transparent 42%,#000 44%,#000 70%,transparent 72%);animation:dsRays .7s ease-out forwards}
+.ds-unl-light-ico{animation:dsLit .68s ease-out forwards}
+@keyframes dsGlow{0%{width:40px;height:40px;opacity:0}40%{opacity:1}100%{width:260px;height:260px;opacity:.9}}
+@keyframes dsRays{0%{width:60px;height:60px;opacity:0;transform:translate(-50%,-50%) rotate(-20deg)}50%{opacity:1}100%{width:230px;height:230px;opacity:.85;transform:translate(-50%,-50%) rotate(15deg)}}
+@keyframes dsLit{0%{filter:none}35%{filter:brightness(1.6) saturate(1.2) drop-shadow(0 0 14px rgba(255,205,80,.95))}100%{filter:brightness(1.25) drop-shadow(0 0 22px rgba(255,205,80,.9));transform:scale(1.06)}}
+.ds-unl-heart .ring{width:72px;height:72px;border:3px solid var(--ds-accent);opacity:0;animation:dsRing .75s ease-out forwards}
+.ds-unl-heart .r2{animation-delay:.28s}
+.ds-unl-heart-ico{animation:dsBeat .76s ease-in-out forwards}
+@keyframes dsRing{0%{width:72px;height:72px;opacity:.8}100%{width:220px;height:220px;opacity:0}}
+@keyframes dsBeat{0%{transform:scale(1)}14%{transform:scale(1.18)}28%{transform:scale(.98)}42%{transform:scale(1.13)}70%{transform:scale(1)}100%{transform:scale(1.04)}}
+/* Sicherungs-Status: Punkt am Schloss */
+.ds-lockbtn{position:relative}
+.ds-lockbtn[data-bk]:not([data-bk=""])::after{content:"";position:absolute;top:5px;right:5px;width:9px;height:9px;border-radius:50%;box-shadow:0 0 0 2px var(--ds-surface);background:var(--ds-ok)}
+.ds-lockbtn[data-bk="warn"]:not([data-bk=""])::after{background:var(--ds-warn);animation:dsDot 2.4s ease-in-out infinite}
+.ds-lockbtn[data-bk="crit"]:not([data-bk=""])::after{background:var(--ds-crit);animation:dsDot 1.6s ease-in-out infinite}
+@keyframes dsDot{50%{transform:scale(1.35)}}
+@media (prefers-reduced-motion:reduce){.ds-lockbtn::after{animation:none!important}}
+/* Haken beim Speichern */
+.ds-saved{background:var(--ds-ok)!important;border-color:var(--ds-ok)!important;color:#fff!important;display:inline-flex!important;align-items:center;justify-content:center;gap:6px}
+.ds-saved .tk{stroke-dasharray:24;stroke-dashoffset:24;animation:dsInk .3s ease-out forwards}
+/* Wechsel zwischen den Boxen */
+.ds-boxes{display:flex;flex-direction:column;background:var(--ds-surface);border:1px solid var(--ds-line);border-radius:14px;overflow:hidden;margin:0 0 6px}
+.ds-boxlink{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px 14px;color:var(--ds-ink);text-decoration:none}
+.ds-boxlink+.ds-boxlink{border-top:1px solid var(--ds-line)}
+.ds-boxlink .ds-qt{display:grid;gap:2px;min-width:0}
+.ds-boxlink .ds-qt b{font-size:15px;font-weight:700}
+.ds-boxlink .ds-qt small{font-size:13px;color:var(--ds-muted)}
+.ds-boxlink .chev{width:20px;height:20px;color:var(--ds-muted)}
+.ds-boxico{width:36px;height:36px;border-radius:10px;display:block}
+
+/* ds:end */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent;min-height:100vh}
+button{font:inherit;color:inherit}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+svg{display:block}
+/* Sperrbildschirm */
+#lock{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:24px 16px;background:var(--bg);overflow:auto}
+.lockbox{width:100%;max-width:380px;display:grid;gap:12px;text-align:center}
+.lockbox img{width:84px;height:84px;margin:0 auto 4px;border-radius:20px}
+.lockbox h1{margin:0;font-size:28px;letter-spacing:-.01em}
+.lockbox p{margin:0;color:var(--muted);font-size:15px}
+.lockbox input{width:100%;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);font-size:17px}
+.lockbox input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.lerr{color:var(--crit);font-size:14px;min-height:1.2em;margin:0}
+.bigbtn{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border-radius:14px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:17px;width:100%}
+.bigbtn.sec{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.bigbtn[disabled]{opacity:.6;pointer-events:none}
+.bigbtn svg{width:22px;height:22px}
+.lockhint{font-size:13px!important;line-height:1.5}
+.lver{font-size:12px!important;margin-top:6px!important}
+.areadots{display:flex;justify-content:center;gap:10px;margin:2px 0 6px}
+.areadots img{width:26px;height:26px;border-radius:7px;opacity:.9;margin:0}
+/* Kopf */
+.hd{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.hd img{width:36px;height:36px;border-radius:10px}
+.hd h1{margin:0;font-size:22px;letter-spacing:-.01em;flex:1;min-width:0}
+.icobtn{all:unset;position:relative;box-sizing:border-box;cursor:pointer;width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);color:var(--ink)}
+.icobtn svg{width:21px;height:21px}
+.icobtn:focus-visible,.card:focus-visible,.row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{max-width:640px;margin:0 auto;padding:4px 16px calc(env(safe-area-inset-bottom,0px) + 32px)}
+.hello{font-size:15px;color:var(--muted);margin:4px 2px 12px}
+.sec{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:22px 2px 10px;font-size:13px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.sec small{font-size:12px;letter-spacing:0;text-transform:none;font-weight:600}
+/* Bereiche */
+.areas{display:grid;gap:12px}
+.card{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:16px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);position:relative;overflow:hidden;width:100%}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--ac)}
+.card img{width:48px;height:48px;border-radius:13px}
+.card .ct{min-width:0;display:grid;gap:2px}
+.card .cn{font-size:12px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--ac)}
+.card .cm{font-size:18px;font-weight:700;line-height:1.3;overflow-wrap:anywhere}
+.card .cs{font-size:14px;color:var(--muted)}
+.card .cf{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.card .cf span{font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--sunk);color:var(--ink)}
+.chev{width:20px;height:20px;color:var(--muted)}
+.card.wait .cm{color:var(--muted);font-weight:600}
+.card.need .cm{color:var(--crit)}
+/* Zeitleiste */
+.list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.row{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;width:100%}
+.row+.row{border-top:1px solid var(--line)}
+.dt{width:48px;height:52px;border-radius:12px;display:grid;place-content:center;text-align:center;background:color-mix(in srgb,var(--ac) 13%,var(--surface));color:var(--ac);line-height:1.05}
+.dt b{font-size:19px}
+.dt small{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.rt{min-width:0;display:grid;gap:1px}
+.rt b{font-size:15.5px;font-weight:700;overflow-wrap:anywhere}
+.rt small{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.when{font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap}
+.when.soon{color:var(--warn)}
+.when.now{color:var(--crit)}
+.ti{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--ac) 13%,var(--surface));color:var(--ac)}
+.ti svg{width:19px;height:19px}
+.row.crit .ti{background:var(--crit-soft);color:var(--crit)}
+.row.warn .ti{background:var(--warn-soft);color:var(--warn)}
+.empty{padding:16px;color:var(--muted);font-size:14.5px;text-align:center}
+.more{all:unset;cursor:pointer;display:block;text-align:center;padding:12px;font-size:14px;font-weight:700;color:var(--accent);border-top:1px solid var(--line)}
+/* Bereiche als Vollbild */
+#areas{position:fixed;inset:0;z-index:20;background:var(--bg)}
+#areas iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--bg);visibility:hidden}
+#areas iframe.on{visibility:visible}
+#areas.off{visibility:hidden;pointer-events:none}
+.aload{position:absolute;inset:0;z-index:2;display:grid;place-content:center;gap:12px;text-align:center;background:var(--bg);color:var(--muted);font-size:15px}
+.aload img{width:64px;height:64px;border-radius:16px;margin:0 auto;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(.92);opacity:.7}}
+.aload .ds-btn{margin:0 auto}
+/* Blatt von unten */
+#sheet{position:fixed;inset:0;z-index:60}
+#sheet .sbg{position:absolute;inset:0;background:rgba(10,12,20,.42);opacity:0;transition:opacity .28s}
+#spanel{position:absolute;left:0;right:0;bottom:0;max-height:92vh;overflow:auto;overscroll-behavior:contain;background:var(--bg);border-radius:22px 22px 0 0;padding:8px 16px calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.85,.25,1);max-width:680px;margin:0 auto}
+#sheet.show .sbg{opacity:1}
+#sheet.show #spanel{transform:none}
+.ds-grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 10px}
+.shd{display:flex;align-items:center;gap:10px;margin:0 0 12px}
+.shd h2{flex:1;margin:0;font-size:20px}
+.sintro{display:flex;gap:10px;align-items:center;font-size:13.5px;color:var(--muted);background:var(--sunk);border-radius:12px;padding:10px 12px;margin:0 0 12px}
+.sintro svg{width:20px;height:20px;flex:none;color:var(--accent)}
+details.acc{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin:0 0 10px;overflow:hidden}
+details.acc summary{list-style:none;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;cursor:pointer}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc .ai{width:36px;height:36px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+details.acc .ai svg{width:19px;height:19px}
+details.acc .at{display:grid;gap:1px;min-width:0;font-weight:700;font-size:16px}
+details.acc .at small{font-weight:400;font-size:13px;color:var(--muted)}
+details.acc .chev{transition:transform .2s}
+details.acc[open] .chev{transform:rotate(90deg)}
+details.acc .accb{padding:2px 14px 14px;border-top:1px solid var(--line)}
+.brow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;padding:8px 0}
+.brow+.brow{border-top:1px solid var(--line)}
+.brow img{width:30px;height:30px;border-radius:8px}
+.brow .bt{min-width:0;font-size:14px}
+.brow .bt b{display:block;font-size:14.5px}
+.brow .bt span{color:var(--muted)}
+.brow .ds-acts{grid-column:1/-1;margin:2px 0 0}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px;background:var(--muted)}
+.dot.ok{background:var(--ok)}.dot.warn{background:var(--warn)}.dot.crit{background:var(--crit)}
+/* Fenster */
+dialog{border:0;border-radius:20px;padding:20px;width:min(440px,calc(100vw - 32px));background:var(--surface);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(10,12,20,.45)}
+dialog h2{margin:0 0 12px;font-size:20px}
+.fl{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:10px 0 4px}
+dialog input,dialog select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:var(--sunk);color:var(--ink);font-size:16px}
+.frow{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap}
+/* Hinweis */
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateX(-50%);z-index:200;max-width:min(520px,calc(100vw - 32px));background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:14px;font-size:15px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);text-align:center}
+@media (min-width:700px){.areas{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){#spanel,#sheet .sbg{transition:none}.aload img{animation:none}}
+</style>
+<script src="ds.js" data-app="mybox"></script>
+</head>
+<body>
+<div id="lock">
+  <form class="lockbox" id="lockForm" autocomplete="on">
+    <img src="icons/mybox-192.png" alt="" class="lockico" width="84" height="84">
+    <h1>MyBox</h1>
+    <p id="lockHint">Haus, Gesundheit und Belege – verschlüsselt auf diesem Gerät.</p>
+    <div class="areadots" aria-hidden="true"><img src="boxen/smartbox.png" alt=""><img src="boxen/gesundbox.png" alt=""><img src="boxen/belegbox.png" alt=""></div>
+    <label class="sr" for="pw">Passwort</label><input id="pw" type="password" placeholder="Passwort" autocomplete="current-password" required>
+    <label class="sr" for="pw2">Passwort wiederholen</label><input id="pw2" type="password" placeholder="Passwort wiederholen" autocomplete="new-password" hidden>
+    <p class="lerr" id="lockErr" role="alert"></p>
+    <button class="bigbtn" id="lockGo">Entsperren</button>
+    <button type="button" class="bigbtn sec" id="bioBtn" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 11v3a8 8 0 0 1-1.5 4.7"/><path d="M8 8.5A5 5 0 0 1 17 11v2a12 12 0 0 1-.7 4"/><path d="M5 12a7 7 0 0 1 12.2-4.7"/><path d="M8.5 13.5V11a3.5 3.5 0 0 1 7 0"/></svg>Mit Fingerabdruck entsperren</button>
+    <p class="lockhint" id="lockMore"></p>
+    <p class="lver" id="lver"></p>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <header class="hd">
+    <img src="icons/mybox-192.png" alt="" width="36" height="36"><h1>MyBox</h1>
+    <button class="icobtn" id="searchBtn" type="button" aria-label="Suchen" title="Suchen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+    <button class="icobtn" id="lockBtn" type="button" aria-label="Sperren" title="Sperren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
+    <button class="icobtn" id="menuBtn" type="button" aria-label="Daten &amp; Sicherheit" title="Daten &amp; Sicherheit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+  </header>
+  <main id="dash"></main>
+</div>
+<div id="areas" class="off"></div>
+<div id="sheet" hidden><div class="sbg"></div><div id="spanel" role="dialog" aria-modal="true" aria-labelledby="sheetH"><div class="ds-grab"></div>
+  <div class="shd"><h2 id="sheetH">Daten &amp; Sicherheit</h2><button type="button" class="ds-x" id="sheetX" aria-label="Schließen">✕</button></div>
+  <div id="sheetBody"></div></div></div>
+<dialog id="dlg"><form id="dlgForm" method="dialog"></form></dialog>
+<input type="file" id="fileIn" hidden>
+<div id="toast" role="status" hidden></div>
+
+<script>
+'use strict';
+const APP_VERSION='0.1.0';
+/* ---------- Bereiche ---------- */
+const AREAS=[
+  {id:'smart',name:'Haus',app:'MySmartBox',path:'smart/',img:'boxen/smartbox.png',dir:'smartbox',host:'jazm-smartbox.github.io',def:{owner:'jazm-smartbox',repo:'smartbox-daten'}},
+  {id:'gesund',name:'Gesundheit',app:'MyGesundBox',path:'gesund/',img:'boxen/gesundbox.png',dir:'gesundbox',host:'jazm-gesundbox.github.io',def:{owner:'jazm-gesundbox',repo:'gesundbox-daten'}},
+  {id:'beleg',name:'Belege',app:'MyBelegBox',path:'beleg/',img:'boxen/belegbox.png',dir:'belegbox',host:'jazm-belegbox.github.io',def:{owner:'jazm-belegbox',repo:'belegbox-daten'}}];
+const AR=id=>AREAS.find(a=>a.id===id);
+/* ---------- Kleine Helfer ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch{}};
+const lsGet=k=>{try{return localStorage.getItem(k)}catch{return null}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v);return true}catch{return false}};
+const lsDel=k=>{try{localStorage.removeItem(k)}catch{}};
+const pad=n=>String(n).padStart(2,'0');
+const isoD=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today=()=>isoD(new Date());
+const pD=s=>{const p=String(s).slice(0,10).split('-').map(Number);return new Date(p[0],p[1]-1,p[2])};
+const dUntil=s=>Math.round((pD(s)-pD(today()))/864e5);
+const relDay=n=>n===0?'heute':n===1?'morgen':n===2?'übermorgen':n>0?'in '+n+' Tagen':n===-1?'gestern':'vor '+(-n)+' Tagen';
+const fmtD=s=>pD(s).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+const MON=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const motion=()=>!matchMedia('(prefers-reduced-motion: reduce)').matches;
+let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3400)}
+const SVG=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const I={chev:SVG('<path d="M9 6l6 6-6 6"/>'),lock:SVG('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),down:SVG('<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>'),
+  move:SVG('<path d="M3 7h13l-3-3M21 17H8l3 3"/>'),bell:SVG('<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/>'),cal:SVG('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
+  pkg:SVG('<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>'),sun:SVG('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+  shield:SVG('<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/>'),warn:SVG('<path d="M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>'),
+  check:SVG('<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/>'),todo:SVG('<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>')};
+
+/* ---------- Verschlüsselung: Schlüssel aus dem Passwort (PBKDF2, 310 000 Runden), AES-256-GCM ---------- */
+const te=new TextEncoder(),td=new TextDecoder(),rnd=n=>crypto.getRandomValues(new Uint8Array(n)),ITER=310000;
+const b64=buf=>{const u=buf instanceof Uint8Array?buf:new Uint8Array(buf);let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s)};
+const unb64=s=>{const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u};
+async function derive(pw,salt){const base=await crypto.subtle.importKey('raw',te.encode(pw),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:ITER,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function seal(obj,k,salt){const iv=rnd(12);const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,te.encode(JSON.stringify(obj)));return{v:1,iter:ITER,salt:b64(salt),iv:b64(iv),ct:b64(ct),saved:Date.now()}}
+async function unseal(p,k){return JSON.parse(td.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(p.iv)},k,unb64(p.ct))))}
+/* Tresor von MyBox selbst: nur Einstellungen (Sicherung, Update, Erinnerungen) – die Daten liegen in den Bereichen */
+const VKEY='mybox_vault',BKEY='mybox_bio';
+const idb=(()=>{let p;const open=()=>p||(p=new Promise((res,rej)=>{const r=indexedDB.open('mybox',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
+  const tx=(mode,fn)=>open().then(db=>new Promise((res,rej)=>{const t=db.transaction('kv',mode);const rq=fn(t.objectStore('kv'));t.oncomplete=()=>res(rq&&rq.result);t.onerror=()=>rej(t.error)}));
+  return{get:k=>tx('readonly',s=>s.get(k)),put:(k,v)=>tx('readwrite',s=>s.put(v,k)),del:k=>tx('readwrite',s=>s.delete(k))}})();
+let vaultJson=null,KEY=null,SALT=null,PW=null,CFG=null;
+const vaultOk=j=>{try{const v=JSON.parse(j);return !!(v&&v.salt&&v.iv&&v.ct)}catch{return false}};
+async function loadVault(){const a=lsGet(VKEY);let b=null;try{b=await idb.get('vault')}catch{}
+  const ok=a&&vaultOk(a),bOk=typeof b==='string'&&vaultOk(b);
+  vaultJson=bOk&&(!ok||JSON.parse(b).saved>=JSON.parse(a).saved)?b:ok?a:null}
+async function writeVault(json){let ok=false;try{await idb.put('vault',json);ok=true}catch{}if(lsSet(VKEY,json))ok=true;if(!ok)throw new Error('store');vaultJson=json}
+let saving=Promise.resolve();
+function saveCfg(){if(!KEY||!CFG)return saving;const k=KEY,s=SALT,c=JSON.parse(JSON.stringify(CFG));
+  saving=saving.then(async()=>writeVault(JSON.stringify(await seal(c,k,s)))).catch(()=>toast('Speichern fehlgeschlagen.'));return saving}
+const defCfg=()=>({v:1,gh:null,upd:null,remind:{on:false,lead:14,bg:false},created:today()});
+
+/* ---------- Fingerabdruck: Passkey mit PRF (Google Passwortmanager), schützt das MyBox-Passwort ---------- */
+const bioSupported=()=>!!(window.PublicKeyCredential&&navigator.credentials&&window.isSecureContext);
+async function keyFromPrf(r,prfSalt){const base=await crypto.subtle.importKey('raw',r,'HKDF',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'HKDF',hash:'SHA-256',salt:prfSalt,info:te.encode('mybox-bio-v1')},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function prfKey(credId,prfSalt){
+  const a=await navigator.credentials.get({publicKey:{challenge:rnd(32),rpId:location.hostname,allowCredentials:[{type:'public-key',id:credId}],userVerification:'required',timeout:60000,extensions:{prf:{eval:{first:prfSalt}}}}});
+  const r=a.getClientExtensionResults()?.prf?.results?.first;if(!r)throw new Error('noprf');return keyFromPrf(r,prfSalt)}
+async function enableBio(pw){
+  const prfSalt=rnd(32);
+  const cred=await navigator.credentials.create({publicKey:{challenge:rnd(32),rp:{name:'MyBox',id:location.hostname},user:{id:rnd(16),name:'MyBox',displayName:'MyBox'},
+    pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{residentKey:'required',requireResidentKey:true,userVerification:'required'},timeout:60000,extensions:{prf:{eval:{first:prfSalt}}}}});
+  const credId=new Uint8Array(cred.rawId),ext=cred.getClientExtensionResults()?.prf;
+  if(ext&&ext.enabled===false)throw new Error('noprf');
+  let k;if(ext?.results?.first)k=await keyFromPrf(ext.results.first,prfSalt);else{toast('Jetzt zur Bestätigung den Passkey „MyBox“ wählen …');k=await prfKey(credId,prfSalt)}
+  const iv=rnd(12),ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,te.encode(pw));
+  lsSet(BKEY,JSON.stringify({cred:b64(credId),salt:b64(prfSalt),iv:b64(iv),ct:b64(ct)}));
+}
+async function bioGetPassword(){const b=JSON.parse(lsGet(BKEY));const k=await prfKey(unb64(b.cred),unb64(b.salt));
+  try{return td.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(b.iv)},k,unb64(b.ct)))}catch{throw new Error('nopw')}}
+
+/* ---------- Sperrbildschirm ---------- */
+let UNLOCKED=false,bioBusy=false;
+function showLock(auto){
+  const has=!!vaultJson;
+  $('#app').hidden=true;$('#areas').innerHTML='';$('#areas').classList.add('off');closeSheet(true);try{$('#dlg').open&&$('#dlg').close()}catch{}
+  $('#lock').hidden=false;$('#lver').textContent='Version '+APP_VERSION;
+  $('#pw2').hidden=has;$('#pw2').required=!has;$('#pw').value='';$('#pw2').value='';$('#lockErr').textContent='';
+  $('#pw').autocomplete=has?'current-password':'new-password';
+  $('#lockGo').textContent=has?'Entsperren':'MyBox anlegen';
+  $('#lockHint').textContent=has?'Haus, Gesundheit und Belege – verschlüsselt auf diesem Gerät.':'Lege ein Passwort fest (mind. 10 Zeichen). Es gilt für alle drei Bereiche. Ohne Passwort sind die Daten nicht wiederherstellbar.';
+  $('#lockMore').textContent=has?'':'Du ziehst aus MySmartBox, MyGesundBox und MyBelegBox um? Leg zuerst ein Passwort fest. Danach übernimmst du die Daten unter Daten & Sicherheit → Umzug.';
+  $('#bioBtn').hidden=!(has&&lsGet(BKEY)&&bioSupported());
+  if($('#bioBtn').hidden)setTimeout(()=>$('#pw').focus(),60);else if(auto)setTimeout(tryBio,350);
+}
+async function unlockWith(pw){
+  const p=JSON.parse(vaultJson),salt=unb64(p.salt),k=await derive(pw,salt),c=await unseal(p,k);
+  KEY=k;SALT=salt;PW=pw;CFG=Object.assign(defCfg(),c);UNLOCKED=true;lastAct=Date.now();
+  DS.unlockAnim($('#lock'),$('#lock .lockico'),'light',()=>{if(!UNLOCKED)return;$('#lock').hidden=true;$('#app').hidden=false;renderDash();
+    try{$('#app').animate([{opacity:0,transform:'scale(.97)'},{opacity:1,transform:'none'}],{duration:360,easing:'cubic-bezier(.2,.85,.25,1)'})}catch{}});
+  try{navigator.storage?.persist?.()}catch{}
+  startAreas();
+}
+$('#lockForm').onsubmit=async e=>{e.preventDefault();
+  const pw=$('#pw').value,btn=$('#lockGo'),has=!!vaultJson;$('#lockErr').textContent='';
+  if(!window.crypto?.subtle){$('#lockErr').textContent='Diese App braucht HTTPS und einen aktuellen Browser.';return}
+  if(!has){if(pw.length<10){$('#lockErr').textContent='Das Passwort braucht mindestens 10 Zeichen.';return}
+    if(pw!==$('#pw2').value){$('#lockErr').textContent='Die Passwörter stimmen nicht überein.';return}}
+  btn.disabled=true;btn.textContent='Bitte warten …';
+  try{if(!has){SALT=rnd(16);KEY=await derive(pw,SALT);CFG=defCfg();await writeVault(JSON.stringify(await seal(CFG,KEY,SALT)))}
+    await unlockWith(pw)}
+  catch(err){KEY=null;$('#lockErr').textContent=has?'Das Passwort ist falsch.':'Fehler: '+err.message;buzz([30,50,30])}
+  finally{btn.disabled=false;btn.textContent=vaultJson?'Entsperren':'MyBox anlegen'}};
+async function tryBio(){if(bioBusy||UNLOCKED||$('#bioBtn').hidden||document.hidden)return;bioBusy=true;const b=$('#bioBtn');b.disabled=true;$('#lockErr').textContent='';
+  try{await unlockWith(await bioGetPassword())}
+  catch(err){KEY=null;$('#lockErr').textContent=err.message==='nopw'?'Der Fingerabdruck passt nicht mehr zum Passwort. Bitte mit Passwort entsperren und neu einrichten.':err.name==='NotAllowedError'?'Abgebrochen. Du kannst auch das Passwort nutzen.':'Fingerabdruck hat nicht geklappt. Bitte das Passwort nutzen.'}
+  finally{b.disabled=false;bioBusy=false}}
+$('#bioBtn').onclick=tryBio;
+
+/* Sperren: Bereiche sichern ihre Eingaben, dann werden sie geschlossen und alle Schlüssel vergessen */
+async function lockAll(){
+  if(!UNLOCKED&&!KEY)return;UNLOCKED=false;
+  await Promise.race([Promise.all(Object.values(API).map(a=>Promise.resolve().then(()=>a.flush()).catch(()=>{}))),sleep(1500)]);
+  await saving;
+  for(const k in API)delete API[k];NEED.length=0;OLDQ.clear();
+  KEY=null;SALT=null;PW=null;CFG=null;curArea=null;
+  showLock(false);
+}
+$('#lockBtn').onclick=()=>{buzz(8);lockAll()};
+
+/* ---------- Brücke zu den Bereichen (gleiche Adresse, darum direkter Zugriff) ---------- */
+const API={},FR={},NEED=[],OLDQ=new Map();let curArea=null,dashT=0;
+window.MBX={
+  unlocked:()=>UNLOCKED,
+  pw:()=>UNLOCKED?PW:null,
+  reg(app,api){API[app]=api;OLDQ.delete(app);syncArea(app);updLoad();schedDash(80)},
+  unreg(app){delete API[app];updLoad();schedDash(80)},
+  needOld(app,fn){OLDQ.set(app,fn);updLoad();schedDash(80);nextOld()},
+  areaErr(app,msg){toast(AR(app).name+': '+String(msg).replace(/^err:/,''))},
+  act(){lastAct=Date.now()},
+  away(){awayUntil=Date.now()+10*60e3},
+  home(){showDash()},
+  bkCfg:app=>CFG&&CFG.gh?{...CFG.gh,dir:AR(app).dir}:null,
+  /* Links zu den einzelnen Boxen: in MyBox öffnen */
+  route(href){let u;try{u=new URL(href,location.href)}catch{return false}
+    const a=AREAS.find(x=>u.hostname===x.host);
+    if(!a)return false;
+    if(u.search||(u.hash&&u.hash.length>1))reloadArea(a.id,u.search+u.hash);
+    setTimeout(()=>openArea(a.id),0);return true}
+};
+function frameFor(id){return FR[id]}
+function startAreas(){const box=$('#areas');box.innerHTML='';
+  for(const a of AREAS){const f=document.createElement('iframe');f.src=a.path;f.title=a.app;f.dataset.area=a.id;f.setAttribute('allow','camera; clipboard-write; web-share');box.appendChild(f);FR[a.id]=f}
+  box.insertAdjacentHTML('beforeend','<div class="aload" id="aload" hidden></div>')}
+function reloadArea(id,qs){const f=FR[id];if(!f)return;delete API[id];OLDQ.delete(id);f.src=AR(id).path+(qs||'');updLoad()}
+/* Datensicherung und Darstellung eines Bereichs an MyBox angleichen */
+function syncArea(app){const api=API[app];if(!api)return;
+  try{const want=MBX.bkCfg(app),i=api.bkInfo();
+    if(want&&(!i.on||!sameGh(api,want)))api.bkSet(want)}catch(e){}
+  try{const v=DS.getTheme();localStorage.setItem(AR(app).dir+'-darstellung',v);if(v==='auto')localStorage.removeItem(AR(app).dir+'-darstellung');FR[app].contentWindow.DS.applyTheme(v)}catch(e){}}
+function sameGh(api,g){try{const c=api.ghCur();
+  return !!c&&c.owner===g.owner&&c.repo===g.repo&&c.token===g.token&&(c.dir||'')===(g.dir||'')}catch(e){return false}}
+function openArea(id){if(!UNLOCKED)return;closeSheet(true);const box=$('#areas');
+  for(const f of Object.values(FR))f.classList.toggle('on',f.dataset.area===id);
+  box.classList.remove('off');curArea=id;if(history.state?.mbx!=='area')history.pushState({mbx:'area'},'');updLoad();buzz(6);
+  try{FR[id].contentWindow.focus()}catch{}}
+function showDash(){if(!curArea)return;curArea=null;$('#areas').classList.add('off');for(const f of Object.values(FR))f.classList.remove('on');
+  if(history.state?.mbx==='area'){ignorePop=true;history.back()}renderDash()}
+function updLoad(){const el=$('#aload');if(!el)return;const id=curArea;if(!id||API[id]){el.hidden=true;return}
+  const a=AR(id);el.hidden=false;
+  el.innerHTML=OLDQ.has(id)?`<img src="${a.img}" alt=""><b>${esc(a.name)}: Passwort nötig</b><span>Die Daten sind noch mit einem anderen Passwort verschlüsselt.</span><button type="button" class="ds-btn pri" id="oldGo">Passwort eingeben</button><button type="button" class="ds-btn" id="aHome">Zur Übersicht</button>`
+    :`<img src="${a.img}" alt=""><span>${esc(a.name)} wird entschlüsselt …</span><button type="button" class="ds-btn" id="aHome">Zur Übersicht</button>`;
+  const og=$('#oldGo');if(og)og.onclick=()=>askOld(id);$('#aHome').onclick=showDash}
+/* Bereich mit anderem Passwort (Umzug oder Sicherung von früher): einmal nachfragen, dann auf das MyBox-Passwort umschlüsseln */
+let oldOpen=false;
+function nextOld(){if(oldOpen||$('#dlg').open)return;const id=[...OLDQ.keys()][0];if(id)askOld(id)}
+function askOld(id){const fn=OLDQ.get(id);if(!fn)return;const a=AR(id);oldOpen=true;
+  form(a.name+': bisheriges Passwort',[{k:'pw',l:'Passwort aus der '+a.app+' bzw. der Sicherung',t:'password',req:true}],async(v,fail)=>{
+    const r=await fn(v.pw);if(r==='wrong')return fail('Das Passwort passt nicht. Versuch es noch einmal.');if(r!=='ok')return fail('Das hat nicht geklappt ('+r+').');
+    OLDQ.delete(id);oldOpen=false;DS.yay('Übernommen');toast(a.name+' ist jetzt mit deinem MyBox-Passwort verschlüsselt.');setTimeout(nextOld,400)},
+    {ok:'Übernehmen',html:`<p class="ds-dlg-intro">Die Daten im Bereich <b>${esc(a.name)}</b> sind mit einem anderen Passwort verschlüsselt – zum Beispiel mit dem bisherigen Passwort der ${esc(a.app)} oder dem Passwort, das beim Sichern galt. Gib es einmal ein. Danach gilt dein MyBox-Passwort.</p>`,
+     onCancel:()=>{oldOpen=false}})}
+
+/* ---------- Dashboard ---------- */
+function schedDash(ms){clearTimeout(dashT);dashT=setTimeout(()=>{if(UNLOCKED){renderDash();writeSched()}},ms||0)}
+const safe=(f,d)=>{try{return f()}catch(e){console.warn(e);return d}};
+function bkAll(){const ls=AREAS.map(a=>API[a.id]&&safe(()=>API[a.id].bkInfo(),null)).filter(Boolean);
+  const own=ls.filter(x=>x.own);
+  return{ghErr:(ls.find(x=>x.ghErr)||{}).ghErr||'',ghOk:own.length>0&&own.every(x=>x.ghOk),own:own.length>0,
+    days:own.some(x=>x.days==null)?null:Math.max(0,...own.map(x=>x.days)),dirty:own.reduce((s,x)=>s+(x.dirty||0),0)}}
+function renderDash(){
+  if(!UNLOCKED||$('#app').hidden)return;
+  const hr=new Date().getHours(),hello=hr<5?'Gute Nacht':hr<11?'Guten Morgen':hr<18?'Hallo':'Guten Abend';
+  const ready=AREAS.filter(a=>API[a.id]);
+  let h=`<div class="hello">${hello} · ${new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'})}</div>`;
+  const bk=bkAll();if(ready.length===AREAS.length)h+=DS.remindHtml(bk,'id="dsRemind"');
+  DS.lockDot($('#lockBtn'),ready.length===AREAS.length?bk:{own:false});
+  /* Als Nächstes: Termine und Fristen aus allen Bereichen */
+  const tl=[];for(const a of ready)for(const x of safe(()=>API[a.id].timeline(30),[]))tl.push({...x,app:a.id});
+  tl.sort((x,y)=>(x.d+(x.time||'')).localeCompare(y.d+(y.time||'')));
+  const N=showAllTl?tl.length:6;
+  h+=`<div class="sec">Als Nächstes<small>nächste 30 Tage</small></div>`;
+  h+=tl.length?`<div class="list">${tl.slice(0,N).map((x,i)=>{const d=pD(x.d),n=dUntil(x.d);
+    return `<button type="button" class="row" style="--ac:var(--c-${x.app})" data-tl="${i}"><span class="dt"><b>${d.getDate()}</b><small>${MON[d.getMonth()]}</small></span><span class="rt"><b>${esc(x.title)}</b><small>${esc([x.time?x.time+' Uhr':'',x.sub].filter(Boolean).join(' · '))}</small></span><span class="when${n<=1?' now':n<=7?' soon':''}">${esc(relDay(n))}</span></button>`}).join('')}${tl.length>6?`<button type="button" class="more" id="tlMore">${showAllTl?'Weniger anzeigen':'Alle '+tl.length+' anzeigen'}</button>`:''}</div>`
+    :`<div class="list"><div class="empty">${ready.length?'In den nächsten 30 Tagen steht nichts an.':'Die Bereiche werden geöffnet …'}</div></div>`;
+  /* Zu erledigen */
+  const td=[];for(const a of ready)for(const x of safe(()=>API[a.id].todos(),[]))td.push({...x,app:a.id});
+  if(td.length)h+=`<div class="sec">Zu erledigen</div><div class="list">${td.slice(0,8).map((x,i)=>`<button type="button" class="row ${x.lvl==='crit'?'crit':'warn'}" style="--ac:var(--c-${x.app})" data-td="${i}"><span class="ti">${x.lvl==='crit'?I.warn:I.todo}</span><span class="rt"><b>${esc(x.title)}</b><small>${esc(AR(x.app).name)}</small></span><span class="chev">${I.chev}</span></button>`).join('')}</div>`;
+  /* Bereiche */
+  h+=`<div class="sec">Bereiche</div><div class="areas">${AREAS.map(a=>{const api=API[a.id];let c,cls='';
+    if(api)c=safe(()=>api.card(),{main:a.name,sub:'',facts:[]});
+    else if(OLDQ.has(a.id)){c={main:'Passwort nötig',sub:'Einmal das bisherige Passwort eingeben',facts:[]};cls=' need'}
+    else{c={main:'Wird geöffnet …',sub:a.app,facts:[]};cls=' wait'}
+    return `<button type="button" class="card${cls}" style="--ac:var(--c-${a.id})" data-area="${a.id}"><img src="${a.img}" alt="" width="48" height="48"><span class="ct"><span class="cn">${esc(a.name)}</span><span class="cm">${esc(c.main)}</span>${c.sub?`<span class="cs">${esc(c.sub)}</span>`:''}${c.facts&&c.facts.length?`<span class="cf">${c.facts.map(f=>`<span>${esc(f)}</span>`).join('')}</span>`:''}</span><span class="chev">${I.chev}</span></button>`}).join('')}</div>`;
+  $('#dash').innerHTML=h;
+  $('#dash').querySelectorAll('[data-area]').forEach(b=>b.onclick=()=>{const id=b.dataset.area;if(OLDQ.has(id)&&!API[id])askOld(id);else openArea(id)});
+  $('#dash').querySelectorAll('[data-tl]').forEach(b=>b.onclick=()=>goRef(tl[+b.dataset.tl]));
+  $('#dash').querySelectorAll('[data-td]').forEach(b=>b.onclick=()=>goRef(td[+b.dataset.td]));
+  const tm=$('#tlMore');if(tm)tm.onclick=()=>{showAllTl=!showAllTl;renderDash()};
+  const rm=$('#dsRemind');if(rm)rm.onclick=()=>{ACC.add('bk');openSheet('menu')};
+}
+let showAllTl=false;
+function goRef(x){if(!x||!API[x.app])return;openArea(x.app);setTimeout(()=>{try{API[x.app].open(x.ref)}catch(e){}},120)}
+
+/* ---------- Blatt (Menü und Suche) ---------- */
+let SHMODE='menu';const ACC=new Set();
+const sheetOpen=()=>!$('#sheet').hidden;
+function openSheet(mode){SHMODE=mode;const sh=$('#sheet');$('#sheetH').textContent=mode==='search'?'Suchen':'Daten & Sicherheit';fillSheet();
+  if(sh.hidden){sh.hidden=false;if(history.state?.mbx!=='sheet')history.pushState({mbx:'sheet'},'');requestAnimationFrame(()=>requestAnimationFrame(()=>sh.classList.add('show')))}
+  $('#spanel').scrollTop=0;buzz(6);if(mode==='search')setTimeout(()=>{const q=$('#sq');if(q)q.focus()},motion()?320:0)}
+function closeSheet(quiet){const sh=$('#sheet');if(sh.hidden)return;sh.classList.remove('show');setTimeout(()=>{if(!sh.classList.contains('show'))sh.hidden=true},quiet||!motion()?0:300);
+  if(!quiet&&history.state?.mbx==='sheet'){ignorePop=true;history.back()}}
+function fillSheet(){const b=$('#sheetBody');
+  if(SHMODE==='search'){b.innerHTML=`<label class="ds-srch"><span class="sr">Suchbegriff</span><input id="sq" type="search" placeholder="Geräte, Termine, Verträge, Ärzte …" autocomplete="off" enterkeyhint="search"></label><div class="ds-qres" id="sqres">${searchRes('')}</div>`;
+    const q=$('#sq');q.addEventListener('input',()=>{$('#sqres').innerHTML=searchRes(q.value)});return}
+  const y=$('#spanel').scrollTop;b.innerHTML=menuHtml();$('#spanel').scrollTop=y}
+function refreshSheet(){if(sheetOpen()&&SHMODE==='menu')fillSheet()}
+$('#sheetX').onclick=()=>closeSheet();$('#sheet .sbg').onclick=()=>closeSheet();
+$('#searchBtn').onclick=()=>openSheet('search');$('#menuBtn').onclick=()=>openSheet('menu');
+$('#sheetBody').addEventListener('toggle',e=>{const d=e.target;if(d.matches?.('details.acc')){d.open?ACC.add(d.dataset.k):ACC.delete(d.dataset.k)}},true);
+/* Nach unten wischen schließt das Blatt */
+(()=>{let y0=0,dy=0,on=false;const p=$('#spanel');
+  p.addEventListener('touchstart',e=>{on=false;if(p.scrollTop>0||e.touches.length!==1||e.target.closest('input,textarea,select'))return;on=true;y0=e.touches[0].clientY;dy=0},{passive:true});
+  p.addEventListener('touchmove',e=>{if(!on)return;dy=Math.max(0,e.touches[0].clientY-y0);p.style.transform=dy?`translateY(${dy}px)`:''},{passive:true});
+  p.addEventListener('touchend',()=>{if(!on)return;on=false;p.style.transform='';if(dy>120)closeSheet()})})();
+/* Gemeinsame Suche über alle Bereiche */
+let SRES=[];
+function searchRes(raw){const q=String(raw||'').trim();
+  if(!q)return `<p class="ds-qhint">Sucht in allen drei Bereichen: Geräte und Routinen, Termine, Ärzte, Vorsorge und Dokumente, Verträge und Belege.</p>`;
+  SRES=[];let h='';
+  for(const a of AREAS){const api=API[a.id];if(!api)continue;const r=safe(()=>api.search(q),[]);if(!r.length)continue;
+    h+=`<div class="ds-lbl" style="color:var(--c-${a.id})">${esc(a.name)} · ${r.length}</div><div class="ds-qlist">${r.slice(0,25).map(x=>{SRES.push({...x,app:a.id});
+      return `<button type="button" class="ds-qrow" data-sr="${SRES.length-1}"><span class="ds-qi" style="background:color-mix(in srgb,var(--c-${a.id}) 13%,var(--surface));color:var(--c-${a.id})"><img src="${a.img}" alt="" width="22" height="22" style="border-radius:6px"></span><span class="ds-qt"><b>${esc(x.title)}</b><small>${esc([x.g,x.sub].filter(Boolean).join(' · '))}</small></span></button>`}).join('')}</div>`}
+  return h||'<p class="ds-qhint">Nichts gefunden.</p>'}
+$('#sheetBody').addEventListener('click',e=>{const r=e.target.closest('[data-sr]');if(!r)return;const x=SRES[+r.dataset.sr];closeSheet(true);
+  if(history.state?.mbx==='sheet')history.replaceState({mbx:'none'},'');goRef(x)});
+
+/* ---------- Fenster für kleine Formulare ---------- */
+function form(title,fields,onSave,o={}){
+  const d=$('#dlg'),f=$('#dlgForm');
+  f.innerHTML=`<h2>${esc(title)}</h2>${o.html||''}${fields.map((x,i)=>x.t==='check'?`<label class="ds-check"><input type="checkbox" name="${x.k}"${x.v?' checked':''}> ${esc(x.l)}</label>`
+    :`<label class="fl" for="f${i}">${esc(x.l)}</label><input id="f${i}" name="${x.k}" type="${x.t||'text'}" value="${esc(x.v||'')}" ${x.req?'required':''} autocomplete="${x.t==='password'?'new-password':'off'}" autocapitalize="off" spellcheck="false">`).join('')}
+    <p class="ds-err" id="ferr" hidden></p><div class="frow"><button type="button" class="ds-btn" data-x="c">Abbrechen</button><button class="ds-btn pri" id="fok">${esc(o.ok||'Speichern')}</button></div>`;
+  const fail=m=>{const e=$('#ferr');e.textContent=m;e.hidden=false;buzz([20,40,20]);return false};
+  f.querySelector('[data-x=c]').onclick=()=>{d.close();o.onCancel&&o.onCancel()};
+  d.oncancel=()=>{o.onCancel&&o.onCancel()};
+  f.onsubmit=async e=>{e.preventDefault();const v={};fields.forEach(x=>v[x.k]=x.t==='check'?f.elements[x.k].checked:f.elements[x.k].value);const b=$('#fok');b.disabled=true;$('#ferr').hidden=true;
+    try{const r=await onSave(v,fail);if(r!==false)d.close()}catch(err){fail(err.message||String(err))}finally{b.disabled=false}};
+  d.showModal();setTimeout(()=>{const i=f.querySelector('input');if(i)i.focus()},50)}
+let awayUntil=0;
+function pickFile(accept){return new Promise(res=>{const i=$('#fileIn');i.value='';i.accept=accept||'';awayUntil=Date.now()+10*60e3;i.onchange=()=>res(i.files[0]||null);i.click()})}
+async function deliver(name,text,type){awayUntil=Date.now()+10*60e3;const file=new File([text],name,{type});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:name});return true}catch(e){if(e.name==='AbortError')return false}}
+  const a=document.createElement('a'),u=URL.createObjectURL(file);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return true}
+
+/* ---------- Menü „Daten & Sicherheit“ ---------- */
+function acc(k,ic,t,sub,body,force){return `<details class="acc" data-k="${k}"${ACC.has(k)||force?' open':''}><summary><span class="ai">${I[ic]}</span><span class="at">${t}<small>${sub}</small></span><span class="chev">${I.chev}</span></summary><div class="accb">${body}</div></details>`}
+function areaBk(a){const api=API[a.id];if(!api)return{cls:'',txt:OLDQ.has(a.id)?'Passwort nötig':'wird geöffnet …'};const i=safe(()=>api.bkInfo(),{});
+  if(i.ghErr)return{cls:'crit',txt:'Problem: '+i.ghErr};if(i.conflict)return{cls:'crit',txt:'Im Repo liegt ein anderer Stand'};
+  if(i.on&&i.at)return{cls:'ok',txt:'gesichert '+new Date(i.at).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})};
+  if(i.on)return{cls:'warn',txt:'noch nicht gesichert'};return{cls:'',txt:i.last?'Datei vom '+fmtD(i.last):'keine Sicherung'}}
+function menuHtml(){
+  const g=CFG.gh,bio=bioSupported()&&lsGet(BKEY),R=CFG.remind||{};
+  const rows=fn=>AREAS.map(a=>`<div class="brow"><img src="${a.img}" alt=""><div class="bt">${fn(a)}</div></div>`).join('');
+  return `<div class="sintro">${I.shield}<span>Alles verschlüsselt mit AES-256 · ein Passwort für alle Bereiche · sperrt nach 5 Min. ohne Eingabe oder 1 Min. im Hintergrund</span></div>`
+  +acc('sec','lock','Sicherheit','Passwort · Fingerabdruck '+(bio?'an':'aus'),`
+    <p class="ds-hint">Alle Daten liegen verschlüsselt auf diesem Gerät${g?' und als verschlüsselte Sicherung in deinem privaten GitHub-Repo':''}. Dein Passwort wird nicht gespeichert.</p>
+    ${bioSupported()?`<div class="ds-lbl">Fingerabdruck</div><p class="ds-hint">${bio?'Entsperren per Fingerabdruck ist eingeschaltet. Das Passwort bleibt für den Notfall wichtig.':'Entsperre MyBox mit Fingerabdruck oder Gesichtserkennung. Dafür wird ein Passkey „MyBox“ in deinem Passwortmanager angelegt.'}</p>
+    <div class="ds-acts">${bio?'<button type="button" class="ds-btn" data-m="bio-off">Ausschalten</button>':'<button type="button" class="ds-btn pri" data-m="bio-on">Einschalten</button>'}</div>`:''}
+    <div class="ds-lbl sep">Passwort</div><p class="ds-hint">Gilt für alle drei Bereiche. Beim Ändern werden alle Daten neu verschlüsselt.</p>
+    <div class="ds-acts"><button type="button" class="ds-btn" data-m="pw">Passwort ändern</button></div>
+    <div class="ds-lbl sep">Alles löschen</div><p class="ds-hint">Löscht MyBox mit allen Bereichen und Dokumenten auf diesem Gerät. Die einzelnen Apps (MySmartBox usw.) bleiben unberührt.</p>
+    <div class="ds-acts"><button type="button" class="ds-btn dng" data-m="wipe">Alles löschen</button></div>`)
+  +acc('bk','down','Datensicherung',(g?'GitHub '+(bkAll().ghErr?'⚠️ Problem':'an'):'GitHub aus')+' · alle Bereiche',`
+    <div class="ds-lbl">Automatisch in GitHub</div>
+    ${g?`<p class="ds-hint">Nach jeder Änderung landet der verschlüsselte Stand jedes Bereichs in <b>${esc(g.owner)}/${esc(g.repo)}</b>, jeder in seinem eigenen Ordner. GitHub sieht nur verschlüsselte Daten.</p>
+      ${rows(a=>{const s=areaBk(a);return `<b>${esc(a.name)} <span style="font-weight:400;color:var(--muted)">· /${esc(a.dir)}</span></b><span><i class="dot ${s.cls}"></i>${esc(s.txt)}</span>`})}
+      <div class="ds-acts" style="margin-top:10px"><button type="button" class="ds-btn pri" data-m="bk-now">Jetzt sichern</button><button type="button" class="ds-btn" data-m="bk-pull">Alles von GitHub laden</button><button type="button" class="ds-btn" data-m="bk-off">Trennen</button></div>`
+    :`<p class="ds-hint">Ein privates GitHub-Repo und ein Zugangsschlüssel für alle drei Bereiche. Gesichert wird nach jeder Änderung, jeder Bereich in seinem eigenen Ordner (smartbox, gesundbox, belegbox).</p>
+      <div class="ds-acts"><button type="button" class="ds-btn pri" data-m="bk-setup">GitHub einrichten</button></div>`}
+    <div class="ds-lbl sep">Sicherungsdatei</div>
+    <p class="ds-hint">Eine Datei mit allen drei Bereichen und allen Dokumenten, verschlüsselt mit deinem aktuellen Passwort. Leg sie an einem zweiten Ort ab.</p>
+    <div class="ds-acts"><button type="button" class="ds-btn${g?'':' pri'}" data-m="file-out">Sicherung erstellen</button><button type="button" class="ds-btn" data-m="file-in">Sicherung laden</button></div>`,!!(g&&bkAll().ghErr))
+  +acc('move','move','Umzug aus den Einzel-Apps','MySmartBox, MyGesundBox, MyBelegBox übernehmen',`
+    <p class="ds-hint">So holst du deine bisherigen Daten nach MyBox: In der alten App unter Daten &amp; Sicherheit → Datensicherung auf <b>„Sicherung erstellen“</b> tippen und die Datei hier laden – oder direkt aus deren GitHub-Sicherung. Danach fragt MyBox einmal nach dem bisherigen Passwort. Die alten Apps bleiben unverändert.</p>
+    ${rows(a=>{const api=API[a.id],n=api?safe(()=>api.count(),0):null;return `<b>${esc(a.name)} <span style="font-weight:400;color:var(--muted)">aus der ${esc(a.app)}</span></b><span>${n==null?(OLDQ.has(a.id)?'Passwort nötig':'wird geöffnet …'):n?n+' Einträge in MyBox':'noch leer'}</span>
+      <div class="ds-acts"><button type="button" class="ds-btn" data-m="mv-file" data-a="${a.id}"${api?'':' disabled'}>Sicherungsdatei laden</button><button type="button" class="ds-btn" data-m="mv-gh" data-a="${a.id}"${api?'':' disabled'}>Aus GitHub</button>${OLDQ.has(a.id)?`<button type="button" class="ds-btn pri" data-m="mv-old" data-a="${a.id}">Passwort eingeben</button>`:''}</div>`})}`)
+  +acc('erin','bell','Erinnerungen',R.on?'an · '+R.lead+' Tage vorher':'aus',remindHtml())
+  +acc('kal','cal','Kalender','Termine und Fristen aus allen Bereichen',`
+    <p class="ds-hint">Exportiert Arzttermine, Kündigungsfristen und Garantie-Enden als eine Kalender-Datei. Nach neuen Einträgen einfach erneut exportieren, bestehende Termine werden aktualisiert.</p>
+    <label class="ds-check"><input id="icsNeutral" type="checkbox" checked> Neutrale Titel bei Verträgen und Geräten</label>
+    <div class="ds-acts"><button type="button" class="ds-btn" data-m="ics">In den Kalender exportieren</button></div>`)
+  +acc('upd','pkg','App-Update','Version '+APP_VERSION+' · '+(CFG.upd?'GitHub verbunden':'nicht verbunden'),`
+    ${CFG.upd?`<p class="ds-hint">Verbunden mit <b>${esc(CFG.upd.repo)}</b>. Lade hier das Zip-Paket einer neuen Version hoch – GitHub prüft die Versionsnummer und veröffentlicht es in 1–2 Minuten.</p>
+      <div class="ds-acts"><button type="button" class="ds-btn pri" data-m="upd-up">Update-Zip hochladen</button><button type="button" class="ds-btn" data-m="upd-set">Verbindung ändern</button><button type="button" class="ds-btn" data-m="upd-off">Trennen</button></div>`
+    :`<p class="ds-hint">Neue Versionen als Zip direkt aus der App veröffentlichen. Dafür brauchst du einen eigenen Zugangsschlüssel nur für das App-Repo.</p><div class="ds-acts"><button type="button" class="ds-btn pri" data-m="upd-set">GitHub verbinden</button></div>`}
+    <div id="updStatus" class="ds-box"${UPD?'':' hidden'}>${UPD}</div>`,!!UPD)
+  +acc('look','sun','Darstellung',({auto:'Automatisch',light:'Hell',dark:'Dunkel'})[DS.getTheme()]+' · für alle Bereiche',`<div class="ds-lbl">Hell oder dunkel</div>${DS.themeHtml()}`)
+  +`<p class="ds-ver">MyBox · Version ${APP_VERSION}<br>MySmartBox, MyGesundBox und MyBelegBox in einer App</p>`;
+}
+$('#sheetBody').addEventListener('click',async e=>{const b=e.target.closest('[data-m]');if(!b||b.disabled)return;const m=b.dataset.m,aid=b.dataset.a;
+  try{await menuAct(m,aid,b)}catch(x){toast(x&&x.message||'Das hat nicht geklappt.')}});
+/* Darstellung für alle Bereiche */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ds-theme]');if(!b)return;const v=b.dataset.dsTheme;
+  setTimeout(()=>{for(const a of AREAS){try{a.id&&API[a.id]&&API[a.id].theme(v)}catch{}try{v==='auto'?localStorage.removeItem(a.dir+'-darstellung'):localStorage.setItem(a.dir+'-darstellung',v)}catch{}}refreshSheet()},0)});
+const allReady=()=>{const miss=AREAS.filter(a=>!API[a.id]);if(miss.length)throw new Error(miss.map(a=>a.name).join(', ')+(miss.length>1?' sind':' ist')+' noch nicht bereit. Bitte kurz warten'+(miss.some(a=>OLDQ.has(a.id))?' oder zuerst das bisherige Passwort eingeben':'')+'.')};
+async function ghCheck(g){const r=await fetch(`https://api.github.com/repos/${encodeURIComponent(g.owner)}/${encodeURIComponent(g.repo)}`,{headers:{Accept:'application/vnd.github+json',Authorization:'Bearer '+g.token,'X-GitHub-Api-Version':'2022-11-28'}});
+  if(r.status===401)throw new Error('Der Zugangsschlüssel ist ungültig oder abgelaufen.');if(r.status===403)throw new Error('Keine Berechtigung – prüfe die Rechte des Zugangsschlüssels.');
+  if(r.status===404)throw new Error('Repo nicht gefunden oder der Schlüssel hat keinen Zugriff darauf.');if(!r.ok)throw new Error('GitHub antwortet mit Fehler '+r.status+'.');
+  const j=await r.json();if(!j.private)throw new Error('Dieses Repo ist öffentlich. Aus Sicherheitsgründen sichert MyBox nur in private Repos.');
+  if(j.permissions&&j.permissions.push===false)throw new Error('Der Schlüssel darf in dieses Repo nicht schreiben. Setze „Contents“ auf „Read and write“.')}
+async function menuAct(m,aid,btn){
+  switch(m){
+  case 'bio-on':form('Fingerabdruck einrichten',[{k:'pw',l:'Zur Bestätigung dein Passwort',t:'password',req:true}],async(v,fail)=>{if(v.pw!==PW)return fail('Das Passwort ist falsch.');
+      try{await enableBio(v.pw);DS.yay('Fingerabdruck an');toast('Fingerabdruck eingerichtet ✓');refreshSheet()}
+      catch(x){return fail(x.message==='noprf'?'Dein Passkey-Anbieter unterstützt das nicht. Bitte den Google Passwortmanager als Speicherort wählen.':x.name==='NotAllowedError'?'Abgebrochen. Bitte erneut versuchen.':x.message)}},
+      {ok:'Weiter',html:'<p class="ds-dlg-intro">Danach fragt dein Handy nach dem Fingerabdruck. Als Speicherort den Google Passwortmanager wählen.</p>'});break;
+  case 'bio-off':if(confirm('Entsperren per Fingerabdruck ausschalten?')){lsDel(BKEY);refreshSheet();toast('Fingerabdruck ausgeschaltet. Den Passkey „MyBox“ kannst du im Passwortmanager löschen.')}break;
+  case 'pw':form('Passwort ändern',[{k:'p0',l:'Aktuelles Passwort',t:'password',req:true},{k:'p1',l:'Neues Passwort (mind. 10 Zeichen)',t:'password',req:true},{k:'p2',l:'Neues Passwort wiederholen',t:'password',req:true}],async(v,fail)=>{
+      if(v.p0!==PW)return fail('Das aktuelle Passwort ist falsch.');if(v.p1.length<10)return fail('Das neue Passwort braucht mindestens 10 Zeichen.');if(v.p1!==v.p2)return fail('Die neuen Passwörter stimmen nicht überein.');
+      try{allReady()}catch(x){return fail(x.message)}
+      $('#fok').textContent='Verschlüssle neu …';
+      for(const a of AREAS){try{await API[a.id].changePw(v.p0,v.p1)}catch(x){return fail(a.name+': '+(x.message||'Umschlüsseln fehlgeschlagen')+'. Bitte erneut versuchen.')}}
+      SALT=rnd(16);KEY=await derive(v.p1,SALT);PW=v.p1;await saveCfg();
+      const hadBio=!!lsGet(BKEY);if(hadBio)lsDel(BKEY);
+      DS.yay('Neu verschlüsselt');toast(hadBio?'Passwort geändert. Bitte den Fingerabdruck neu einrichten.':'Passwort geändert. Alle Bereiche sind neu verschlüsselt.');refreshSheet()},{ok:'Passwort ändern'});break;
+  case 'wipe':if(!confirm('Wirklich MyBox mit ALLEN Bereichen und Dokumenten auf diesem Gerät löschen? Das lässt sich nicht rückgängig machen.'))return;if(!confirm('Letzte Warnung: Hast du eine Sicherung?'))return;
+    UNLOCKED=false;$('#areas').innerHTML='';try{localStorage.clear()}catch{}
+    try{const dbs=indexedDB.databases?await indexedDB.databases():[{name:'mybox'},{name:'mysmartbox'},{name:'gesundbox'},{name:'beleg-belegbox-files'}];for(const d of dbs)if(d.name)indexedDB.deleteDatabase(d.name)}catch{}
+    try{for(const k of await caches.keys())if(!k.startsWith('mybox-'))await caches.delete(k)}catch{}
+    location.reload();break;
+  case 'bk-setup':form('GitHub-Sicherung einrichten',[{k:'owner',l:'Konto / Organisation',req:true,v:'jazm-box'},{k:'repo',l:'Privates Repo',req:true,v:'mybox-daten'},{k:'token',l:'Zugangsschlüssel (github_pat_…)',t:'password',req:true}],async(v,fail)=>{
+      const g={owner:v.owner.trim(),repo:v.repo.trim(),token:v.token.trim()};if(!g.owner||!g.repo||!g.token)return fail('Bitte alle drei Felder ausfüllen.');
+      try{await ghCheck(g)}catch(x){return fail(x.message)}
+      CFG.gh=g;await saveCfg();for(const a of AREAS)if(API[a.id])try{await API[a.id].bkSet(MBX.bkCfg(a.id))}catch{}
+      DS.yay('GitHub verbunden');toast('Automatische Sicherung ist für alle Bereiche aktiv ✓');refreshSheet();setTimeout(refreshSheet,6000)},
+      {ok:'Verbinden & sichern',html:'<p class="ds-dlg-intro">Lege auf GitHub ein <b>privates</b> Repo an, z. B. <b>mybox-daten</b>, und einen Fine-grained-Zugangsschlüssel nur für dieses Repo mit <b>Contents: Read and write</b>. Alle drei Bereiche sichern dorthin, jeder in seinen eigenen Ordner. GitHub sieht nur verschlüsselte Daten.</p>'});break;
+  case 'bk-now':allReady();btn.disabled=true;btn.textContent='Sichere …';for(const a of AREAS)await API[a.id].bkNow().catch(()=>{});
+    const er=bkAll().ghErr;if(!er){buzz(10);toast('Alle Bereiche auf GitHub gesichert ✓')}else toast('Problem: '+er);refreshSheet();break;
+  case 'bk-pull':allReady();if(!confirm('Die Daten aller Bereiche auf diesem Gerät durch den Stand auf GitHub ersetzen?'))return;btn.disabled=true;btn.textContent='Lade …';
+    for(const a of AREAS){try{await API[a.id].ghPull(MBX.bkCfg(a.id))}catch(x){toast(a.name+': '+(x.message||'nicht geladen'))}}
+    toast('Geladen. Falls ein Bereich mit einem anderen Passwort gesichert wurde, fragt MyBox gleich danach.');refreshSheet();break;
+  case 'bk-off':if(!confirm('GitHub-Sicherung für alle Bereiche trennen? Im Repo bleibt alles liegen.'))return;CFG.gh=null;await saveCfg();
+    for(const a of AREAS)if(API[a.id])try{await API[a.id].bkSet(null)}catch{}toast('GitHub-Sicherung getrennt.');refreshSheet();break;
+  case 'file-out':{allReady();btn.disabled=true;btn.textContent='Erstelle …';const boxes={};
+    for(const a of AREAS){boxes[a.id]=JSON.parse(await API[a.id].backupFile())}
+    await saving;const payload=JSON.stringify({app:'mybox',format:1,exported:new Date().toISOString(),version:APP_VERSION,shell:JSON.parse(vaultJson),boxes});
+    if(await deliver(`mybox-sicherung-${today()}.mybox`,payload,'application/json')){DS.yay('Gesichert');toast('Sicherung erstellt. Leg die Datei an einem zweiten Ort ab, z. B. in deiner Cloud.')}
+    refreshSheet();schedDash(300);break}
+  case 'file-in':{allReady();const f=await pickFile('.mybox,application/json');if(!f)return;let o;
+    try{o=JSON.parse(await f.text())}catch{throw new Error('Das ist keine MyBox-Sicherung.')}
+    if(!o||o.app!=='mybox'||!o.boxes||!o.shell)throw new Error(/smartbox|gesundbox|belegbox/i.test(f.name)?'Das ist eine Sicherung einer Einzel-App. Lade sie unter „Umzug aus den Einzel-Apps“.':'Das ist keine MyBox-Sicherung.');
+    if(!confirm(`Alle Daten auf diesem Gerät durch die Sicherung vom ${new Date(o.exported).toLocaleDateString('de-DE')} ersetzen? Danach entsperrst du mit dem Passwort, das beim Sichern galt.`))return;
+    UNLOCKED=false;for(const a of AREAS){if(o.boxes[a.id])try{await API[a.id].restore(o.boxes[a.id])}catch(x){toast(a.name+': '+x.message)}}
+    await writeVault(JSON.stringify(o.shell));lsDel(BKEY);UNLOCKED=true;await lockAll();toast('Sicherung geladen. Entsperre mit dem Passwort, das beim Sichern galt.');break}
+  case 'mv-file':{const a=AR(aid),api=API[aid];if(!api)return;const f=await pickFile('');if(!f)return;
+    if(api.count()&&!confirm(`Die Daten im Bereich ${a.name} in MyBox durch diese Sicherung ersetzen?`))return;
+    closeSheet();openArea(aid);await api.restoreFile(f);break}
+  case 'mv-gh':{const a=AR(aid),api=API[aid];if(!api)return;
+    form(a.name+' aus GitHub übernehmen',[{k:'owner',l:'Konto / Organisation',req:true,v:a.def.owner},{k:'repo',l:'Repo der '+a.app,req:true,v:a.def.repo},{k:'dir',l:'Ordner im Repo (meist leer)'},{k:'token',l:'Zugangsschlüssel (github_pat_…)',t:'password',req:true}],async(v,fail)=>{
+      const g={owner:v.owner.trim(),repo:v.repo.trim(),token:v.token.trim()};const dd=v.dir.trim().replace(/^\/+|\/+$/g,'');if(dd)g.dir=dd;
+      if(api.count()&&!confirm(`Die Daten im Bereich ${a.name} in MyBox durch den Stand aus GitHub ersetzen?`))return false;
+      $('#fok').textContent='Lade …';try{await api.ghPull(g)}catch(x){return fail(x.status===401?'Der Zugangsschlüssel ist ungültig.':x.status===404?'Repo oder Sicherung nicht gefunden.':(x.message||'Das hat nicht geklappt.'))}
+      closeSheet();openArea(aid)},{ok:'Laden',html:`<p class="ds-dlg-intro">Lädt die bisherige GitHub-Sicherung der ${esc(a.app)} in MyBox. Im alten Repo wird nichts verändert. Danach sichert MyBox nur noch in das Repo unter „Datensicherung“.</p>`});break}
+  case 'mv-old':askOld(aid);break;
+  case 'rm-on':btn.disabled=true;try{await remindOn()}catch(x){btn.disabled=false;toast(x.message);return}refreshSheet();DS.yay('Erinnerungen an');break;
+  case 'rm-off':await remindOff();refreshSheet();toast('Erinnerungen ausgeschaltet.');break;
+  case 'rm-lead':{const v=+btn.dataset.v;CFG.remind.lead=v;await saveCfg();buzz(5);await writeSched(true);refreshSheet();break}
+  case 'rm-perm':try{await Notification.requestPermission()}catch{}if(Notification.permission==='granted'){await writeSched(true);toast('Benachrichtigungen sind erlaubt ✓')}else toast('Noch blockiert. Bitte in den Einstellungen erlauben.');refreshSheet();break;
+  case 'rm-test':if(Notification.permission!=='granted'){try{await Notification.requestPermission()}catch{}if(Notification.permission!=='granted'){refreshSheet();toast('Benachrichtigungen sind blockiert – siehe Hinweis.');return}}
+    try{const r=await navigator.serviceWorker.ready;await r.showNotification('MyBox',{body:'So sieht eine Erinnerung aus. Namen, Ärzte und Beträge stehen nie darin.',tag:'mybox-test',icon:'icons/mybox-192.png',badge:'icons/mybox-badge-96.png'});buzz(8)}
+    catch(x){toast('Test hat nicht geklappt: '+(x&&x.message||x))}break;
+  case 'ics':{const neutral=$('#icsNeutral').checked;let ev=[];
+    for(const a of AREAS){const api=API[a.id];if(!api)continue;const t=safe(()=>api.ics(neutral),'');if(t)ev=ev.concat(t.match(/BEGIN:VEVENT[\s\S]*?END:VEVENT/g)||[])}
+    if(!ev.length){toast('Gerade stehen keine Termine oder Fristen an.');return}
+    const txt=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//MyBox//DE','CALSCALE:GREGORIAN','METHOD:PUBLISH',...ev,'END:VCALENDAR'].join('\r\n')+'\r\n';
+    if(await deliver('mybox-termine.ics',txt,'text/calendar'))toast(ev.length+' Termine exportiert. Öffne die Datei mit deinem Kalender.');break}
+  case 'upd-set':updSetup();break;
+  case 'upd-up':updUpload();break;
+  case 'upd-off':if(confirm('GitHub-Verbindung für Updates entfernen?')){CFG.upd=null;await saveCfg();refreshSheet();toast('App-Update getrennt.')}break;
+  }
+}
+
+/* ---------- Erinnerungen über alle Bereiche (Service Worker zeigt sie an, auch bei geschlossener App) ---------- */
+const SCHED='sched-mybox',LEADS=[7,14,30];let lastSched='',SCH={};
+const RML={'b.k':'Kündigungsfrist','b.g':'Garantie-Ende','b.p':'Preisänderung','g.t':'Arzttermin','g.v':'Vorsorge','g.u':'Ablauf eines Dokuments','g.w':'Kontaktlinsen-Wechsel','g.n':'Kontaktlinsen nachbestellen'};
+function schedAll(){const L=(CFG.remind&&CFG.remind.lead)||14;
+  for(const a of AREAS){const api=API[a.id];if(api)SCH[a.id]=safe(()=>api.sched(L),[]).map(x=>({d:x.d,t:a.id[0]+'.'+x.t,l:+x.l||L}))}
+  return Object.values(SCH).flat().filter(x=>x.d>=today()).sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0)}
+async function writeSched(force){
+  if(!CFG||!('caches' in window))return;
+  try{const c=await caches.open(SCHED);
+    if(!CFG.remind||!CFG.remind.on){if(lastSched!=='off'){lastSched='off';await c.delete('./__sched');try{navigator.clearAppBadge&&navigator.clearAppBadge()}catch{}}return}
+    const items=schedAll(),body=JSON.stringify({items});
+    try{const n=items.filter(x=>dUntil(x.d)<=x.l).length;if(navigator.setAppBadge)n?navigator.setAppBadge(n):navigator.clearAppBadge()}catch{}
+    if(body!==lastSched||force){lastSched=body;await c.put('./__sched',new Response(body,{headers:{'content-type':'application/json'}}))}
+    if(force){const r=await navigator.serviceWorker.ready;r.active&&r.active.postMessage({type:'REMIND',force:true})}
+  }catch{}}
+async function bgSync(reg){try{if(reg.periodicSync){await reg.periodicSync.register('mybox-erinnerung',{minInterval:12*3600e3});return true}}catch{}return false}
+async function remindOn(){
+  if(!('Notification' in window)||!('serviceWorker' in navigator))throw new Error('Dieser Browser kann keine Benachrichtigungen anzeigen.');
+  const p=await Notification.requestPermission();
+  if(p!=='granted')throw new Error('Benachrichtigungen sind blockiert. Erlaube sie in den Android-Einstellungen unter Apps → MyBox (oder Chrome) → Benachrichtigungen.');
+  const bg=await bgSync(await navigator.serviceWorker.ready);
+  CFG.remind={...CFG.remind,on:true,bg};await saveCfg();await writeSched(true);
+  toast(bg?'Erinnerungen sind an – auch bei geschlossener App.':'Erinnerungen sind an. Geprüft wird beim Öffnen der App.')}
+async function remindOff(){CFG.remind={...CFG.remind,on:false};await saveCfg();
+  try{const r=await navigator.serviceWorker.ready;if(r.periodicSync)await r.periodicSync.unregister('mybox-erinnerung');(await r.getNotifications({tag:'mybox-erinnerung'})).forEach(n=>n.close())}catch{}
+  await writeSched()}
+function remindNext(){const it=schedAll();if(!it.length)return 'Gerade steht nichts an.';const td=today();
+  const st=x=>{const d=pD(x.d);d.setDate(d.getDate()-x.l);const s=isoD(d);return s<td?td:s};
+  const f=it.slice().sort((a,b)=>st(a)<st(b)?-1:st(a)>st(b)?1:0)[0],n=dUntil(f.d),ar=AREAS.find(a=>a.id[0]===f.t[0]);
+  return st(f)===td?`<b>Als Nächstes:</b> ${RML[f.t]||'Frist'} (${esc(ar.name)}) am ${fmtD(f.d)} – ${relDay(n)}. Die Meldung kommt beim Öffnen der App, auch noch gesperrt.`
+    :`<b>Als Nächstes:</b> ${RML[f.t]||'Frist'} (${esc(ar.name)}) am ${fmtD(f.d)}. Die Meldung kommt ab dem ${fmtD(st(f))}.`}
+function remindHtml(){
+  if(!('Notification' in window&&'serviceWorker' in navigator))return '<p class="ds-hint">Dieser Browser kann keine Benachrichtigungen anzeigen.</p>';
+  const R=CFG.remind||{};
+  if(!R.on)return `<p class="ds-hint">MyBox meldet sich vor <b>Arztterminen</b>, fälligen <b>Vorsorgen</b>, ablaufenden <b>Überweisungen</b>, beim <b>Kontaktlinsen-Wechsel</b>, vor <b>Kündigungsfristen</b>, <b>Garantie-Enden</b> und <b>Preisänderungen</b> – auch bei geschlossener App. Dafür liegen nur die <b>Daten ohne Namen, Ärzte oder Beträge</b> unverschlüsselt auf dem Handy.</p>
+    <div class="ds-acts"><button type="button" class="ds-btn pri" data-m="rm-on">Einschalten</button></div>`;
+  const P=Notification.permission;
+  return `<p class="ds-hint">An. MyBox meldet sich einmal am Tag mit einer neutralen Benachrichtigung. Geprüft wird bei jedem Öffnen der App${R.bg?' und ab und zu bei geschlossener App – wie oft, entscheidet Android':'. Bei geschlossener App nur, wenn sie auf dem Startbildschirm installiert ist'}. Ganz sicher: zusätzlich in den Kalender exportieren.</p>
+    <div class="ds-lbl">So früh melden</div><div class="ds-seg" role="radiogroup" aria-label="So früh melden" style="margin:0 0 6px">${LEADS.map(k=>`<button type="button" role="radio" aria-checked="${(R.lead||14)===k}" data-m="rm-lead" data-v="${k}">${k} Tage</button>`).join('')}</div>
+    <p class="ds-hint" style="font-size:13px">Gilt für Fristen, Vorsorge, Dokumente und Linsen-Vorrat. Arzttermine und Linsen-Wechsel kommen immer am Vortag und am Tag selbst.</p>
+    ${P!=='granted'?`<div class="ds-box crit"><b>Benachrichtigungen sind ${P==='default'?'nicht erlaubt':'blockiert'}.</b> Darum kommt keine Meldung. ${P==='default'?'Tippe auf „Erlauben“.':'Erlaube sie in den Android-Einstellungen: Apps → MyBox (oder Chrome) → Benachrichtigungen → an. Falls dort alles an ist: in Chrome auf das Symbol neben der Adresse → Berechtigungen → Benachrichtigungen → zulassen.'}<div class="ds-acts"><button type="button" class="ds-btn" data-m="rm-perm">${P==='default'?'Erlauben':'Erneut prüfen'}</button></div></div>`:''}
+    <p class="ds-stat" style="display:block">${remindNext()}</p>
+    <div class="ds-acts"><button type="button" class="ds-btn" data-m="rm-test">Test-Benachrichtigung</button><button type="button" class="ds-btn" data-m="rm-off">Ausschalten</button></div>`}
+
+/* ---------- Update direkt aus der App (GitHub) ---------- */
+let UPD='';
+const defaultRepo=()=>{const h=location.hostname;return h.endsWith('.github.io')?h.split('.')[0]+'/'+h:'jazm-box/jazm-box.github.io'};
+function setUpd(html){UPD=html;const el=$('#updStatus');if(el){el.innerHTML=html;el.hidden=!html}}
+async function gh(path,opt={},tok){
+  const r=await fetch('https://api.github.com'+path,{...opt,headers:{'Accept':'application/vnd.github+json','Authorization':'Bearer '+tok,'X-GitHub-Api-Version':'2022-11-28',...(opt.body?{'Content-Type':'application/json'}:{})}});
+  if(r.status===404&&opt.allow404)return null;const j=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(r.status===401?'Token ungültig oder abgelaufen.':r.status===403?'Keine Berechtigung (Token-Rechte prüfen).':r.status===404?'Repo nicht gefunden oder kein Zugriff.':(j.message||('Fehler '+r.status)));return j}
+function updSetup(){form('App-Update verbinden',[{k:'repo',l:'Repo (Besitzer/Name)',req:true,v:CFG.upd?.repo||defaultRepo()},{k:'token',l:'Zugangsschlüssel (github_pat_…)',t:'password',req:true}],async(v,fail)=>{
+    const repo=v.repo.trim().replace(/^https:\/\/github\.com\//,'').replace(/\/$/,''),token=v.token.trim();
+    try{const j=await gh('/repos/'+repo,{},token);if(j.permissions&&!j.permissions.push)return fail('Der Schlüssel darf in dieses Repo nicht schreiben. Setze „Contents“ auf „Read and write“.')}catch(e){return fail(e.message)}
+    CFG.upd={repo,token};await saveCfg();refreshSheet();toast('GitHub verbunden ✓')},
+  {ok:'Prüfen & verbinden',html:'<p class="ds-dlg-intro">Dafür brauchst du einen eigenen Fine-grained-Zugangsschlüssel nur für das App-Repo mit den Rechten <b>Contents: Read and write</b> und <b>Actions: Read</b>. Der Schlüssel der Datensicherung reicht dafür nicht.</p>'})}
+async function updUpload(){
+  const file=await pickFile('.zip,application/zip');if(!file)return;if(!/\.zip$/i.test(file.name)){toast('Bitte eine .zip-Datei wählen.');return}
+  const name=file.name.replace(/[^\w.\-]/g,'_'),repo=CFG.upd.repo,tok=CFG.upd.token;
+  if(!confirm(`„${name}“ (${Math.round(file.size/1024)} KB) ins Repo hochladen und veröffentlichen?`))return;
+  setUpd('⏳ Lade Zip hoch …');
+  try{const old=await gh(`/repos/${repo}/contents/${encodeURIComponent(name)}`,{allow404:true},tok);
+    const res=await gh(`/repos/${repo}/contents/${encodeURIComponent(name)}`,{method:'PUT',body:JSON.stringify({message:'Paket '+name+' (aus MyBox)',content:b64(await file.arrayBuffer()),branch:'main',...(old?.sha?{sha:old.sha}:{})})},tok);
+    setUpd('⚙️ Hochgeladen – GitHub entpackt und prüft das Paket …');watchRun(repo,tok,res.commit.sha)}
+  catch(e){setUpd('❌ '+esc(e.message))}}
+async function watchRun(repo,tok,sha){
+  const t0=Date.now();let run=null;
+  while(Date.now()-t0<5*60e3){await sleep(5000);try{const j=await gh(`/repos/${repo}/actions/runs?head_sha=${sha}&per_page=5`,{},tok);run=j.workflow_runs?.[0]||run}catch(e){}if(run&&run.status==='completed')break}
+  if(!run){setUpd('⚠️ Kein Ablauf gefunden. Ist <b>.github/workflows/paket.yml</b> im Repo angelegt?');return}
+  const link=/^https:\/\//.test(run.html_url||'')?` <a href="${esc(run.html_url)}" target="_blank" rel="noopener noreferrer">Details</a>`:'';
+  if(run.status!=='completed'){setUpd('⏳ Ablauf läuft noch länger als üblich.'+link);return}
+  if(run.conclusion!=='success'){let msg='';try{const jobs=await gh(`/repos/${repo}/actions/runs/${run.id}/jobs`,{},tok);const id=jobs.jobs?.[0]?.id;
+      if(id){const ann=await gh(`/repos/${repo}/check-runs/${id}/annotations`,{},tok);msg=(ann.find(a=>a.annotation_level==='failure')||ann[0])?.message||''}}catch(e){}
+    setUpd('❌ Paket abgelehnt'+(msg?': '+esc(msg.replace(/^MyBox:?/,'')):'.')+link);return}
+  setUpd('✅ Paket übernommen – warte auf die Veröffentlichung …'+link);
+  const t1=Date.now();
+  while(Date.now()-t1<4*60e3){await sleep(10000);
+    try{const html=await (await fetch('./index.html?v='+Date.now(),{cache:'no-store'})).text();const v=(html.match(/APP_VERSION='([\d.]+)'/)||[])[1];
+      if(v&&v!==APP_VERSION){setUpd(`🎉 Version ${esc(v)} ist online.<div class="ds-acts"><button type="button" class="ds-btn pri" onclick="location.reload()">Jetzt neu laden</button></div>`);DS.yay('Update online',true);return}}catch(e){}}
+  setUpd('✅ Paket übernommen. Die Seite ist noch nicht aktualisiert – später neu laden.'+link)}
+
+/* ---------- Auto-Sperre: 5 Min. ohne Eingabe oder 1 Min. im Hintergrund ---------- */
+let lastAct=Date.now(),hiddenAt=0;
+['pointerdown','keydown','touchstart','scroll'].forEach(ev=>addEventListener(ev,()=>{lastAct=Date.now()},{passive:true,capture:true}));
+setInterval(()=>{if(UNLOCKED&&Date.now()-lastAct>5*60e3)lockAll()},10000);
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){hiddenAt=Date.now();for(const a of Object.values(API))try{a.flush()}catch{}return}
+  const away=Date.now()<awayUntil;awayUntil=0;
+  if(UNLOCKED&&hiddenAt&&Date.now()-hiddenAt>60000&&!away)lockAll().then(()=>setTimeout(tryBio,300));
+  else if(UNLOCKED){schedDash(200);swReg&&swReg.update().catch(()=>{})}
+  else if(!$('#lock').hidden)setTimeout(tryBio,300)});
+setInterval(()=>{if(UNLOCKED&&!curArea&&!document.hidden&&!sheetOpen())schedDash(0)},60000);
+/* Zurück-Geste: Blatt schließen bzw. zurück zur Übersicht */
+let ignorePop=false;
+addEventListener('popstate',()=>{if(ignorePop){ignorePop=false;return}
+  if($('#dlg').open){$('#dlg').close();return}
+  if(sheetOpen()){closeSheet(true);return}
+  if(curArea){curArea=null;$('#areas').classList.add('off');for(const f of Object.values(FR))f.classList.remove('on');renderDash()}});
+
+/* ---------- Service Worker: offline nutzbar, Erinnerungen, neue Version ---------- */
+let swReg=null;
+function showUpdBar(){if(document.getElementById('dsupd'))return;const b=document.createElement('div');b.id='dsupd';b.className='ds-updbar';b.setAttribute('role','status');
+  b.innerHTML='<span>Neue Version von MyBox ist da.</span><button type="button" class="ds-btn pri">Aktualisieren</button><button type="button" class="ds-x" aria-label="Später">✕</button>';
+  b.querySelector('.ds-btn').onclick=async()=>{b.querySelector('.ds-btn').disabled=true;for(const a of Object.values(API))try{await a.flush()}catch{}location.reload()};
+  b.querySelector('.ds-x').onclick=()=>b.remove();document.body.appendChild(b)}
+if('serviceWorker' in navigator){const hadCtl=!!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{swReg=r}).catch(()=>{});
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(hadCtl)showUpdBar()})}
+
+/* ---------- Start ---------- */
+loadVault().then(()=>showLock(true));
+</script>
+</body>
+</html>
