@@ -21,7 +21,15 @@ A.api={
     const facts=[act.length===1?'1 Vertrag':act.length+' Verträge',d.devices.length===1?'1 Gerät':d.devices.length+' Geräte'];if(ohne)facts.push(ohne+' ohne Beleg');
     return{main:B.eur(mon)+' pro Monat',sub:'Fixkosten aus Verträgen und Raten',facts}},
   timeline(days){return B.upcoming().filter(e=>e.n>=0&&e.n<=days).map(e=>({d:B.iso(e.date),title:e.title,sub:e.sub,ref:{k:e.kind,id:e.id}}))},
-  todos(){return []},
+  todos(){const r=[];for(const x of db().devices){const wi=B.wartInfo(x);if(wi&&wi.n<0)r.push({lvl:'crit',title:x.name+': Wartung überfällig seit '+B.fmtD(wi.next),ref:{k:'d',id:x.id}})}return r},
+  stats(){const d=db(),act=d.contracts.filter(c=>c.status!=='gekuendigt'),by={};
+    act.forEach(c=>{const k=c.kategorie||'Sonstiges';by[k]=(by[k]||0)+B.monthly(c)});
+    const raten=d.devices.map(x=>B.rateInfo(x)).filter(r=>r&&r.aktiv);if(raten.length)by['Ratenkäufe']=raten.reduce((s,r)=>s+r.b,0);
+    const g={ok:0,bald:0,ab:0};d.devices.forEach(x=>{const i=B.deviceInfo(x);if(!i.best)g.ab++;else if(B.days(i.best.date)<=90)g.bald++;else g.ok++});
+    return{kats:Object.entries(by).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]),garantie:g,devices:d.devices.length}},
+  eur:n=>B.eur(n),
+  linkedCount:pre=>db().devices.filter(x=>x.ext&&String(x.ext.ref||'').startsWith(pre)).length,
+  shortcut(k){try{B.closeSheet(false)}catch(e){}if(k==='foto')B.openForm('d',null,true);else if(k==='vertrag')B.openForm('c');else B.openForm('d')},
   search(raw){const s=String(raw||'').trim().toLowerCase();if(!s)return [];
     const has=(...f)=>f.some(x=>String(x||'').toLowerCase().includes(s)),r=[];
     db().contracts.filter(c=>has(c.anbieter,c.kategorie,c.notiz,c.kundennr,c.vertragsnr)).forEach(c=>r.push({g:'Verträge',title:c.anbieter||'Vertrag',sub:[c.kategorie,c.status==='gekuendigt'?'gekündigt':''].filter(Boolean).join(' · '),ref:{k:'c',id:c.id}}));
@@ -50,7 +58,7 @@ A.api={
   /* Verknüpfung zu Haus (mysmartbox:<id>) bzw. Gesundheit (mygesundbox:<id>) */
   linkInfo(ref){const d=db();if(!d)return null;const dv=d.devices.find(x=>x.ext&&x.ext.ref===ref);
     if(dv){const i=B.deviceInfo(dv),f=[];if(dv.kauf)f.push('gekauft '+B.fmtD(i.kauf));if(+dv.preis)f.push(B.eur(dv.preis));
-      f.push(i.best?i.best.typ+' bis '+B.fmtD(i.best.date):'kein Schutz mehr');f.push(dv.nachweis==='keiner'?'noch kein Beleg':'Beleg vorhanden');
+      f.push(i.best?i.best.typ+' bis '+B.fmtD(i.best.date):'kein Schutz mehr');const wi=B.wartInfo(dv);if(wi)f.push(wi.n<0?'Wartung überfällig':'Wartung am '+B.fmtD(wi.next));f.push(dv.nachweis==='keiner'?'noch kein Beleg':'Beleg vorhanden');
       return{k:'d',id:dv.id,title:dv.name,facts:f}}
     const c=d.contracts.find(x=>x.ext&&x.ext.ref===ref);
     if(c){const f=[B.eur(B.monthly(c))+' pro Monat'];const ci=B.contractInfo(c);if(c.status==='gekuendigt')f.push('gekündigt');else if(ci.by)f.push('kündbar bis '+B.fmtD(ci.by));

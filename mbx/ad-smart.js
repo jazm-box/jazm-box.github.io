@@ -15,9 +15,11 @@ A.cfg={
 A.api={
   name:'Haus',
   card(){const d=state.devices.length,r=new Set(state.devices.map(x=>x.room).filter(Boolean)).size,rt=(state.routines||[]).length;
-    const facts=[rt===1?'1 Routine':rt+' Routinen',(state.apps||[]).length+' Apps'];
+    const facts=[rt===1?'1 Routine':rt+' Routinen',(state.apps||[]).length+' Apps'];const bb=A.P.api('beleg'),nb=bb&&bb.linkedCount?bb.linkedCount('mysmartbox:'):0;if(nb)facts.push(nb===1?'1 mit Kaufbeleg':nb+' mit Kaufbeleg');
     return{main:d===1?'1 Gerät':d+' Geräte',sub:r?'in '+(r===1?'1 Raum':r+' Räumen'):'Geräte, Räume, Grundriss',facts}},
   timeline(){return []},
+  stats(){const by={};state.devices.forEach(d=>{const r=d.room||'Ohne Raum';by[r]=(by[r]||0)+1});return{rooms:Object.entries(by).sort((a,b)=>b[1]-a[1])}},
+  shortcut(k){try{S.closeSheet()}catch(e){}if(k==='geraet')openEditor(null)},
   todos(){return []},
   search(raw){const s=String(raw||'').trim().toLowerCase();if(!s)return [];
     const r=[];

@@ -254,7 +254,54 @@ dialog input,dialog select{width:100%;padding:12px 13px;border:1px solid var(--l
 .frow{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap}
 /* Hinweis */
 #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateX(-50%);z-index:200;max-width:min(520px,calc(100vw - 32px));background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:14px;font-size:15px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);text-align:center}
-@media (min-width:700px){.areas{grid-template-columns:1fr}}
+/* Würfel auf dem Sperrbildschirm: Deckel klappt auf, drei Bereiche springen heraus */
+.cube{width:96px;height:96px;margin:0 auto 4px;perspective:420px}
+.cube svg{width:100%;height:100%;overflow:visible;display:block}
+.cube .flap,.cube .inner,.cube .pop{opacity:0}
+.cube .flap{transform-box:view-box}
+.cube .fl{transform-origin:122px 180px}.cube .fr{transform-origin:256px 104px}
+.cube .pop{transform-box:fill-box;transform-origin:center}
+.cube.open .flap,.cube.open .inner{opacity:1}
+.cube.open .glow{animation:mbGlow .7s ease-out .12s both}
+.cube.open .fl{animation:mbFlL .5s cubic-bezier(.35,1.15,.5,1) forwards}
+.cube.open .fr{animation:mbFlR .5s cubic-bezier(.35,1.15,.5,1) .05s forwards}
+.cube.open .pop{animation:mbPop .6s cubic-bezier(.22,1.55,.45,1) forwards}
+.cube.open .p1{animation-delay:.2s;--tx:-175px;--rz:-14deg}.cube.open .p2{animation-delay:.27s;--tx:0px;--rz:0deg}.cube.open .p3{animation-delay:.34s;--tx:175px;--rz:14deg}
+@keyframes mbFlL{from{transform:rotate3d(134,-76,0,0deg)}to{transform:rotate3d(134,-76,0,-118deg)}}
+@keyframes mbFlR{from{transform:rotate3d(134,76,0,0deg)}to{transform:rotate3d(134,76,0,118deg)}}
+@keyframes mbGlow{0%{opacity:0}35%{opacity:1}100%{opacity:.85}}
+@keyframes mbPop{0%{opacity:0;transform:translate(0,40px) scale(.3)}40%{opacity:1}100%{opacity:1;transform:translate(var(--tx),-235px) rotate(var(--rz)) scale(1.45)}}
+/* Diagramme */
+.charts{display:grid;gap:12px}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px 14px 14px;box-shadow:var(--shadow);position:relative}
+.chd{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;width:100%;margin:0 0 10px}
+.chd b{display:block;font-size:15.5px}.chd small{display:block;font-size:13px;color:var(--muted)}
+.chart.lockd{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:14px;border-radius:18px;background:var(--surface);border:1px dashed var(--line);color:var(--ink);width:100%}
+.chart.lockd b{display:block}.chart.lockd small{display:block;color:var(--muted);font-size:13px}.chart.lockd svg:last-child{width:20px;height:20px;color:var(--muted)}
+.hb{display:grid;gap:8px}
+.hbr{display:grid;grid-template-columns:minmax(70px,34%) minmax(0,1fr) auto;gap:10px;align-items:center;font-size:13.5px}
+.hbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.hbt{height:12px;display:block}.hbt i{display:block;height:100%;border-radius:0 4px 4px 0}
+.hbv{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600;white-space:nowrap}
+.stk{display:flex;gap:2px;height:14px;border-radius:4px;overflow:hidden;margin:2px 0 10px}.stk i{display:block;min-width:4px}
+.lgd{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);margin-top:8px}
+.lgd span{display:inline-flex;align-items:center;gap:6px}.lgd b{color:var(--ink)}
+.lgd em{display:inline-block;width:10px;height:10px;border-radius:3px}
+.lgd em.ls{width:16px;height:0;border-top:2px solid var(--c-gesund);border-radius:0}.lgd em.ls.dash{border-top-style:dashed}
+.lgd em.band{background:var(--c-gesund);opacity:.18}
+.shp{display:inline-block;vertical-align:-1px;flex:none}
+svg.ln{width:100%;height:auto;display:block;overflow:visible}
+.ln .gl{stroke:var(--line);stroke-width:1}.ln .ax{fill:var(--muted);font-size:10px}
+.ln .l1,.ln .l2{fill:none;stroke:var(--c-gesund);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}.ln .l2{stroke-dasharray:5 4}
+.ln .dt1,.ln .dt2{fill:var(--c-gesund);stroke:var(--surface);stroke-width:2}.ln .lv{fill:var(--ink);font-size:11px;font-weight:700}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal>b{font-size:11px;color:var(--muted);font-weight:700;padding-bottom:2px}
+.cd{min-height:40px;border-radius:9px;background:var(--sunk);display:grid;align-content:start;justify-items:center;gap:2px;padding:4px 2px;font-size:12px;font-weight:600;color:var(--ink);cursor:default}
+.cd.out{opacity:.38}.cd.now{outline:2px solid var(--accent);outline-offset:-2px}.cd.has{cursor:pointer;background:color-mix(in srgb,var(--accent) 9%,var(--surface))}
+.cd i{display:flex;gap:2px;justify-content:center;min-height:9px}
+.calw{margin-bottom:10px}
+.ctip{position:fixed;z-index:150;max-width:min(300px,calc(100vw - 16px));background:var(--ink);color:var(--bg);padding:8px 11px;border-radius:10px;font-size:13px;line-height:1.4;white-space:pre-line;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+@media (min-width:700px){.areas{grid-template-columns:1fr}.charts{grid-template-columns:1fr 1fr}}
 @media (prefers-reduced-motion:reduce){#spanel,#sheet .sbg{transition:none}.aload img{animation:none}}
 </style>
 <script src="ds.js" data-app="mybox"></script>
@@ -262,7 +309,13 @@ dialog input,dialog select{width:100%;padding:12px 13px;border:1px solid var(--l
 <body>
 <div id="lock">
   <form class="lockbox" id="lockForm" autocomplete="on">
-    <img src="icons/mybox-192.png" alt="" class="lockico" width="84" height="84">
+    <div class="cube" aria-hidden="true"><svg viewBox="0 0 512 512"><defs><radialGradient id="cglow" cx="50%" cy="55%" r="60%"><stop offset="0" stop-color="#FFE7A3"/><stop offset=".55" stop-color="#F3B95F" stop-opacity=".55"/><stop offset="1" stop-color="#1D2442" stop-opacity="0"/></radialGradient></defs>
+      <rect width="512" height="512" rx="113" fill="#34406B"/>
+      <path class="inner" d="M256 104 L390 180 L256 256 L122 180 Z" fill="#1D2442"/><path class="inner glow" d="M256 104 L390 180 L256 256 L122 180 Z" fill="url(#cglow)"/>
+      <image class="pop p1" href="boxen/smartbox.png" x="206" y="140" width="100" height="100"/><image class="pop p2" href="boxen/gesundbox.png" x="206" y="140" width="100" height="100"/><image class="pop p3" href="boxen/belegbox.png" x="206" y="140" width="100" height="100"/>
+      <g fill="none" stroke="#fff" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M256 104 L390 180 L390 334 L256 410 L122 334 L122 180 Z"/><path class="frontl" d="M122 180 L256 256 L390 180"/><path d="M256 256 V410"/></g>
+      <g class="flap fl"><path d="M122 180 L256 104 L256 256 Z" fill="#4B5A96" stroke="#fff" stroke-width="24" stroke-linejoin="round"/></g>
+      <g class="flap fr"><path d="M256 104 L390 180 L256 256 Z" fill="#5B6AA6" stroke="#fff" stroke-width="24" stroke-linejoin="round"/></g></svg></div>
     <h1>MyBox</h1>
     <p id="lockHint">Haus, Gesundheit und Belege – verschlüsselt auf diesem Gerät.</p>
     <div class="areadots" aria-hidden="true"><img src="boxen/smartbox.png" alt=""><img src="boxen/gesundbox.png" alt=""><img src="boxen/belegbox.png" alt=""></div>
@@ -295,7 +348,7 @@ dialog input,dialog select{width:100%;padding:12px 13px;border:1px solid var(--l
 
 <script>
 'use strict';
-const APP_VERSION='0.2.0';
+const APP_VERSION='0.3.0';
 /* ---------- Bereiche ---------- */
 const AREAS=[
   {id:'smart',name:'Haus',app:'MySmartBox',path:'smart/',img:'boxen/smartbox.png',dir:'smartbox',host:'jazm-smartbox.github.io',def:{owner:'jazm-smartbox',repo:'smartbox-daten'}},
@@ -388,7 +441,7 @@ function showLock(auto){
 async function unlockWith(pw){
   const p=JSON.parse(vaultJson),salt=unb64(p.salt),k=await derive(pw,salt),c=await unseal(p,k);
   KEY=k;SALT=salt;PW=pw;CFG=Object.assign(defCfg(),c);UNLOCKED=true;lastAct=Date.now();
-  DS.unlockAnim($('#lock'),$('#lock .lockico'),'light',()=>{if(!UNLOCKED)return;$('#lock').hidden=true;$('#app').hidden=false;renderDash();
+  cubeOpen(()=>{if(!UNLOCKED)return;$('#lock').hidden=true;$('#app').hidden=false;renderDash();
     try{$('#app').animate([{opacity:0,transform:'scale(.97)'},{opacity:1,transform:'none'}],{duration:360,easing:'cubic-bezier(.2,.85,.25,1)'})}catch{}});
   try{navigator.storage?.persist?.()}catch{}
   startAreas();
@@ -409,13 +462,18 @@ async function tryBio(){if(bioBusy||UNLOCKED||$('#bioBtn').hidden||document.hidd
   finally{b.disabled=false;bioBusy=false}}
 $('#bioBtn').onclick=tryBio;
 
+/* Entsperren: Der Würfel klappt auf, die drei Bereiche springen heraus */
+function cubeOpen(done){const c=$('#lock .cube');if(!c||!motion()){done();return}
+  c.classList.remove('open');void c.offsetWidth;c.classList.add('open');buzz([10,40,18]);
+  setTimeout(()=>{const a=$('#lock').animate([{opacity:1},{opacity:0,transform:'scale(1.03)'}],{duration:300,easing:'ease-in',fill:'forwards'});
+    a.onfinish=()=>{done();requestAnimationFrame(()=>{a.cancel();c.classList.remove('open')})}},900)}
 /* Sperren: Bereiche sichern ihre Eingaben, dann werden sie geschlossen und alle Schlüssel vergessen */
 async function lockAll(){
   if(!UNLOCKED&&!KEY)return;UNLOCKED=false;
   await Promise.race([Promise.all(Object.values(API).map(a=>Promise.resolve().then(()=>a.flush()).catch(()=>{}))),sleep(1500)]);
   await saving;
   for(const k in API)delete API[k];NEED.length=0;OLDQ.clear();
-  KEY=null;SALT=null;PW=null;CFG=null;curArea=null;
+  KEY=null;SALT=null;PW=null;CFG=null;curArea=null;gAuth=false;
   showLock(false);
 }
 $('#lockBtn').onclick=()=>{buzz(8);lockAll()};
@@ -425,7 +483,7 @@ const API={},FR={},NEED=[],OLDQ=new Map();let curArea=null,dashT=0;
 window.MBX={
   unlocked:()=>UNLOCKED,
   pw:()=>UNLOCKED?PW:null,
-  reg(app,api){API[app]=api;OLDQ.delete(app);syncArea(app);updLoad();schedDash(80)},
+  reg(app,api){API[app]=api;OLDQ.delete(app);syncArea(app);updLoad();schedDash(80);setTimeout(runGo,300)},
   unreg(app){delete API[app];updLoad();schedDash(80)},
   needOld(app,fn){OLDQ.set(app,fn);updLoad();schedDash(80);nextOld()},
   areaErr(app,msg){toast(AR(app).name+': '+String(msg).replace(/^err:/,''))},
@@ -435,14 +493,14 @@ window.MBX={
   api:app=>API[app]||null,
   go(app,ref){goRef({app,ref})},
   /* Neuen Beleg/Vertrag zu einem Eintrag aus Haus oder Gesundheit anlegen – direkt im Bereich Belege */
-  linkNew(neu){if(!API.beleg){toast('Der Bereich Belege ist noch nicht bereit.');return}openArea('beleg');setTimeout(()=>{try{API.beleg.linkNew(neu)}catch(e){}},150)},
+  linkNew(neu){if(!API.beleg){toast('Der Bereich Belege ist noch nicht bereit.');return}if(curArea==='gesund')gLeft=Date.now();openArea('beleg');setTimeout(()=>{try{API.beleg.linkNew(neu)}catch(e){}},150)},
   bkCfg:app=>CFG&&CFG.gh?{...CFG.gh,dir:AR(app).dir}:null,
   /* Links zu den einzelnen Boxen: in MyBox öffnen */
   route(href){let u;try{u=new URL(href,location.href)}catch{return false}
     const a=AREAS.find(x=>u.hostname===x.host);
     if(!a)return false;
     if(u.search||(u.hash&&u.hash.length>1))reloadArea(a.id,u.search+u.hash);
-    setTimeout(()=>openArea(a.id),0);return true}
+    setTimeout(()=>openAreaG(a.id),0);return true}
 };
 function frameFor(id){return FR[id]}
 function startAreas(){const box=$('#areas');box.innerHTML='';
@@ -456,11 +514,11 @@ function syncArea(app){const api=API[app];if(!api)return;
   try{const v=DS.getTheme();localStorage.setItem(AR(app).dir+'-darstellung',v);if(v==='auto')localStorage.removeItem(AR(app).dir+'-darstellung');FR[app].contentWindow.DS.applyTheme(v)}catch(e){}}
 function sameGh(api,g){try{const c=api.ghCur();
   return !!c&&c.owner===g.owner&&c.repo===g.repo&&c.token===g.token&&(c.dir||'')===(g.dir||'')}catch(e){return false}}
-function openArea(id){if(!UNLOCKED)return;closeSheet(true);const box=$('#areas');try{API[id]&&API[id].refresh&&API[id].refresh()}catch(e){}
+function openArea(id){if(!UNLOCKED)return;if(curArea==='gesund'&&id!=='gesund')gLeft=Date.now();closeSheet(true);const box=$('#areas');try{API[id]&&API[id].refresh&&API[id].refresh()}catch(e){}
   for(const f of Object.values(FR))f.classList.toggle('on',f.dataset.area===id);
   box.classList.remove('off');curArea=id;if(history.state?.mbx!=='area')history.pushState({mbx:'area'},'');updLoad();buzz(6);
   try{FR[id].contentWindow.focus()}catch{}}
-function showDash(){if(!curArea)return;curArea=null;$('#areas').classList.add('off');for(const f of Object.values(FR))f.classList.remove('on');
+function showDash(){if(!curArea)return;if(curArea==='gesund')gLeft=Date.now();curArea=null;$('#areas').classList.add('off');for(const f of Object.values(FR))f.classList.remove('on');
   if(history.state?.mbx==='area'){ignorePop=true;history.back()}renderDash()}
 function updLoad(){const el=$('#aload');if(!el)return;const id=curArea;if(!id||API[id]){el.hidden=true;return}
   const a=AR(id);el.hidden=false;
@@ -484,39 +542,108 @@ function bkAll(){const ls=AREAS.map(a=>API[a.id]&&safe(()=>API[a.id].bkInfo(),nu
   const own=ls.filter(x=>x.own);
   return{ghErr:(ls.find(x=>x.ghErr)||{}).ghErr||'',ghOk:own.length>0&&own.every(x=>x.ghOk),own:own.length>0,
     days:own.some(x=>x.days==null)?null:Math.max(0,...own.map(x=>x.days)),dirty:own.reduce((s,x)=>s+(x.dirty||0),0)}}
+/* ---------- Gesundheit zusätzlich schützen (Fingerabdruck bzw. Passwort) ---------- */
+let gAuth=false,gLeft=0;
+const gOK=()=>!CFG||!CFG.gLock||(gAuth&&(curArea==='gesund'||Date.now()-gLeft<180e3));
+async function askGesund(){
+  if(lsGet(BKEY)&&bioSupported()){try{const p=await bioGetPassword();if(p===PW){gAuth=true;gLeft=Date.now();return true}}catch(e){if(e&&e.name==='NotAllowedError'){toast('Abgebrochen.');return false}}}
+  return new Promise(res=>{let done=false;form('Gesundheit entsperren',[{k:'pw',l:'Dein MyBox-Passwort',t:'password',req:true}],async(v,fail)=>{if(v.pw!==PW)return fail('Das Passwort ist falsch.');gAuth=true;gLeft=Date.now();done=true;res(true)},
+    {ok:'Entsperren',html:'<p class="ds-dlg-intro">Der Bereich Gesundheit ist zusätzlich geschützt.</p>',onCancel:()=>{if(!done)res(false)}})})}
+async function openAreaG(id){if(id==='gesund'&&!gOK()){if(!await askGesund())return false;renderDash()}openArea(id);return true}
+
+/* ---------- Diagramme ---------- */
+const WD=['Mo','Di','Mi','Do','Fr','Sa','So'];
+const SHAPE={smart:'<circle cx="5" cy="5" r="4.2"/>',gesund:'<rect x="1" y="1" width="8" height="8" rx="1.5"/>',beleg:'<path d="M5 .3L9.7 5 5 9.7.3 5z"/>'};
+const shp=(app,s)=>`<svg class="shp" width="${s||10}" height="${s||10}" viewBox="0 0 10 10" style="color:var(--c-${app})" aria-hidden="true"><g fill="currentColor">${SHAPE[app]}</g></svg>`;
+const fmtE=n=>Number(n||0).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
+function calGrid(tl){const t0=pD(today()),start=new Date(t0);start.setDate(start.getDate()-((start.getDay()+6)%7));
+  const by={};for(const x of tl)(by[x.d]=by[x.d]||[]).push(x);const cells=[];
+  for(let i=0;i<35;i++){const d=new Date(start);d.setDate(d.getDate()+i);const k=isoD(d),n=dUntil(k),ev=by[k]||[];
+    const tip=ev.length?`${d.toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short'})}\n`+ev.map(x=>'· '+x.title+(x.time?' '+x.time:'')).join('\n'):'';
+    cells.push(`<div class="cd${n<0||n>30?' out':''}${n===0?' now':''}${ev.length?' has':''}"${tip?` data-tip="${esc(tip)}" tabindex="0"`:''}><span>${d.getDate()===1?d.getDate()+'.'+(d.getMonth()+1)+'.':d.getDate()}</span><i>${ev.slice(0,3).map(x=>shp(x.app,8)).join('')}</i></div>`)}
+  return `<div class="cal">${WD.map(w=>`<b>${w}</b>`).join('')}${cells.join('')}</div><div class="lgd">${AREAS.map(a=>`<span>${shp(a.id)}${esc(a.name)}</span>`).join('')}</div>`}
+function bars(rows,col,fmt,max){max=max||Math.max(1,...rows.map(r=>r[1]));
+  return `<div class="hb">${rows.map(([l,v,c,tip])=>`<div class="hbr" data-tip="${esc(tip||l+': '+fmt(v))}"><span class="hbl">${esc(l)}</span><span class="hbt"><i style="width:${Math.max(v>0?2:0,v/max*100)}%;background:${c||col}"></i></span><span class="hbv">${esc(fmt(v))}</span></div>`).join('')}</div>`}
+function stack(parts){const tot=parts.reduce((s,p)=>s+p.n,0)||1;
+  return `<div class="stk">${parts.filter(p=>p.n).map(p=>`<i style="flex:${p.n};background:${p.c}" data-tip="${esc(p.l+': '+p.n)}"></i>`).join('')}</div><div class="lgd">${parts.map(p=>`<span><em style="background:${p.c}"></em>${esc(p.l)} <b>${p.n}</b></span>`).join('')}</div>`}
+function bpLine(pts,Z){const W=320,H=150,L=30,R=34,T=10,B=22;
+  const vals=pts.flatMap(p=>[p.v1,p.v2]).concat(Z.v1?Z.v1:[],Z.v2?Z.v2:[]);let lo=Math.floor((Math.min(...vals)-5)/10)*10,hi=Math.ceil((Math.max(...vals)+5)/10)*10;if(hi-lo<30)hi=lo+30;
+  const x=i=>L+(pts.length<2?0:i*(W-L-R)/(pts.length-1)),y=v=>T+(hi-v)/(hi-lo)*(H-T-B);
+  const ticks=[];for(let v=lo;v<=hi;v+=(hi-lo)>60?20:10)ticks.push(v);
+  const path=k=>pts.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(p[k]).toFixed(1)).join('');
+  const band=(r)=>r?`<rect x="${L}" y="${y(r[1])}" width="${W-L-R}" height="${Math.max(0,y(r[0])-y(r[1]))}" fill="var(--c-gesund)" opacity=".08"/>`:'';
+  const last=pts[pts.length-1],fd=s=>{const d=new Date(s);return isNaN(d)?'':d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})};
+  const step=pts.length>1?(W-L-R)/(pts.length-1):W-L-R;
+  return `<svg class="ln" viewBox="0 0 ${W} ${H}" role="img" aria-label="Blutdruck, letzte ${pts.length} Messungen">
+    ${band(Z.v1)}${band(Z.v2)}
+    ${ticks.map(v=>`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" class="gl"/><text x="${L-6}" y="${y(v)+4}" class="ax" text-anchor="end">${v}</text>`).join('')}
+    <text x="${L}" y="${H-6}" class="ax">${esc(fd(pts[0].d))}</text><text x="${W-R}" y="${H-6}" class="ax" text-anchor="end">${esc(fd(last.d))}</text>
+    <path d="${path('v1')}" class="l1"/><path d="${path('v2')}" class="l2"/>
+    <circle cx="${x(pts.length-1)}" cy="${y(last.v1)}" r="4.5" class="dt1"/><circle cx="${x(pts.length-1)}" cy="${y(last.v2)}" r="4.5" class="dt2"/>
+    <text x="${x(pts.length-1)+8}" y="${y(last.v1)+4}" class="lv">${Math.round(last.v1)}</text><text x="${x(pts.length-1)+8}" y="${y(last.v2)+4}" class="lv">${Math.round(last.v2)}</text>
+    ${pts.map((p,i)=>`<rect x="${x(i)-step/2}" y="0" width="${Math.max(step,8)}" height="${H}" fill="transparent" data-tip="${esc(fd(p.d)+': '+Math.round(p.v1)+'/'+Math.round(p.v2)+' mmHg')}"/>`).join('')}
+  </svg><div class="lgd"><span><em class="ls"></em>systolisch</span><span><em class="ls dash"></em>diastolisch</span>${Z.v1||Z.v2?'<span><em class="band"></em>Zielbereich</span>':''}</div>`}
+function chartCard(app,title,sub,body){return `<div class="chart" style="--ac:var(--c-${app})"><button type="button" class="chd" data-go="${app}">${shp(app,12)}<span><b>${esc(title)}</b>${sub?`<small>${esc(sub)}</small>`:''}</span><span class="chev">${I.chev}</span></button>${body}</div>`}
+function chartsHtml(){const out=[],S=a=>API[a]&&API[a].stats?safe(()=>API[a].stats(),null):null;
+  const b=S('beleg'),g=gOK()?S('gesund'):null,s=S('smart');
+  if(b&&b.kats.length){const tot=b.kats.reduce((x,k)=>x+k[1],0);out.push(chartCard('beleg','Fixkosten nach Kategorie',fmtE(tot)+' pro Monat',bars(b.kats.slice(0,6),'var(--c-beleg)',fmtE)))}
+  if(b&&b.devices)out.push(chartCard('beleg','Garantie-Ampel',b.devices===1?'1 Gerät':b.devices+' Geräte',stack([{l:'geschützt',n:b.garantie.ok,c:'var(--ok)'},{l:'endet in 90 Tagen',n:b.garantie.bald,c:'var(--warn)'},{l:'abgelaufen',n:b.garantie.ab,c:'var(--muted)'}])));
+  if(g&&g.bp.length>=2)out.push(chartCard('gesund','Blutdruck',`letzte ${g.bp.length} Messungen`,bpLine(g.bp,g.ziel)));
+  if(g&&g.medis.length)out.push(chartCard('gesund','Medikamente','so lange reicht der Vorrat',bars(g.medis.slice(0,6).map(m=>[m.name,m.reicht,m.reicht<=Math.min(3,m.vorlauf)?'var(--crit)':m.reicht<=m.vorlauf?'var(--warn)':'var(--ok)',m.name+': noch '+m.reicht+' Tage, bis '+fmtD(m.leer)]),'',v=>v+(v===1?' Tag':' Tage'),Math.max(30,...g.medis.map(m=>m.reicht)))));
+  if(CFG.gLock&&!gOK()&&API.gesund)out.push(`<button type="button" class="chart lockd" data-go="gesund">${shp('gesund',12)}<span><b>Gesundheit ist geschützt</b><small>Zum Anzeigen entsperren</small></span>${I.lock}</button>`);
+  if(s&&s.rooms.length)out.push(chartCard('smart','Geräte nach Raum',s.rooms.reduce((x,r)=>x+r[1],0)+' Geräte',bars(s.rooms.slice(0,6),'var(--c-smart)',v=>String(v))));
+  return out.length?`<div class="sec">Überblick</div><div class="charts">${out.join('')}</div>`:''}
+
+/* ---------- Dashboard ---------- */
 function renderDash(){
   if(!UNLOCKED||$('#app').hidden)return;
   const hr=new Date().getHours(),hello=hr<5?'Gute Nacht':hr<11?'Guten Morgen':hr<18?'Hallo':'Guten Abend';
-  const ready=AREAS.filter(a=>API[a.id]);
+  const ready=AREAS.filter(a=>API[a.id]),G=gOK();
   let h=`<div class="hello">${hello} · ${new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'})}</div>`;
   const bk=bkAll();if(ready.length===AREAS.length)h+=DS.remindHtml(bk,'id="dsRemind"');
   DS.lockDot($('#lockBtn'),ready.length===AREAS.length?bk:{own:false});
   /* Als Nächstes: Termine und Fristen aus allen Bereichen */
-  const tl=[];for(const a of ready)for(const x of safe(()=>API[a.id].timeline(30),[]))tl.push({...x,app:a.id});
+  const tl=[];for(const a of ready)for(const x of safe(()=>API[a.id].timeline(30),[]))tl.push(a.id==='gesund'&&!G?{d:x.d,title:'Gesundheit (geschützt)',sub:'',app:a.id,ref:null}:{...x,app:a.id});
   tl.sort((x,y)=>(x.d+(x.time||'')).localeCompare(y.d+(y.time||'')));
   const N=showAllTl?tl.length:6;
   h+=`<div class="sec">Als Nächstes<small>nächste 30 Tage</small></div>`;
+  if(ready.length)h+=`<div class="chart calw">${calGrid(tl)}</div>`;
   h+=tl.length?`<div class="list">${tl.slice(0,N).map((x,i)=>{const d=pD(x.d),n=dUntil(x.d);
-    return `<button type="button" class="row" style="--ac:var(--c-${x.app})" data-tl="${i}"><span class="dt"><b>${d.getDate()}</b><small>${MON[d.getMonth()]}</small></span><span class="rt"><b>${esc(x.title)}</b><small>${esc([x.time?x.time+' Uhr':'',x.sub].filter(Boolean).join(' · '))}</small></span><span class="when${n<=1?' now':n<=7?' soon':''}">${esc(relDay(n))}</span></button>`}).join('')}${tl.length>6?`<button type="button" class="more" id="tlMore">${showAllTl?'Weniger anzeigen':'Alle '+tl.length+' anzeigen'}</button>`:''}</div>`
+    return `<button type="button" class="row" style="--ac:var(--c-${x.app})" data-tl="${i}"><span class="dt"><b>${d.getDate()}</b><small>${MON[d.getMonth()]}</small></span><span class="rt"><b>${esc(x.title)}</b><small>${shp(x.app,8)} ${esc([AR(x.app).name,x.time?x.time+' Uhr':'',x.sub].filter(Boolean).join(' · '))}</small></span><span class="when${n<=1?' now':n<=7?' soon':''}">${esc(relDay(n))}</span></button>`}).join('')}${tl.length>6?`<button type="button" class="more" id="tlMore">${showAllTl?'Weniger anzeigen':'Alle '+tl.length+' anzeigen'}</button>`:''}</div>`
     :`<div class="list"><div class="empty">${ready.length?'In den nächsten 30 Tagen steht nichts an.':'Die Bereiche werden geöffnet …'}</div></div>`;
   /* Zu erledigen */
-  const td=[];for(const a of ready)for(const x of safe(()=>API[a.id].todos(),[]))td.push({...x,app:a.id});
-  if(td.length)h+=`<div class="sec">Zu erledigen</div><div class="list">${td.slice(0,8).map((x,i)=>`<button type="button" class="row ${x.lvl==='crit'?'crit':'warn'}" style="--ac:var(--c-${x.app})" data-td="${i}"><span class="ti">${x.lvl==='crit'?I.warn:I.todo}</span><span class="rt"><b>${esc(x.title)}</b><small>${esc(AR(x.app).name)}</small></span><span class="chev">${I.chev}</span></button>`).join('')}</div>`;
+  const td=[];for(const a of ready){const L=safe(()=>API[a.id].todos(),[]);
+    if(a.id==='gesund'&&!G){if(L.length)td.push({lvl:L.some(x=>x.lvl==='crit')?'crit':'warn',title:L.length===1?'1 Hinweis – zum Ansehen entsperren':L.length+' Hinweise – zum Ansehen entsperren',app:a.id,ref:null})}
+    else for(const x of L)td.push({...x,app:a.id})}
+  if(td.length)h+=`<div class="sec">Zu erledigen</div><div class="list">${td.slice(0,8).map((x,i)=>`<button type="button" class="row ${x.lvl==='crit'?'crit':'warn'}" style="--ac:var(--c-${x.app})" data-td="${i}"><span class="ti">${x.lvl==='crit'?I.warn:I.todo}</span><span class="rt"><b>${esc(x.title)}</b><small>${shp(x.app,8)} ${esc(AR(x.app).name)}</small></span><span class="chev">${I.chev}</span></button>`).join('')}</div>`;
+  /* Überblick mit Diagrammen */
+  if(ready.length)h+=chartsHtml();
   /* Bereiche */
   h+=`<div class="sec">Bereiche</div><div class="areas">${AREAS.map(a=>{const api=API[a.id];let c,cls='';
-    if(api)c=safe(()=>api.card(),{main:a.name,sub:'',facts:[]});
+    if(api&&a.id==='gesund'&&!G){c={main:'Geschützt',sub:'Zum Öffnen '+(lsGet(BKEY)&&bioSupported()?'Fingerabdruck':'Passwort')+' bestätigen',facts:[]}}
+    else if(api)c=safe(()=>api.card(),{main:a.name,sub:'',facts:[]});
     else if(OLDQ.has(a.id)){c={main:'Passwort nötig',sub:'Einmal das bisherige Passwort eingeben',facts:[]};cls=' need'}
     else{c={main:'Wird geöffnet …',sub:a.app,facts:[]};cls=' wait'}
     return `<button type="button" class="card${cls}" style="--ac:var(--c-${a.id})" data-area="${a.id}"><img src="${a.img}" alt="" width="48" height="48"><span class="ct"><span class="cn">${esc(a.name)}</span><span class="cm">${esc(c.main)}</span>${c.sub?`<span class="cs">${esc(c.sub)}</span>`:''}${c.facts&&c.facts.length?`<span class="cf">${c.facts.map(f=>`<span>${esc(f)}</span>`).join('')}</span>`:''}</span><span class="chev">${I.chev}</span></button>`}).join('')}</div>`;
   $('#dash').innerHTML=h;
-  $('#dash').querySelectorAll('[data-area]').forEach(b=>b.onclick=()=>{const id=b.dataset.area;if(OLDQ.has(id)&&!API[id])askOld(id);else openArea(id)});
+  $('#dash').querySelectorAll('[data-area]').forEach(b=>b.onclick=()=>{const id=b.dataset.area;if(OLDQ.has(id)&&!API[id])askOld(id);else openAreaG(id)});
+  $('#dash').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>openAreaG(b.dataset.go));
   $('#dash').querySelectorAll('[data-tl]').forEach(b=>b.onclick=()=>goRef(tl[+b.dataset.tl]));
   $('#dash').querySelectorAll('[data-td]').forEach(b=>b.onclick=()=>goRef(td[+b.dataset.td]));
   const tm=$('#tlMore');if(tm)tm.onclick=()=>{showAllTl=!showAllTl;renderDash()};
   const rm=$('#dsRemind');if(rm)rm.onclick=()=>{ACC.add('bk');openSheet('menu')};
 }
 let showAllTl=false;
-function goRef(x){if(!x||!API[x.app])return;openArea(x.app);setTimeout(()=>{try{API[x.app].open(x.ref)}catch(e){}},120)}
+async function goRef(x){if(!x||!API[x.app])return;if(!await openAreaG(x.app))return;if(x.ref)setTimeout(()=>{try{API[x.app].open(x.ref)}catch(e){}},120)}
+/* Hinweis beim Antippen bzw. Überfahren von Diagrammen */
+(()=>{let tip=null;const hide=()=>{if(tip){tip.remove();tip=null}};
+  const show=(el,ev)=>{hide();tip=document.createElement('div');tip.className='ctip';tip.textContent=el.dataset.tip;document.body.appendChild(tip);
+    const r=el.getBoundingClientRect(),w=tip.offsetWidth,x=Math.min(innerWidth-w-8,Math.max(8,(ev&&ev.clientX?ev.clientX:r.left+r.width/2)-w/2));
+    let y=r.top-tip.offsetHeight-8;if(y<8)y=r.bottom+8;tip.style.left=x+'px';tip.style.top=y+'px'};
+  $('#dash').addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const t=e.target.closest('[data-tip]');if(t)show(t,e);else hide()});
+  $('#dash').addEventListener('pointerleave',hide);
+  $('#dash').addEventListener('click',e=>{const t=e.target.closest('[data-tip]');if(t&&!t.closest('button.row')){show(t,e);e.stopPropagation()}},true);
+  addEventListener('scroll',hide,{passive:true});document.addEventListener('click',e=>{if(!e.target.closest('[data-tip]'))hide()});})();
 
 /* ---------- Blatt (Menü und Suche) ---------- */
 let SHMODE='menu';const ACC=new Set();
@@ -545,10 +672,12 @@ function searchRes(raw){const q=String(raw||'').trim();
   if(!q)return `<p class="ds-qhint">Sucht in allen drei Bereichen: Geräte und Routinen, Termine, Ärzte, Vorsorge und Dokumente, Verträge und Belege.</p>`;
   SRES=[];let h='';
   for(const a of AREAS){const api=API[a.id];if(!api)continue;const r=safe(()=>api.search(q),[]);if(!r.length)continue;
+    if(a.id==='gesund'&&!gOK()){h+=`<div class="ds-lbl" style="color:var(--c-gesund)">${esc(a.name)} · ${r.length}</div><div class="ds-qlist"><button type="button" class="ds-qrow" data-gunlock="1"><span class="ds-qi">${I.lock}</span><span class="ds-qt"><b>Geschützt</b><small>Zum Anzeigen der Treffer entsperren</small></span></button></div>`;continue}
     h+=`<div class="ds-lbl" style="color:var(--c-${a.id})">${esc(a.name)} · ${r.length}</div><div class="ds-qlist">${r.slice(0,25).map(x=>{SRES.push({...x,app:a.id});
       return `<button type="button" class="ds-qrow" data-sr="${SRES.length-1}"><span class="ds-qi" style="background:color-mix(in srgb,var(--c-${a.id}) 13%,var(--surface));color:var(--c-${a.id})"><img src="${a.img}" alt="" width="22" height="22" style="border-radius:6px"></span><span class="ds-qt"><b>${esc(x.title)}</b><small>${esc([x.g,x.sub].filter(Boolean).join(' · '))}</small></span></button>`}).join('')}</div>`}
   return h||'<p class="ds-qhint">Nichts gefunden.</p>'}
-$('#sheetBody').addEventListener('click',e=>{const r=e.target.closest('[data-sr]');if(!r)return;const x=SRES[+r.dataset.sr];closeSheet(true);
+$('#sheetBody').addEventListener('click',async e=>{const gu=e.target.closest('[data-gunlock]');if(gu){if(await askGesund()){const q=$('#sq');$('#sqres').innerHTML=searchRes(q.value)}return}
+  const r=e.target.closest('[data-sr]');if(!r)return;const x=SRES[+r.dataset.sr];closeSheet(true);
   if(history.state?.mbx==='sheet')history.replaceState({mbx:'none'},'');goRef(x)});
 
 /* ---------- Fenster für kleine Formulare ---------- */
@@ -583,6 +712,8 @@ function menuHtml(){
     <p class="ds-hint">Alle Daten liegen verschlüsselt auf diesem Gerät${g?' und als verschlüsselte Sicherung in deinem privaten GitHub-Repo':''}. Dein Passwort wird nicht gespeichert.</p>
     ${bioSupported()?`<div class="ds-lbl">Fingerabdruck</div><p class="ds-hint">${bio?'Entsperren per Fingerabdruck ist eingeschaltet. Das Passwort bleibt für den Notfall wichtig.':'Entsperre MyBox mit Fingerabdruck oder Gesichtserkennung. Dafür wird ein Passkey „MyBox“ in deinem Passwortmanager angelegt.'}</p>
     <div class="ds-acts">${bio?'<button type="button" class="ds-btn" data-m="bio-off">Ausschalten</button>':'<button type="button" class="ds-btn pri" data-m="bio-on">Einschalten</button>'}</div>`:''}
+    <div class="ds-lbl sep">Gesundheit extra schützen</div><p class="ds-hint">${CFG.gLock?'An. ':''}Der Bereich Gesundheit öffnet sich erst nach ${bio?'Fingerabdruck':'erneuter Eingabe des Passworts'} – auch Termine, Werte und Hinweise im Dashboard bleiben bis dahin verborgen. Gilt, bis MyBox gesperrt wird oder du 3 Minuten nicht in Gesundheit warst.${bio?'':' Mit eingeschaltetem Fingerabdruck geht es schneller.'}</p>
+    <div class="ds-acts">${CFG.gLock?'<button type="button" class="ds-btn" data-m="glock-off">Ausschalten</button>':'<button type="button" class="ds-btn pri" data-m="glock-on">Einschalten</button>'}</div>
     <div class="ds-lbl sep">Passwort</div><p class="ds-hint">Gilt für alle drei Bereiche. Beim Ändern werden alle Daten neu verschlüsselt.</p>
     <div class="ds-acts"><button type="button" class="ds-btn" data-m="pw">Passwort ändern</button></div>
     <div class="ds-lbl sep">Alles löschen</div><p class="ds-hint">Löscht MyBox mit allen Bereichen und Dokumenten auf diesem Gerät. Die einzelnen Apps (MySmartBox usw.) bleiben unberührt.</p>
@@ -631,6 +762,8 @@ async function menuAct(m,aid,btn){
       try{await enableBio(v.pw);DS.yay('Fingerabdruck an');toast('Fingerabdruck eingerichtet ✓');refreshSheet()}
       catch(x){return fail(x.message==='noprf'?'Dein Passkey-Anbieter unterstützt das nicht. Bitte den Google Passwortmanager als Speicherort wählen.':x.name==='NotAllowedError'?'Abgebrochen. Bitte erneut versuchen.':x.message)}},
       {ok:'Weiter',html:'<p class="ds-dlg-intro">Danach fragt dein Handy nach dem Fingerabdruck. Als Speicherort den Google Passwortmanager wählen.</p>'});break;
+  case 'glock-on':CFG.gLock=true;gAuth=false;await saveCfg();refreshSheet();schedDash(0);DS.yay('Gesundheit geschützt');break;
+  case 'glock-off':if(!gOK()&&!await askGesund())return;CFG.gLock=false;await saveCfg();refreshSheet();schedDash(0);toast('Zusätzlicher Schutz für Gesundheit ausgeschaltet.');break;
   case 'bio-off':if(confirm('Entsperren per Fingerabdruck ausschalten?')){lsDel(BKEY);refreshSheet();toast('Fingerabdruck ausgeschaltet. Den Passkey „MyBox“ kannst du im Passwortmanager löschen.')}break;
   case 'pw':form('Passwort ändern',[{k:'p0',l:'Aktuelles Passwort',t:'password',req:true},{k:'p1',l:'Neues Passwort (mind. 10 Zeichen)',t:'password',req:true},{k:'p2',l:'Neues Passwort wiederholen',t:'password',req:true}],async(v,fail)=>{
       if(v.p0!==PW)return fail('Das aktuelle Passwort ist falsch.');if(v.p1.length<10)return fail('Das neue Passwort braucht mindestens 10 Zeichen.');if(v.p1!==v.p2)return fail('Die neuen Passwörter stimmen nicht überein.');
@@ -669,7 +802,7 @@ async function menuAct(m,aid,btn){
     if(!confirm(`Alle Daten auf diesem Gerät durch die Sicherung vom ${new Date(o.exported).toLocaleDateString('de-DE')} ersetzen? Danach entsperrst du mit dem Passwort, das beim Sichern galt.`))return;
     UNLOCKED=false;for(const a of AREAS){if(o.boxes[a.id])try{await API[a.id].restore(o.boxes[a.id])}catch(x){toast(a.name+': '+x.message)}}
     await writeVault(JSON.stringify(o.shell));lsDel(BKEY);UNLOCKED=true;await lockAll();toast('Sicherung geladen. Entsperre mit dem Passwort, das beim Sichern galt.');break}
-  case 'mv-file':{const a=AR(aid),api=API[aid];if(!api)return;const f=await pickFile('');if(!f)return;
+  case 'mv-file':{const a=AR(aid),api=API[aid];if(!api)return;if(aid==='gesund'&&!gOK()&&!await askGesund())return;const f=await pickFile('');if(!f)return;
     if(api.count()&&!confirm(`Die Daten im Bereich ${a.name} in MyBox durch diese Sicherung ersetzen?`))return;
     closeSheet();openArea(aid);await api.restoreFile(f);break}
   case 'mv-gh':{const a=AR(aid),api=API[aid];if(!api)return;
@@ -684,7 +817,7 @@ async function menuAct(m,aid,btn){
   case 'rm-lead':{const v=+btn.dataset.v;CFG.remind.lead=v;await saveCfg();buzz(5);await writeSched(true);refreshSheet();break}
   case 'rm-perm':try{await Notification.requestPermission()}catch{}if(Notification.permission==='granted'){await writeSched(true);toast('Benachrichtigungen sind erlaubt ✓')}else toast('Noch blockiert. Bitte in den Einstellungen erlauben.');refreshSheet();break;
   case 'rm-test':if(Notification.permission!=='granted'){try{await Notification.requestPermission()}catch{}if(Notification.permission!=='granted'){refreshSheet();toast('Benachrichtigungen sind blockiert – siehe Hinweis.');return}}
-    try{const r=await navigator.serviceWorker.ready;await r.showNotification('MyBox',{body:'So sieht eine Erinnerung aus. Namen, Ärzte und Beträge stehen nie darin.',tag:'mybox-test',icon:'icons/mybox-192.png',badge:'icons/mybox-badge-96.png'});buzz(8)}
+    try{const r=await navigator.serviceWorker.ready;await r.showNotification('MyBox',{body:'So sieht eine Erinnerung aus. Namen, Ärzte und Beträge stehen nie darin.',tag:'mybox-test',icon:'icons/mybox-192.png',badge:'icons/mybox-badge-v2-96.png'});buzz(8)}
     catch(x){toast('Test hat nicht geklappt: '+(x&&x.message||x))}break;
   case 'ics':{const neutral=$('#icsNeutral').checked;let ev=[];
     for(const a of AREAS){const api=API[a.id];if(!api)continue;const t=safe(()=>api.ics(neutral),'');if(t)ev=ev.concat(t.match(/BEGIN:VEVENT[\s\S]*?END:VEVENT/g)||[])}
@@ -807,6 +940,12 @@ if('serviceWorker' in navigator){const hadCtl=!!navigator.serviceWorker.controll
   navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{swReg=r}).catch(()=>{});
   navigator.serviceWorker.addEventListener('controllerchange',()=>{if(hadCtl)showUpdBar()})}
 
+/* ---------- Vorschläge am App-Symbol: ?go=bereich.aktion ---------- */
+let GO=(()=>{try{const u=new URL(location.href),g=u.searchParams.get('go');if(g){u.searchParams.delete('go');history.replaceState(null,'',u.pathname+u.search+u.hash)}return /^[a-z]+(\.[a-z]+)?$/.test(g||'')?g:null}catch{return null}})();
+async function runGo(){if(!GO||!UNLOCKED||$('#app').hidden&&!$('#lock').hidden)return;const [app,k]=GO.split('.');
+  if(app==='suche'){GO=null;setTimeout(()=>openSheet('search'),400);return}
+  const api=API[app];if(!api||!api.shortcut)return;GO=null;
+  if(!await openAreaG(app))return;setTimeout(()=>{try{api.shortcut(k)}catch(e){}},300)}
 /* ---------- Start ---------- */
 loadVault().then(()=>showLock(true));
 </script>

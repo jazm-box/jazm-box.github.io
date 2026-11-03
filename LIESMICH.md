@@ -1,4 +1,4 @@
-# MyBox 0.2.0
+# MyBox 0.3.0
 
 MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensicherung, ein gemeinsames Dashboard, eine Suche, ein Kalender und Erinnerungen für alles. Alle Daten bleiben verschlüsselt auf dem Handy (AES-256). Es gibt keinen Server.
 
@@ -9,7 +9,17 @@ MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensiche
 - Der Knopf mit dem Würfel oben in jedem Bereich führt zurück zur MyBox-Übersicht.
 - Es wird nichts mehr zwischen Apps geteilt. Verknüpfte Einträge liegen zusammen in MyBox und zeigen sich gegenseitig an (siehe unten).
 
-## Verknüpfte Einträge (neu in 0.2.0)
+## Neu in 0.3.0
+
+- **Entsperren:** Der Würfel klappt auf, und die drei Bereiche springen heraus.
+- **Dashboard mit Diagrammen:** Kalender der nächsten Wochen (Haus ●, Gesundheit ■, Belege ◆), Fixkosten nach Kategorie, Garantie-Ampel, Blutdruck-Verlauf mit Zielbereich, Medikamenten-Vorrat und Geräte nach Raum. Antippen zeigt Details, der Titel öffnet den Bereich.
+- **Gesundheit extra schützen** (Daten & Sicherheit → Sicherheit): Der Bereich öffnet sich erst nach Fingerabdruck bzw. Passwort. Auch im Dashboard und in der Suche bleiben Gesundheitsdaten bis dahin verborgen.
+- **Medikamente** (Gesundheit → Werte → Medikamente): Bestand und Einnahme eintragen, die App zählt jeden Tag runter und erinnert rechtzeitig an ein neues Rezept.
+- **Wartungen** (Belege → Gerät → Wartung), z. B. für die Heizung, mit Erinnerung und Verlauf. Im Haus zeigt das verknüpfte Gerät die nächste Wartung.
+- **Vorschläge am App-Symbol:** Lange auf das MyBox-Symbol drücken → Beleg fotografieren, Termin eintragen, Suchen, Messung, Medikament, Gerät. Gilt nach der Neuinstallation bzw. nachdem Android das Symbol aktualisiert hat.
+- Benachrichtigungen zeigen ein gefülltes MyBox-Symbol statt der Glocke.
+
+## Verknüpfte Einträge (seit 0.2.0)
 
 - **Haus ↔ Belege:** Im Gerät im Bereich Haus steht „Beleg & Garantie“ mit Kaufdatum, Preis, Garantie und ob ein Beleg vorliegt. Ein Tipp öffnet den Beleg. Gibt es noch keinen: „Kaufbeleg anlegen“ legt ihn direkt im Bereich Belege an oder verknüpft ein vorhandenes Gerät.
 - **Belege → Haus / Gesundheit:** Im Beleg steht, zu welchem Gerät (Raum, App) bzw. zu welcher Brille oder welchen Linsen er gehört. Ein Tipp öffnet den Eintrag dort.

@@ -1,6 +1,6 @@
 // MyBox Service Worker – Netzwerk zuerst, offline aus dem Cache. Gilt für MyBox und alle drei Bereiche.
 // Bei eingeschalteten Erinnerungen liegt zusätzlich eine Liste von Daten ohne Namen, Ärzte oder Beträge im Cache „sched-mybox“.
-const CACHE = 'mybox-0.2.0', SCHED = 'sched-mybox';
+const CACHE = 'mybox-0.3.0', SCHED = 'sched-mybox';
 const ASSETS = ["./",
   "./beleg/app.js",
   "./beleg/boxen/belegbox.png",
@@ -11,6 +11,7 @@ const ASSETS = ["./",
   "./beleg/icons/belegbox-192.png",
   "./beleg/icons/belegbox-512.png",
   "./beleg/icons/belegbox-badge-96.png",
+  "./beleg/icons/belegbox-badge-v2-96.png",
   "./beleg/icons/belegbox-maskable-192.png",
   "./beleg/icons/belegbox-maskable-512.png",
   "./beleg/index.html",
@@ -35,8 +36,15 @@ const ASSETS = ["./",
   "./icons/mybox-192.png",
   "./icons/mybox-512.png",
   "./icons/mybox-badge-96.png",
+  "./icons/mybox-badge-v2-96.png",
   "./icons/mybox-maskable-192.png",
   "./icons/mybox-maskable-512.png",
+  "./icons/sc-foto.png",
+  "./icons/sc-geraet.png",
+  "./icons/sc-medi.png",
+  "./icons/sc-messung.png",
+  "./icons/sc-suche.png",
+  "./icons/sc-termin.png",
   "./index.html",
   "./manifest.json",
   "./mbx/ad-beleg.js",
@@ -110,7 +118,7 @@ async function remind(force) {
   const key = dayIso(today) + '|' + soon.length + '|' + soon[0].t + soon[0].n;
   if (!force && last && last.key === key) return;
   const body = soon.length === 1 ? line(soon[0]) : soon.length + ' Erinnerungen – als Nächstes: ' + line(soon[0]);
-  await self.registration.showNotification('MyBox', { body, tag: 'mybox-erinnerung', renotify: true, icon: 'icons/mybox-192.png', badge: 'icons/mybox-badge-96.png', data: { url: './' } });
+  await self.registration.showNotification('MyBox', { body, tag: 'mybox-erinnerung', renotify: true, icon: 'icons/mybox-192.png', badge: 'icons/mybox-badge-v2-96.png', data: { url: './' } });
   await c.put('./__last', new Response(JSON.stringify({ key })));
 }
 self.addEventListener('notificationclick', e => {

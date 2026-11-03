@@ -20,6 +20,7 @@ A.api={
     const due=D.vorsorge.filter(v=>vStatus(v).rank<=2).length,fq=D.fragen.filter(x=>!x.done).length;
     const bp=D.werte.filter(w=>w.typ==='bp').sort((a,b)=>a.datum.localeCompare(b.datum)).pop();
     const facts=[];if(due)facts.push(due===1?'1 Vorsorge fällig':due+' Vorsorgen fällig');
+    const rz=D.medis.filter(m=>{if(m.aktiv===false)return false;const i=mInfo(m);return i.reicht!=null&&i.reicht<=i.vorlauf}).length;if(rz)facts.push(rz===1?'1 Rezept nötig':rz+' Rezepte nötig');
     if(bp)facts.push('Blutdruck '+fmtNum(bp.v1,0)+'/'+fmtNum(bp.v2,0));if(fq)facts.push(fq===1?'1 Frage gemerkt':fq+' Fragen gemerkt');
     if(!facts.length){const n=D.termine.filter(t=>new Date(t.datum)>=Date.now()).length,k=D.dokumente.length;facts.push((n===1?'1 Termin':n+' Termine')+' geplant',k===1?'1 Dokument':k+' Dokumente')}
     if(nt){const a=arzt(nt.arztId);return{main:nt.titel,sub:relDay(daysUntil(nt.datum)).replace(/^./,c=>c.toUpperCase())+' · '+hhmm(nt.datum)+' Uhr'+(a?' · '+a.name:''),facts}}
@@ -29,6 +30,11 @@ A.api={
     return D.termine.filter(t=>{const n=daysUntil(t.datum);return n>=0&&n<=days&&new Date(t.datum)>=Date.now()-2*3600e3}).map(t=>{const a=arzt(t.arztId);
       return{d:t.datum.slice(0,10),time:hhmm(t.datum),title:t.titel,sub:'Arzttermin'+(a?' · '+a.name:''),ref:{a:'t-edit',id:t.id}}});
   },
+  stats(){const bp=D.werte.filter(w=>w.typ==='bp').sort((a,b)=>a.datum.localeCompare(b.datum)).slice(-30).map(w=>({d:w.datum,v1:w.v1,v2:w.v2}));
+    let Z={};try{Z=ziel('bp')||{}}catch(e){}
+    const medis=D.medis.filter(m=>m.aktiv!==false).map(m=>({name:m.name,...mInfo(m)})).filter(m=>m.reicht!=null).sort((a,b)=>a.reicht-b.reicht);
+    return{bp,ziel:{v1:Z.v1||null,v2:Z.v2||null},medis}},
+  shortcut(k){try{closeSheet()}catch(e){}act({termin:'q-termin',wert:'q-wert',medi:'q-medi',dok:'q-dok'}[k]||'q-termin')},
   todos(){return dashTodos().map(([lv,ic,txt,a,id])=>({lvl:lv,title:txt,ref:{a,id}}))},
   search(raw){
     const s=String(raw||'').trim().toLowerCase();if(!s)return [];
@@ -37,6 +43,7 @@ A.api={
     D.aerzte.filter(a=>has(a.name,a.fach,a.adresse,a.notiz,a.tel)).forEach(a=>r.push({g:'Ärzte',title:a.name,sub:[a.fach,a.tel].filter(Boolean).join(' · '),ref:{a:'a-edit',id:a.id}}));
     D.vorsorge.filter(v=>has(v.name,v.notiz)).forEach(v=>r.push({g:'Vorsorge',title:v.name,sub:vStatus(v).txt,ref:{a:'v-edit',id:v.id}}));
     D.sehhilfen.filter(x=>has(x.name,x.haendler,x.fassung,x.glaeser,x.notiz,hilfeTitel(x))).forEach(x=>r.push({g:'Augen',title:hilfeTitel(x),sub:(x.art==='brille'?'Brille':'Kontaktlinsen')+(x.haendler?' · '+x.haendler:''),ref:{a:'hilfe-edit',id:x.id}}));
+    D.medis.filter(m=>has(m.name,m.staerke,m.notiz)).forEach(m=>r.push({g:'Medikamente',title:m.name,sub:[m.staerke,m.bedarf?'bei Bedarf':m.schema].filter(Boolean).join(' · '),ref:{a:'goto-medis',id:m.id}}));
     D.dokumente.filter(d=>has(dokTitel(d),d.notiz,DOKTYP[d.typ],arzt(d.arztId)?.name)).forEach(d=>r.push({g:'Dokumente',title:dokTitel(d),sub:(DOKTYP[d.typ]||'Dokument')+(d.datum?' · '+fmtD(d.datum):''),ref:{a:'d-view',id:d.id}}));
     return r;
   },
