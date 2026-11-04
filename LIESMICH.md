@@ -1,4 +1,4 @@
-# MyBox 0.3.0
+# MyBox 0.3.1
 
 MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensicherung, ein gemeinsames Dashboard, eine Suche, ein Kalender und Erinnerungen für alles. Alle Daten bleiben verschlüsselt auf dem Handy (AES-256). Es gibt keinen Server.
 
@@ -8,6 +8,10 @@ MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensiche
 - **Bereiche** `smart/`, `gesund/` und `beleg/` sind die drei bisherigen Apps, unverändert in ihrer Bedienung. Sie werden mit dem MyBox-Passwort entsperrt. Was MyBox gemeinsam erledigt, blenden sie aus.
 - Der Knopf mit dem Würfel oben in jedem Bereich führt zurück zur MyBox-Übersicht.
 - Es wird nichts mehr zwischen Apps geteilt. Verknüpfte Einträge liegen zusammen in MyBox und zeigen sich gegenseitig an (siehe unten).
+
+## Neu in 0.3.1
+
+- QR-Aufkleber für Geräte jetzt klein: 5 × 16 Etiketten à 35,6 × 16,9 mm (80 pro A4-Bogen). Lange Gerätenamen werden automatisch kleiner gesetzt.
 
 ## Neu in 0.3.0
 
