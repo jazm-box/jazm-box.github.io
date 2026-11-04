@@ -255,22 +255,9 @@ dialog input,dialog select{width:100%;padding:12px 13px;border:1px solid var(--l
 /* Hinweis */
 #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateX(-50%);z-index:200;max-width:min(520px,calc(100vw - 32px));background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:14px;font-size:15px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);text-align:center}
 /* Würfel auf dem Sperrbildschirm: Deckel klappt auf, drei Bereiche springen heraus */
-.cube{width:96px;height:96px;margin:0 auto 4px;perspective:420px}
+.cube{width:96px;height:96px;margin:0 auto 4px;will-change:transform}
 .cube svg{width:100%;height:100%;overflow:visible;display:block}
 .cube .flap,.cube .inner,.cube .pop{opacity:0}
-.cube .flap{transform-box:view-box}
-.cube .fl{transform-origin:122px 180px}.cube .fr{transform-origin:256px 104px}
-.cube .pop{transform-box:fill-box;transform-origin:center}
-.cube.open .flap,.cube.open .inner{opacity:1}
-.cube.open .glow{animation:mbGlow .7s ease-out .12s both}
-.cube.open .fl{animation:mbFlL .5s cubic-bezier(.35,1.15,.5,1) forwards}
-.cube.open .fr{animation:mbFlR .5s cubic-bezier(.35,1.15,.5,1) .05s forwards}
-.cube.open .pop{animation:mbPop .6s cubic-bezier(.22,1.55,.45,1) forwards}
-.cube.open .p1{animation-delay:.2s;--tx:-175px;--rz:-14deg}.cube.open .p2{animation-delay:.27s;--tx:0px;--rz:0deg}.cube.open .p3{animation-delay:.34s;--tx:175px;--rz:14deg}
-@keyframes mbFlL{from{transform:rotate3d(134,-76,0,0deg)}to{transform:rotate3d(134,-76,0,-118deg)}}
-@keyframes mbFlR{from{transform:rotate3d(134,76,0,0deg)}to{transform:rotate3d(134,76,0,118deg)}}
-@keyframes mbGlow{0%{opacity:0}35%{opacity:1}100%{opacity:.85}}
-@keyframes mbPop{0%{opacity:0;transform:translate(0,40px) scale(.3)}40%{opacity:1}100%{opacity:1;transform:translate(var(--tx),-235px) rotate(var(--rz)) scale(1.45)}}
 /* Diagramme */
 .charts{display:grid;gap:12px}
 .chart{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px 14px 14px;box-shadow:var(--shadow);position:relative}
@@ -311,11 +298,12 @@ svg.ln{width:100%;height:auto;display:block;overflow:visible}
   <form class="lockbox" id="lockForm" autocomplete="on">
     <div class="cube" aria-hidden="true"><svg viewBox="0 0 512 512"><defs><radialGradient id="cglow" cx="50%" cy="55%" r="60%"><stop offset="0" stop-color="#FFE7A3"/><stop offset=".55" stop-color="#F3B95F" stop-opacity=".55"/><stop offset="1" stop-color="#1D2442" stop-opacity="0"/></radialGradient></defs>
       <rect width="512" height="512" rx="113" fill="#34406B"/>
-      <path class="inner" d="M256 104 L390 180 L256 256 L122 180 Z" fill="#1D2442"/><path class="inner glow" d="M256 104 L390 180 L256 256 L122 180 Z" fill="url(#cglow)"/>
-      <image class="pop p1" href="boxen/smartbox.png" x="206" y="140" width="100" height="100"/><image class="pop p2" href="boxen/gesundbox.png" x="206" y="140" width="100" height="100"/><image class="pop p3" href="boxen/belegbox.png" x="206" y="140" width="100" height="100"/>
+      <clipPath id="crim"><path d="M-600 -900 H1112 V180 H390 L256 256 L122 180 H-600 Z"/></clipPath>
+      <path class="inner" d="M256 104 L390 180 L256 256 L122 180 Z" fill="#141a33"/><path class="inner" d="M256 104 L390 180 L390 206 L256 130 L122 206 L122 180 Z" fill="#0d1226"/><path class="inner glow" d="M256 104 L390 180 L256 256 L122 180 Z" fill="url(#cglow)"/>
+      <path class="flap fb" stroke="#fff" stroke-width="24" stroke-linejoin="round"/>
+      <g clip-path="url(#crim)"><image class="pop p1" href="boxen/smartbox.png" x="206" y="140" width="100" height="100"/><image class="pop p2" href="boxen/gesundbox.png" x="206" y="140" width="100" height="100"/><image class="pop p3" href="boxen/belegbox.png" x="206" y="140" width="100" height="100"/></g>
       <g fill="none" stroke="#fff" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M256 104 L390 180 L390 334 L256 410 L122 334 L122 180 Z"/><path class="frontl" d="M122 180 L256 256 L390 180"/><path d="M256 256 V410"/></g>
-      <g class="flap fl"><path d="M122 180 L256 104 L256 256 Z" fill="#4B5A96" stroke="#fff" stroke-width="24" stroke-linejoin="round"/></g>
-      <g class="flap fr"><path d="M256 104 L390 180 L256 256 Z" fill="#5B6AA6" stroke="#fff" stroke-width="24" stroke-linejoin="round"/></g></svg></div>
+      <path class="flap ff" stroke="#fff" stroke-width="24" stroke-linejoin="round"/></svg></div>
     <h1>MyBox</h1>
     <p id="lockHint">Haus, Gesundheit und Belege – verschlüsselt auf diesem Gerät.</p>
     <div class="areadots" aria-hidden="true"><img src="boxen/smartbox.png" alt=""><img src="boxen/gesundbox.png" alt=""><img src="boxen/belegbox.png" alt=""></div>
@@ -348,7 +336,7 @@ svg.ln{width:100%;height:auto;display:block;overflow:visible}
 
 <script>
 'use strict';
-const APP_VERSION='0.3.1';
+const APP_VERSION='0.3.2';
 /* ---------- Bereiche ---------- */
 const AREAS=[
   {id:'smart',name:'Haus',app:'MySmartBox',path:'smart/',img:'boxen/smartbox.png',dir:'smartbox',host:'jazm-smartbox.github.io',def:{owner:'jazm-smartbox',repo:'smartbox-daten'}},
@@ -463,10 +451,36 @@ async function tryBio(){if(bioBusy||UNLOCKED||$('#bioBtn').hidden||document.hidd
 $('#bioBtn').onclick=tryBio;
 
 /* Entsperren: Der Würfel klappt auf, die drei Bereiche springen heraus */
+/* Der Deckel besteht aus zwei Klappen, die echt in 3D um ihre Kanten drehen (isometrisch projiziert).
+   Klappe vorne hängt an der Kante vorne-links, Klappe hinten an der Kante hinten-rechts. */
+const CUBE={iso:(a,b,c)=>[256+134*a-134*b,256-76*a-76*b-154*c],
+  flap(hinge,t){const co=Math.cos(t),si=Math.sin(t),w=.5;
+    const pts=hinge?[[1,0,0],[1,1,0],[1-w*co,1,w*si],[1-w*co,0,w*si]]:[[0,0,0],[0,1,0],[w*co,1,w*si],[w*co,0,w*si]];
+    const P=pts.map(p=>CUBE.iso(...p));let ar=0;for(let i=0;i<4;i++){const[x1,y1]=P[i],[x2,y2]=P[(i+1)%4];ar+=x1*y2-x2*y1}
+    return{d:'M'+P.map(q=>q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' L')+' Z',out:hinge?ar<0:ar>0,lift:Math.abs(si)}},
+  mix(a,b,k){const h=x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16));const A=h(a),B=h(b);return'rgb('+A.map((v,i)=>Math.round(v+(B[i]-v)*k)).join(',')+')'}};
+const ease={out:t=>1-Math.pow(1-t,3),back:t=>{const c=1.5;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2)},inOut:t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2};
 function cubeOpen(done){const c=$('#lock .cube');if(!c||!motion()){done();return}
-  c.classList.remove('open');void c.offsetWidth;c.classList.add('open');buzz([10,40,18]);
-  setTimeout(()=>{const a=$('#lock').animate([{opacity:1},{opacity:0,transform:'scale(1.03)'}],{duration:300,easing:'ease-in',fill:'forwards'});
-    a.onfinish=()=>{done();requestAnimationFrame(()=>{a.cancel();c.classList.remove('open')})}},900)}
+  const ff=c.querySelector('.ff'),fb=c.querySelector('.fb'),inn=[...c.querySelectorAll('.inner')],glow=c.querySelector('.glow'),pops=[...c.querySelectorAll('.pop')];
+  const seg=(t,a,d)=>Math.min(1,Math.max(0,(t-a)/d));
+  const PO=[{tx:-205,ty:-250,rz:-12,at:330},{tx:0,ty:-300,rz:0,at:400},{tx:205,ty:-250,rz:12,at:470}];
+  buzz([8,60,14]);
+  c.animate([{transform:'scale(1)'},{transform:'scale(1.07,.93)',offset:.45},{transform:'scale(.97,1.04)',offset:.75},{transform:'scale(1)'}],{duration:300,easing:'ease-out'});
+  const t0=performance.now();let fin=false;
+  const paintFlap=(el,hinge,k,max)=>{const f=CUBE.flap(hinge,k*max);el.setAttribute('d',f.d);
+    el.setAttribute('fill',f.out?CUBE.mix('#34406B','#6A79B8',Math.min(1,f.lift*1.2)):CUBE.mix('#222a4d','#3b4677',f.lift));el.style.opacity=Math.min(1,k*12)};
+  function frame(now){const t=now-t0;
+    paintFlap(ff,0,ease.back(seg(t,90,500)),Math.PI*1.08);
+    paintFlap(fb,1,ease.back(seg(t,150,460)),Math.PI*.74);
+    const g=seg(t,120,180);inn.forEach(e=>e.style.opacity=g);glow.style.opacity=ease.out(seg(t,200,260))*(1-.2*seg(t,700,400));
+    pops.forEach((el,i)=>{const o=PO[i],k=seg(t,o.at,620),e=ease.out(k),u=1-e;
+      // Bogen: erst senkrecht aus der Öffnung, dann seitlich nach außen
+      const x=2*u*e*(o.tx*.1)+e*e*o.tx,y=u*u*70+2*u*e*(o.ty*1.05)+e*e*o.ty,sc=.35+1.45*ease.back(k),rz=o.rz*e;
+      el.style.opacity=Math.min(1,k*4);el.setAttribute('transform',`translate(${(256+x).toFixed(1)} ${(190+y).toFixed(1)}) rotate(${rz.toFixed(1)}) scale(${sc.toFixed(3)}) translate(-256 -190)`)});
+    if(t<1100)requestAnimationFrame(frame);else if(!fin){fin=true;
+      const a=$('#lock').animate([{opacity:1},{opacity:0,transform:'scale(1.03)'}],{duration:280,easing:'ease-in',fill:'forwards'});
+      a.onfinish=()=>{done();requestAnimationFrame(()=>{a.cancel();[ff,fb,...inn,glow,...pops].forEach(e=>{e.style.opacity='';e.removeAttribute('transform')})})}}}
+  requestAnimationFrame(frame)}
 /* Sperren: Bereiche sichern ihre Eingaben, dann werden sie geschlossen und alle Schlüssel vergessen */
 async function lockAll(){
   if(!UNLOCKED&&!KEY)return;UNLOCKED=false;
