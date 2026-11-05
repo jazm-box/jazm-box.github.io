@@ -42,10 +42,9 @@
       "url": "./?go=smart",
       "icons": [
         {
-          "src": "icons/sc-smart.png",
-          "sizes": "192x192",
-          "type": "image/png",
-          "purpose": "maskable"
+          "src": "icons/sca-smart.png",
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     },
@@ -56,10 +55,9 @@
       "url": "./?go=gesund",
       "icons": [
         {
-          "src": "icons/sc-gesund.png",
-          "sizes": "192x192",
-          "type": "image/png",
-          "purpose": "maskable"
+          "src": "icons/sca-gesund.png",
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     },
@@ -70,10 +68,9 @@
       "url": "./?go=beleg",
       "icons": [
         {
-          "src": "icons/sc-beleg.png",
-          "sizes": "192x192",
-          "type": "image/png",
-          "purpose": "maskable"
+          "src": "icons/sca-beleg.png",
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     },
