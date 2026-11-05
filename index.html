@@ -336,7 +336,7 @@ svg.ln{width:100%;height:auto;display:block;overflow:visible}
 
 <script>
 'use strict';
-const APP_VERSION='0.3.2';
+const APP_VERSION='0.3.3';
 /* ---------- Bereiche ---------- */
 const AREAS=[
   {id:'smart',name:'Haus',app:'MySmartBox',path:'smart/',img:'boxen/smartbox.png',dir:'smartbox',host:'jazm-smartbox.github.io',def:{owner:'jazm-smartbox',repo:'smartbox-daten'}},
@@ -958,6 +958,7 @@ if('serviceWorker' in navigator){const hadCtl=!!navigator.serviceWorker.controll
 let GO=(()=>{try{const u=new URL(location.href),g=u.searchParams.get('go');if(g){u.searchParams.delete('go');history.replaceState(null,'',u.pathname+u.search+u.hash)}return /^[a-z]+(\.[a-z]+)?$/.test(g||'')?g:null}catch{return null}})();
 async function runGo(){if(!GO||!UNLOCKED||$('#app').hidden&&!$('#lock').hidden)return;const [app,k]=GO.split('.');
   if(app==='suche'){GO=null;setTimeout(()=>openSheet('search'),400);return}
+  if(!k){if(!API[app])return;GO=null;setTimeout(()=>openAreaG(app),350);return}
   const api=API[app];if(!api||!api.shortcut)return;GO=null;
   if(!await openAreaG(app))return;setTimeout(()=>{try{api.shortcut(k)}catch(e){}},300)}
 /* ---------- Start ---------- */

@@ -36,6 +36,61 @@
   ],
   "shortcuts": [
     {
+      "name": "MySmartBox",
+      "short_name": "SmartBox",
+      "description": "Geräte und Haus öffnen",
+      "url": "./?go=smart",
+      "icons": [
+        {
+          "src": "icons/sc-smart.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "maskable"
+        }
+      ]
+    },
+    {
+      "name": "MyGesundBox",
+      "short_name": "GesundBox",
+      "description": "Gesundheit öffnen",
+      "url": "./?go=gesund",
+      "icons": [
+        {
+          "src": "icons/sc-gesund.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "maskable"
+        }
+      ]
+    },
+    {
+      "name": "MyBelegBox",
+      "short_name": "BelegBox",
+      "description": "Belege und Verträge öffnen",
+      "url": "./?go=beleg",
+      "icons": [
+        {
+          "src": "icons/sc-beleg.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "maskable"
+        }
+      ]
+    },
+    {
+      "name": "Suchen",
+      "short_name": "Suchen",
+      "description": "In allen Bereichen suchen",
+      "url": "./?go=suche",
+      "icons": [
+        {
+          "src": "icons/sc-suche.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
       "name": "Beleg fotografieren",
       "short_name": "Beleg",
       "description": "Kassenbon oder Rechnung als neues Gerät",
@@ -56,58 +111,6 @@
       "icons": [
         {
           "src": "icons/sc-termin.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "Suchen",
-      "short_name": "Suchen",
-      "description": "In allen Bereichen suchen",
-      "url": "./?go=suche",
-      "icons": [
-        {
-          "src": "icons/sc-suche.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "Messung eintragen",
-      "short_name": "Messung",
-      "description": "Blutdruck, Puls oder Gewicht",
-      "url": "./?go=gesund.wert",
-      "icons": [
-        {
-          "src": "icons/sc-messung.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "Medikament",
-      "short_name": "Medikament",
-      "description": "Neues Medikament mit Bestand",
-      "url": "./?go=gesund.medi",
-      "icons": [
-        {
-          "src": "icons/sc-medi.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "Gerät hinzufügen",
-      "short_name": "Gerät",
-      "description": "Neues Gerät im Haus",
-      "url": "./?go=smart.geraet",
-      "icons": [
-        {
-          "src": "icons/sc-geraet.png",
           "sizes": "96x96",
           "type": "image/png"
         }
