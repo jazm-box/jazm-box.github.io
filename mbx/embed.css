@@ -15,3 +15,44 @@ html.mbx-gesund details.acc[data-k="look"],html.mbx-gesund details.acc[data-k="e
 html.mbx-beleg details.acc[data-acc="sicher"],html.mbx-beleg details.acc[data-acc="gh"],html.mbx-beleg details.acc[data-acc="erin"],
 html.mbx-beleg details.acc[data-acc="upd"],html.mbx-beleg details.acc[data-acc="look"],html.mbx-beleg details.acc[data-acc="kal"]{display:none!important}
 html.mbx .ds-ver{display:none!important}
+
+/* ===== Ein Aussehen für alle Bereiche (MyBox 0.4) ===== */
+/* Neutrale Flächen wie in MyBox – die Bereichsfarbe bleibt nur als Akzent */
+html.mbx{--mbx-chip:#ECEEF3;--mbx-mu:#5B6376}
+html.mbx-smart{--mbx-ac:#2456E0}html.mbx-gesund{--mbx-ac:#8C2F45}html.mbx-beleg{--mbx-ac:#0E6A5B}
+html.mbx-smart{--bg:#F3F4F8!important;--surface:#FFFFFF!important;--surface2:#ECEEF3!important;--glass:#FFFFFF!important;--glass-strong:#FFFFFF!important;--ink:#161B26!important;--muted:#5B6376!important;--line:#E0E3EA!important;--line2:#ECEEF3!important;
+  --accent:#2456E0!important;--accent-ink:#FFFFFF!important;--accent-soft:#E3EAFC!important}
+html.mbx-gesund{--bg:#F3F4F8!important;--card:#FFFFFF!important;--tx:#161B26!important;--mu:#5B6376!important;--bd:#E0E3EA!important}
+html.mbx-beleg{--bg:#F3F4F8!important;--surface:#FFFFFF!important;--sunk:#ECEEF3!important;--ink:#161B26!important;--muted:#5B6376!important;--line:#E0E3EA!important}
+@media (prefers-color-scheme: dark){
+  html.mbx:not([data-theme="light"]){--mbx-chip:#222734;--mbx-mu:#A0A7B8}
+  html.mbx-smart:not([data-theme="light"]){--mbx-ac:#8DB4FF}html.mbx-gesund:not([data-theme="light"]){--mbx-ac:#E8A0AE}html.mbx-beleg:not([data-theme="light"]){--mbx-ac:#5CC8B1}
+  html.mbx-smart:not([data-theme="light"]){--bg:#10131A!important;--surface:#1A1E28!important;--surface2:#141821!important;--glass:#1A1E28!important;--glass-strong:#1A1E28!important;--ink:#EDEFF4!important;--muted:#A0A7B8!important;--line:#2A303D!important;--line2:#222734!important;--accent:#8DB4FF!important;--accent-ink:#0B1530!important;--accent-soft:#1A2747!important;color-scheme:dark}
+  html.mbx-gesund:not([data-theme="light"]){--bg:#10131A!important;--card:#1A1E28!important;--tx:#EDEFF4!important;--mu:#A0A7B8!important;--bd:#2A303D!important}
+  html.mbx-beleg:not([data-theme="light"]){--bg:#10131A!important;--surface:#1A1E28!important;--sunk:#141821!important;--ink:#EDEFF4!important;--muted:#A0A7B8!important;--line:#2A303D!important}}
+html.mbx[data-theme="dark"]{--mbx-chip:#222734;--mbx-mu:#A0A7B8}
+html.mbx-smart[data-theme="dark"]{--mbx-ac:#8DB4FF}html.mbx-gesund[data-theme="dark"]{--mbx-ac:#E8A0AE}html.mbx-beleg[data-theme="dark"]{--mbx-ac:#5CC8B1}
+html.mbx-smart[data-theme="dark"]{--bg:#10131A!important;--surface:#1A1E28!important;--surface2:#141821!important;--glass:#1A1E28!important;--glass-strong:#1A1E28!important;--ink:#EDEFF4!important;--muted:#A0A7B8!important;--line:#2A303D!important;--line2:#222734!important;--accent:#8DB4FF!important;--accent-ink:#0B1530!important;--accent-soft:#1A2747!important;color-scheme:dark}
+html.mbx-gesund[data-theme="dark"]{--bg:#10131A!important;--card:#1A1E28!important;--tx:#EDEFF4!important;--mu:#A0A7B8!important;--bd:#2A303D!important}
+html.mbx-beleg[data-theme="dark"]{--bg:#10131A!important;--surface:#1A1E28!important;--sunk:#141821!important;--ink:#EDEFF4!important;--muted:#A0A7B8!important;--line:#2A303D!important}
+
+/* Kopf bleibt oben stehen, die Reiter des Bereichs sitzen direkt darunter (unten ist die MyBox-Leiste) */
+html.mbx header.mbx-hd{position:sticky!important;top:0!important;z-index:5!important;background:var(--bg)!important;flex-wrap:wrap!important;padding-bottom:8px!important}
+html.mbx .mbx-tt{position:static!important;inset:auto!important;transform:none!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;height:auto!important;
+  display:block!important;flex:1 0 100%!important;order:99!important;width:100%!important;max-width:720px!important;margin:8px auto 0!important;padding:0!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;z-index:auto!important}
+html.mbx-smart .mbx-tt{padding:0 16px!important;box-sizing:border-box!important}
+html.mbx .mbx-tt-row{display:flex!important;gap:6px!important;overflow-x:auto!important;scrollbar-width:none!important;justify-content:flex-start!important;height:auto!important;padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;max-width:none!important;position:static!important}
+html.mbx .mbx-tt-row::-webkit-scrollbar{display:none}
+html.mbx .mbx-tt-row>button{all:unset!important;box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;gap:5px!important;padding:7px 11px 7px 9px!important;border-radius:999px!important;background:var(--mbx-chip)!important;color:var(--mbx-mu)!important;
+  font:600 14px/1.15 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif!important;white-space:nowrap!important;cursor:pointer!important;flex:none!important;transition:background .15s,color .15s!important;-webkit-tap-highlight-color:transparent}
+html.mbx .mbx-tt-row>button:is([aria-selected="true"],.on,[aria-current="page"],.active,.sel){background:color-mix(in srgb,var(--mbx-ac) 15%,transparent)!important;color:var(--mbx-ac)!important}
+html.mbx .mbx-tt-row>button:focus-visible{outline:2px solid var(--mbx-ac)!important;outline-offset:2px!important}
+html.mbx .mbx-tt-row>button :is(i,.pill){display:contents!important}
+html.mbx .mbx-tt-row>button svg{width:17px!important;height:17px!important;flex:none!important}
+html.mbx .mbx-tt-row>button::before,html.mbx .mbx-tt-row>button::after,html.mbx .mbx-tt-row .ind{display:none!important}
+/* Plus-Knopf und Menü des Bereichs: MyBox hat einen gemeinsamen Plus-Knopf in der Leiste unten */
+html.mbx #fab,html.mbx .fab,html.mbx #fan,html.mbx #bxfan{display:none!important}
+html.mbx .mbx-gone{display:none!important}
+/* Vier Reiter: gleichmäßig verteilt, ohne Symbole, damit alles in eine Zeile passt */
+html.mbx .mbx-tt-row:has(> button:nth-of-type(4))>button{flex:1 1 auto!important;justify-content:center!important;padding:7px 8px!important;font-size:13.5px!important}
+html.mbx .mbx-tt-row:has(> button:nth-of-type(4))>button svg{display:none!important}

@@ -1,4 +1,4 @@
-# MyBox 0.3.4
+# MyBox 0.5.0
 
 MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensicherung, ein gemeinsames Dashboard, eine Suche, ein Kalender und Erinnerungen für alles. Alle Daten bleiben verschlüsselt auf dem Handy (AES-256). Es gibt keinen Server.
 
@@ -8,6 +8,33 @@ MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensiche
 - **Bereiche** `smart/`, `gesund/` und `beleg/` sind die drei bisherigen Apps, unverändert in ihrer Bedienung. Sie werden mit dem MyBox-Passwort entsperrt. Was MyBox gemeinsam erledigt, blenden sie aus.
 - Der Knopf mit dem Würfel oben in jedem Bereich führt zurück zur MyBox-Übersicht.
 - Es wird nichts mehr zwischen Apps geteilt. Verknüpfte Einträge liegen zusammen in MyBox und zeigen sich gegenseitig an (siehe unten).
+
+## Neu in 0.5.0
+
+**Bereiche arbeiten zusammen**
+- **Adressbuch** (Symbol oben auf der Übersicht): Ärzte, Optiker, Wartungsfirmen, Händler und Vertragspartner aus allen Bereichen, nach Namen zusammengeführt – mit Anrufen, E-Mail, Route und allem, was dazugehört (Termine, Wartungen, Käufe, Verträge). Eigene Kontakte und Telefon/E-Mail/Notiz lassen sich ergänzen. Kontakte erscheinen auch in der Suche.
+- **Gerätepass**: alles zu einem Gerät auf einer Seite – Raum, Sicherung und Verbindung aus Haus, Kauf, Garantie, Beleg, Dokumente und Wartung aus Belege. Neue QR-Aufkleber zeigen auf MyBox und öffnen direkt den Gerätepass. Auch im Gerät unter „Gerätepass“.
+- **Jahresübersicht & Steuer** (Karte „Ausgaben“ auf der Übersicht): Ausgaben des Jahres nach Kategorie, mit Abschnitten für Handwerkerleistungen, Krankheitskosten und Versicherungen und Export als Tabelle (CSV).
+- Gesundheit: beim Termin „Selbst bezahlt“, beim Medikament „Zuzahlung pro Packung“ (wird bei „Neue Packung“ mitgezählt).
+
+**Alltag**
+- **Teilen → MyBox**: Fotos, PDFs, Kalender-Dateien oder Text aus anderen Apps an MyBox schicken; MyBox fragt, ob Belege oder Gesundheit.
+- **Tageszusammenfassung**: eine Meldung am Tag, nach Art gruppiert, z. B. „Arzttermin morgen · Rezept besorgen · 2 × Kündigungsfristen“. Jetzt auch mit Wartungen und Rezepten.
+
+**Unter der Haube**
+- Die Bereiche laden schon hinter dem Sperrbildschirm vor; nach dem Entsperren müssen sie nur noch entschlüsseln.
+- Einstellungen und Adressbuch werden zusätzlich verschlüsselt im GitHub-Repo gesichert (Ordner mybox).
+- Sicherungsdatei: beim Laden lassen sich einzelne Bereiche auswählen.
+- Die drei Apps bringen ihren MyBox-Modus selbst mit – Updates sind dadurch robuster.
+
+## Neu in 0.4.0
+
+- Leiste unten: Übersicht · Haus · Plus · Gesundheit · Belege – von jedem Bereich direkt in jeden anderen.
+- Ein Plus-Knopf für alles: zeigt alle Aktionen aller Bereiche, der aktuelle Bereich steht oben.
+- Bereiche sehen gleich aus: Bereichsname statt App-Name, Reiter oben unter dem Kopf, neutrale Flächen wie in MyBox, Bereichsfarbe nur als Akzent, Dunkelmodus jetzt auch im Bereich Haus.
+- Die Lupe im Bereich öffnet die gemeinsame Suche, der aktuelle Bereich steht oben.
+- Zurück-Taste überall gleich: erst offenes Fenster schließen, dann zum ersten Reiter, dann zur Übersicht.
+- Im Bereich Haus heißt der Reiter „Haus“ jetzt „Einrichtung“; die Bereichsmenüs heißen „… · Extras“.
 
 ## Neu in 0.3.4
 

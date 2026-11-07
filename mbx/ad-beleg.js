@@ -4,7 +4,9 @@
 const A=window.MBXA,B=window.__mbxB;if(!A||!B)return;
 const q=s=>document.querySelector(s);
 A.cfg={
-  lockBtn:'#lockBtn',
+  lockBtn:'#lockBtn',title:'Belege',brand:'header.top .brand h1',header:'header.top',nav:'nav.tabs',search:'#searchBtn',
+  overlay:()=>!!(q('#sheetRoot')&&q('#sheetRoot').firstElementChild)||!q('#viewer').hidden||!q('#fan').hidden,
+  menuBtn:'#menuBtn',menuTitle:'Belege · Extras',fan:'#fan .fi button',fanOrder:['Beleg fotografieren','Abo / Vertrag','Gerät'],fanLabel:{'Beleg fotografieren':'Beleg-Foto'},
   locked:()=>document.body.classList.contains('locked')||!B.db,
   form:()=>q('#lf'),
   fill:pw=>{const a=q('#lp1'),b=q('#lp2'),n=q('#lnew');if(a)a.value=pw;if(b)b.value=pw;if(n)n.checked=true},
@@ -64,7 +66,39 @@ A.api={
     if(c){const f=[B.eur(B.monthly(c))+' pro Monat'];const ci=B.contractInfo(c);if(c.status==='gekuendigt')f.push('gekündigt');else if(ci.by)f.push('kündbar bis '+B.fmtD(ci.by));
       return{k:'c',id:c.id,title:c.anbieter,facts:f}}
     return null},
-  linkNew(neu){try{B.closeSheet(false)}catch(e){}setTimeout(()=>B.openExternal(neu,null),80)}
+  linkNew(neu){try{B.closeSheet(false)}catch(e){}setTimeout(()=>B.openExternal(neu,null),80)},
+  /* Aus anderen Apps geteilt: über das Eingangsfach der Belege (neues Gerät, Vertrag oder vorhandener Eintrag) */
+  async share(files,text){try{B.closeSheet(false)}catch(e){}const c=await caches.open(B.INBOX);
+    const put=(body,type,name)=>c.put(new Request('./__inbox/'+Date.now()+'-'+Math.random().toString(36).slice(2,7)),new Response(body,{headers:{'content-type':type,'x-name':encodeURIComponent(name)}}));
+    for(const f of files)await put(f,f.type||'application/octet-stream',f.name||'Datei');
+    if(!files.length)await put(JSON.stringify({text:text||'',big:0,keys:['text']}),B.SHARE_T,'Geteilter Inhalt');
+    B.openInbox(await B.inboxFiles())},
+  /* Adressbuch: Wartungsfirmen, Händler und Vertragspartner */
+  contacts(){const d=db(),r=[],add=(name,o)=>{name=String(name||'').trim();if(name)r.push(Object.assign({name},o))};
+    d.devices.forEach(x=>{const w=x.wartung,wi=B.wartInfo(x);
+      if(w&&w.firma){const items=[{title:x.name,sub:wi?(wi.n<0?'Wartung überfällig seit '+B.fmtD(wi.next):'nächste Wartung '+B.fmtD(wi.next)):'Wartung',ref:{k:'d',id:x.id},d:wi&&B.iso(wi.next)}];
+        (x.wartLog||[]).slice().sort((a,b)=>a.datum<b.datum?1:-1).slice(0,4).forEach(l=>items.push({title:'Wartung '+x.name,sub:B.fmtD(B.parse(l.datum))+(+l.kosten?' · '+B.eur(+l.kosten):''),ref:{k:'d',id:x.id}}));
+        add(w.firma,{role:'Wartung & Handwerk',tel:w.tel,items})}
+      if(x.haendler)add(x.haendler,{role:'Händler',items:[{title:x.name,sub:[x.kauf?'gekauft '+B.fmtD(B.parse(x.kauf)):'',+x.preis?B.eur(+x.preis):''].filter(Boolean).join(' · '),ref:{k:'d',id:x.id}}]})});
+    d.contracts.forEach(c=>add(c.anbieter,{role:c.kategorie||'Vertrag',items:[{title:c.kategorie||'Vertrag',sub:B.eur(B.monthly(c))+' pro Monat'+(c.status==='gekuendigt'?' · gekündigt':'')+(c.kundennr?' · Kd.-Nr. '+c.kundennr:''),ref:{k:'c',id:c.id}}]}));
+    return r},
+  /* Ausgaben eines Jahres: Anschaffungen, Wartungen, Verträge (anteilig nach Monaten) */
+  costs(y){const d=db(),r=[],Y=+y,now=new Date(),lastM=Y===now.getFullYear()?now.getMonth():11;
+    if(Y>now.getFullYear())return r;
+    d.devices.forEach(x=>{if(String(x.kauf||'').slice(0,4)===String(Y)&&+x.preis>0)r.push({d:x.kauf,title:x.name+(x.haendler?' – '+x.haendler:''),amount:+x.preis,cat:'Anschaffungen',tax:null,ref:{k:'d',id:x.id}});
+      (x.wartLog||[]).forEach(l=>{if(String(l.datum).slice(0,4)===String(Y)&&+l.kosten>0)r.push({d:l.datum,title:'Wartung '+x.name+(x.wartung&&x.wartung.firma?' – '+x.wartung.firma:''),amount:+l.kosten,cat:'Wartung & Handwerk',tax:'handwerk',ref:{k:'d',id:x.id}})})});
+    d.contracts.forEach(c=>{const m=B.monthly(c);if(!(m>0))return;const st=c.beginn?B.parse(c.beginn):null,en=c.status==='gekuendigt'&&c.ende?B.parse(c.ende):null;let k=0;
+      for(let i=0;i<=lastM;i++){const a=new Date(Y,i,1),b=new Date(Y,i+1,0);if(st&&b<st)continue;if(en&&a>en)continue;k++}
+      if(!k)return;const vers=/versicher/i.test(c.kategorie||'');
+      r.push({d:Y+'-'+String(lastM+1).padStart(2,'0')+'-01',title:c.anbieter+(c.kategorie?' – '+c.kategorie:''),amount:Math.round(m*k*100)/100,cat:vers?'Versicherungen':'Verträge & Abos',tax:vers?'vorsorge':null,sub:k+(k===1?' Monat':' Monate')+' × '+B.eur(m),ref:{k:'c',id:c.id}})});
+    return r},
+  /* Gerätepass: alles aus den Belegen zu einem Gerät aus dem Bereich Haus */
+  passInfo(ref){const d=db();if(!d)return null;const x=d.devices.find(v=>v.ext&&v.ext.ref===ref);if(!x)return null;const i=B.deviceInfo(x),wi=B.wartInfo(x);
+    return{k:'d',id:x.id,name:x.name,kauf:x.kauf?B.fmtD(i.kauf):'',preis:+x.preis?B.eur(+x.preis):'',haendler:x.haendler||'',hersteller:[x.hersteller,x.modell].filter(Boolean).join(' '),sn:x.sn||'',
+      schutz:i.best?{typ:i.best.typ,bis:B.fmtD(i.best.date),tage:B.days(i.best.date)}:null,beleg:x.nachweis!=='keiner',
+      wartung:wi?{next:B.fmtD(wi.next),n:wi.n,firma:x.wartung.firma||'',tel:x.wartung.tel||'',monate:x.wartung.monate}:null,
+      log:(x.wartLog||[]).slice().sort((a,b)=>a.datum<b.datum?1:-1).slice(0,3).map(l=>B.fmtD(B.parse(l.datum))+(+l.kosten?' · '+B.eur(+l.kosten):'')+(l.notiz?' · '+l.notiz:'')),
+      docs:(x.docs||[]).map(v=>v.name||'Dokument')}}
 };
 const AIC={smart:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>',gesund:'<path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/>'};
 const CHEV='<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';

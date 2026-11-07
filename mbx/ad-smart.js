@@ -5,7 +5,9 @@ const A=window.MBXA,S=window.__mbxS;if(!A||!S)return;
 const q=s=>document.querySelector(s);
 const click=attrs=>{const b=document.createElement('button');b.type='button';b.hidden=true;for(const [k,v] of Object.entries(attrs))b.setAttribute(k,v);document.body.appendChild(b);b.click();b.remove()};
 A.cfg={
-  lockBtn:'[data-box="lock"]',
+  lockBtn:'[data-box="lock"]',title:'Haus',brand:'header.hero .brand h1',header:'header.hero',nav:'.bottomnav',search:'[data-box="search"]',
+  overlay:()=>(typeof draft!=='undefined'&&!!draft)||(typeof fs!=='undefined'&&!!fs)||!q('#bxsheet').hidden||!q('#bxfan').hidden,
+  menuBtn:'[data-box="menu"]',menuTitle:'Haus · Extras',fan:'#bxfan .fi button',fanOrder:['Gerät','Routine','Raum'],tabRename:{'Haus':'Einrichtung'},
   locked:()=>document.body.classList.contains('bxlocked'),
   form:()=>q('#lockForm'),
   fill:pw=>{q('#pw').value=pw;q('#pw2').value=pw},
@@ -46,6 +48,14 @@ A.api={
   theme:v=>DS.setTheme(v),
   flush:()=>S.saving,
   refresh(){try{render()}catch(e){}},
+  belegNeu(id){const d=state.devices.find(x=>x.id===id);if(d)A.P.linkNew(bbLink(d).split('#neu=')[1])},
+  contacts(){return []},
+  costs(){return []},
+  passInfo(id){const d=state.devices.find(x=>x.id===id);if(!d)return null;let fl='',ci='';
+    try{if(state.floors&&state.floors.length>1&&typeof d.x==='number')fl=(state.floors.find(f=>f.id===floorOf(d))||{}).name||''}catch(e){}
+    try{ci=circLabel(circuitOf(d))||''}catch(e){}
+    let ln='';try{ln=(linkById(d.link)||{}).name||''}catch(e){}
+    return{name:d.name,room:d.room||'',floor:fl,app:(appById(d.app)||{}).name||'',type:(TYPES[d.type]||[])[0]||'',circuit:ci,conn:ln,ip:d.ip||'',note:d.note||''}},
   linkInfo(id){const d=state.devices.find(x=>x.id===id);if(!d)return null;
     return{title:d.name,sub:d.room||'ohne Raum',facts:[(appById(d.app)||{}).name,(TYPES[d.type]||[])[0]].filter(Boolean)}}
 };
@@ -53,9 +63,11 @@ const e_=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;',
 const BI='<span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span>';
 const CHEV='<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
 /* Im Gerät: Kaufbeleg und Garantie direkt aus dem Bereich Belege */
+const PI='<span class="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>';
+const passLink=d=>`<a class="bblink" href="#" data-mbx-do="pass" data-id="${e_(d.id)}">${PI}<span class="at"><b>Gerätepass</b><small>Alles zum Gerät auf einen Blick – auch per QR-Aufkleber</small></span>${CHEV}</a>`;
 A.bbHtml=d=>{if(!d||!state.devices.some(x=>x.id===d.id))return '';const api=A.P.api('beleg'),info=api&&api.linkInfo('mysmartbox:'+d.id);
-  if(info)return `<a class="bblink" href="#" data-mbx-go="${e_(JSON.stringify({app:'beleg',ref:{k:info.k,id:info.id}}))}">${BI}<span class="at"><b>Beleg &amp; Garantie</b><small>${e_(info.facts.join(' · '))}</small></span>${CHEV}</a>`;
-  return `<a class="bblink" href="#" data-mbx-do="beleg-neu" data-id="${e_(d.id)}">${BI}<span class="at"><b>Kaufbeleg anlegen</b><small>Kauf, Preis und Garantie im Bereich Belege</small></span>${CHEV}</a>`};
-A.act=(what,el)=>{if(what!=='beleg-neu')return;const d=state.devices.find(x=>x.id===el.dataset.id);if(!d)return;A.P.linkNew(bbLink(d).split('#neu=')[1])};
+  if(info)return `<a class="bblink" href="#" data-mbx-go="${e_(JSON.stringify({app:'beleg',ref:{k:info.k,id:info.id}}))}">${BI}<span class="at"><b>Beleg &amp; Garantie</b><small>${e_(info.facts.join(' · '))}</small></span>${CHEV}</a>`+passLink(d);
+  return `<a class="bblink" href="#" data-mbx-do="beleg-neu" data-id="${e_(d.id)}">${BI}<span class="at"><b>Kaufbeleg anlegen</b><small>Kauf, Preis und Garantie im Bereich Belege</small></span>${CHEV}</a>`+passLink(d)};
+A.act=(what,el)=>{if(what==='pass'){A.P.pass(el.dataset.id);return}if(what!=='beleg-neu')return;const d=state.devices.find(x=>x.id===el.dataset.id);if(!d)return;A.P.linkNew(bbLink(d).split('#neu=')[1])};
 A.start();
 })();

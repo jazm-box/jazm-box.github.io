@@ -6,7 +6,9 @@ const q=s=>document.querySelector(s);
 const hhmm=s=>{const d=new Date(s);return isNaN(d)?'':d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})};
 const act=(a,id)=>{const b=document.createElement('button');b.dataset.act=a;if(id!=null)b.dataset.id=id;onAct({target:b})};
 A.cfg={
-  lockBtn:'#lockNow',
+  lockBtn:'#lockNow',title:'Gesundheit',brand:'header .brand h1',header:'header',nav:'nav[aria-label="Bereiche"]',search:'#searchBtn',
+  overlay:()=>sheetOpen()||!q('#viewer').hidden||!q('#fan').hidden||SEARCH!==null,
+  menuBtn:'#menuBtn',menuTitle:'Gesundheit · Extras',fan:'#fan .fi button',fanOrder:['Termin','Messung','Medikament','Dokument fotografieren','Arzt','Vorsorge'],fanLabel:{'Dokument fotografieren':'Dokument'},
   locked:()=>!q('#lock').hidden||!KEY,
   form:()=>q('#lockForm'),
   fill:pw=>{q('#pw').value=pw;q('#pw2').value=pw},
@@ -72,6 +74,27 @@ A.api={
   theme:v=>DS.setTheme(v),
   flush:async()=>{try{await stashDraft()}catch(e){}await saving},
   refresh(){try{render(true)}catch(e){}},
+  /* Adressbuch: Ärzte und Optiker mit allem, was dazugehört */
+  contacts(){const r=[],now=Date.now()-2*3600e3;
+    D.aerzte.forEach(a=>{const ts=D.termine.filter(t=>t.arztId===a.id).sort((x,y)=>x.datum.localeCompare(y.datum));
+      const up=ts.filter(t=>new Date(t.datum)>=now),past=ts.filter(t=>new Date(t.datum)<now).reverse();
+      const items=[...up.slice(0,3).map(t=>({title:t.titel,sub:'Termin '+fmtDT(t.datum),ref:{a:'t-edit',id:t.id},d:t.datum.slice(0,10)})),
+        ...past.slice(0,2).map(t=>({title:t.titel,sub:'zuletzt '+fmtD(t.datum.slice(0,10))+(+t.kosten?' · '+fmtNum(+t.kosten,2)+' €':''),ref:{a:'t-edit',id:t.id}})),
+        ...D.vorsorge.filter(v=>v.arztId===a.id).map(v=>({title:v.name,sub:'Vorsorge · '+vStatus(v).txt,ref:{a:'v-edit',id:v.id}})),
+        ...D.medis.filter(m=>m.arztId===a.id&&m.aktiv!==false).map(m=>({title:m.name,sub:'Medikament · verschrieben',ref:{a:'goto-medis',id:m.id}}))];
+      r.push({name:a.name,role:a.fach||'Arzt',tel:a.tel,addr:a.adresse,web:a.web,note:a.zeiten?'Sprechzeiten: '+a.zeiten:'',ref:{a:'a-edit',id:a.id},items})});
+    const by={};D.sehhilfen.filter(x=>String(x.haendler||'').trim()).forEach(x=>{const k=x.haendler.trim();(by[k]=by[k]||[]).push(x)});
+    for(const [k,L] of Object.entries(by))r.push({name:k,role:'Optiker',items:L.map(x=>({title:hilfeTitel(x),sub:(x.art==='brille'?'Brille':'Kontaktlinsen')+(x.gekauft?' · gekauft '+fmtD(x.gekauft):'')+(+x.preis?' · '+fmtNum(+x.preis,2)+' €':''),ref:{a:'seh',id:x.id}}))});
+    return r},
+  /* Ausgaben eines Jahres (für Jahresübersicht und Steuer) */
+  costs(y){const Y=String(y),r=[];const n=v=>{const x=typeof v==='number'?v:dnum(v);return x>0?x:0};
+    D.termine.forEach(t=>{if(String(t.datum).slice(0,4)===Y&&n(t.kosten)){const a=arzt(t.arztId);r.push({d:t.datum.slice(0,10),title:t.titel+(a?' – '+a.name:''),amount:n(t.kosten),cat:'Arzt & Behandlung',tax:'krankheit',ref:{a:'t-edit',id:t.id}})}});
+    D.medis.forEach(m=>(m.packLog||[]).forEach(p=>{if(String(p.datum).slice(0,4)===Y&&n(p.zz))r.push({d:p.datum,title:m.name+' – Zuzahlung',amount:n(p.zz),cat:'Medikamente',tax:'krankheit',ref:{a:'goto-medis',id:m.id}})}));
+    D.sehhilfen.forEach(x=>{if(String(x.gekauft||'').slice(0,4)===Y&&n(x.preis))r.push({d:x.gekauft,title:hilfeTitel(x)+(x.haendler?' – '+x.haendler:''),amount:n(x.preis),cat:'Brille & Kontaktlinsen',tax:'krankheit',ref:{a:'seh',id:x.id}})});
+    return r},
+  /* Aus anderen Apps geteilt: wie in der MyGesundBox (Dokument, Termin aus Text, .ics, .csv, Samsung Health) */
+  async share(files,title,text){try{closeSheet()}catch(e){}const fs=[];for(const f of files)fs.push({name:f.name||'',type:f.type||'',buf:await f.arrayBuffer()});
+    await idb.put('share',{at:Date.now(),title:title||'',text:text||'',url:'',files:fs});await handleShare()},
   linkInfo(id){const x=D.sehhilfen.find(y=>y.id===id);if(!x)return null;
     return{title:hilfeTitel(x),sub:x.art==='brille'?'Brille':'Kontaktlinsen',facts:[HSTATUS[x.status],x.gekauft?'gekauft '+fmtD(x.gekauft):'',x.haendler].filter(Boolean)}}
 };

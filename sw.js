@@ -1,6 +1,6 @@
 // MyBox Service Worker – Netzwerk zuerst, offline aus dem Cache. Gilt für MyBox und alle drei Bereiche.
 // Bei eingeschalteten Erinnerungen liegt zusätzlich eine Liste von Daten ohne Namen, Ärzte oder Beträge im Cache „sched-mybox“.
-const CACHE = 'mybox-0.3.4', SCHED = 'sched-mybox';
+const CACHE = 'mybox-0.5.0', SCHED = 'sched-mybox';
 const ASSETS = ["./",
   "./beleg/app.js",
   "./beleg/boxen/belegbox.png",
@@ -75,6 +75,24 @@ self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith('mybox-') && k !== CACHE).map(k => caches.delete(k)))));
   self.clients.claim();
 });
+// Teilen aus anderen Apps: Dateien kurz ins Eingangsfach (bis MyBox entsperrt ist und du den Bereich wählst)
+const INBOX = 'share-mybox';
+self.addEventListener('fetch', e => {
+  const req = e.request, url = new URL(req.url);
+  if (req.method !== 'POST' || url.origin !== location.origin || !url.searchParams.has('teilen')) return;
+  e.respondWith((async () => {
+    try {
+      const c = await caches.open(INBOX), fd = await req.formData(), id = () => Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+      for (const f of fd.getAll('files')) {
+        if (!f || typeof f === 'string' || !f.size || f.size > 50e6) continue;
+        await c.put(new Request('./__share/' + id()), new Response(f, { headers: { 'content-type': f.type || 'application/octet-stream', 'x-name': encodeURIComponent(f.name || 'Datei') } }));
+      }
+      const meta = { at: Date.now(), title: String(fd.get('title') || ''), text: String(fd.get('text') || ''), url: String(fd.get('url') || '') };
+      if (meta.title || meta.text || meta.url) await c.put(new Request('./__share/meta-' + id()), new Response(JSON.stringify(meta), { headers: { 'content-type': 'application/x-mybox-share' } }));
+    } catch (x) {}
+    return Response.redirect(new URL('./?geteilt=1', self.registration.scope).href, 303);
+  })());
+});
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
@@ -95,19 +113,21 @@ self.addEventListener('periodicsync', e => { if (e.tag === 'mybox-erinnerung') e
 function dayIso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 function diffDays(s, today) { const p = s.split('-').map(Number); return Math.round((new Date(p[0], p[1] - 1, p[2]) - today) / 864e5); }
 const when = n => n === 0 ? 'heute' : n === 1 ? 'morgen' : 'in ' + n + ' Tagen';
-function line(x) {
-  const w = when(x.n);
-  switch (x.t) {
-    case 'g.t': return 'Ein Arzttermin ist ' + w + '.';
-    case 'g.v': return 'Eine Vorsorge ist ' + w + ' fällig.';
-    case 'g.u': return 'Ein Dokument läuft ' + w + ' ab.';
-    case 'g.w': return 'Kontaktlinsen wechseln: ' + w + '.';
-    case 'g.n': return x.n === 0 ? 'Der Kontaktlinsen-Vorrat ist aufgebraucht.' : 'Der Kontaktlinsen-Vorrat reicht noch ' + x.n + (x.n === 1 ? ' Tag.' : ' Tage.');
-    case 'b.k': return 'Eine Kündigungsfrist endet ' + w + '.';
-    case 'b.g': return 'Eine Garantie läuft ' + w + ' ab.';
-    case 'b.p': return 'Ein Preis ändert sich ' + w + '.';
-    default: return 'Etwas ist ' + w + ' fällig.';
-  }
+/* Tageszusammenfassung: eine Meldung am Tag, nach Art gruppiert – ohne Namen, Ärzte oder Beträge */
+const KIND = {
+  'g.t': ['Arzttermin', 'Arzttermine'], 'g.v': ['Vorsorge fällig', 'Vorsorgen fällig'], 'g.u': ['Dokument läuft ab', 'Dokumente laufen ab'],
+  'g.w': ['Kontaktlinsen wechseln', 'Kontaktlinsen wechseln'], 'g.n': ['Kontaktlinsen nachbestellen', 'Kontaktlinsen nachbestellen'], 'g.m': ['Rezept besorgen', 'Rezepte besorgen'],
+  'b.k': ['Kündigungsfrist', 'Kündigungsfristen'], 'b.g': ['Garantie endet', 'Garantien enden'], 'b.p': ['Preisänderung', 'Preisänderungen'], 'b.w': ['Wartung fällig', 'Wartungen fällig']
+};
+function part(t, L) {
+  const k = KIND[t] || ['Erinnerung', 'Erinnerungen'], n = L[0].n;
+  if (t === 'g.m') return (L.length === 1 ? 'Ein Medikament' : L.length + ' Medikamente') + (n === 0 ? ' aufgebraucht' : ' reicht' + (L.length === 1 ? '' : ' teils') + ' nur noch ' + n + (n === 1 ? ' Tag' : ' Tage')) + ' – Rezept besorgen';
+  if (t === 'g.n') return n === 0 ? 'Kontaktlinsen-Vorrat aufgebraucht' : 'Kontaktlinsen-Vorrat reicht noch ' + n + (n === 1 ? ' Tag' : ' Tage');
+  return (L.length === 1 ? k[0] : L.length + ' × ' + k[1]) + ' ' + (L.length === 1 ? when(n) : '– als Nächstes ' + when(n));
+}
+function digest(soon) {
+  const by = {}; soon.forEach(x => (by[x.t] = by[x.t] || []).push(x));
+  return Object.entries(by).sort((a, b) => a[1][0].n - b[1][0].n).map(([t, L]) => part(t, L));
 }
 async function remind(force) {
   const c = await caches.open(SCHED), r = await c.match('./__sched');
@@ -118,10 +138,12 @@ async function remind(force) {
   const soon = items.map(x => ({ t: x.t, n: diffDays(x.d, today), l: +x.l || 14 })).filter(x => x.n >= 0 && x.n <= x.l).sort((a, b) => a.n - b.n);
   if (!soon.length) { old.forEach(n => n.close()); await c.delete('./__last'); return; }
   const last = await c.match('./__last').then(x => x && x.json()).catch(() => null);
-  const key = dayIso(today) + '|' + soon.length + '|' + soon[0].t + soon[0].n;
+  const key = dayIso(today) + '|' + soon.map(x => x.t + x.n).join(',');
   if (!force && last && last.key === key) return;
-  const body = soon.length === 1 ? line(soon[0]) : soon.length + ' Erinnerungen – als Nächstes: ' + line(soon[0]);
-  await self.registration.showNotification('MyBox', { body, tag: 'mybox-erinnerung', renotify: true, icon: 'icons/mybox-192.png', badge: 'icons/mybox-badge-v2-96.png', data: { url: './' } });
+  const lines = digest(soon), heute = soon.filter(x => x.n === 0).length;
+  const title = heute ? 'MyBox · heute ' + (heute === 1 ? '1 Sache' : heute + ' Sachen') : 'MyBox · ' + (soon.length === 1 ? '1 Erinnerung' : soon.length + ' Erinnerungen');
+  const body = lines.length === 1 ? lines[0] : lines.map(l => '• ' + l).join('\n');
+  await self.registration.showNotification(title, { body, tag: 'mybox-erinnerung', renotify: true, icon: 'icons/mybox-192.png', badge: 'icons/mybox-badge-v2-96.png', data: { url: './' } });
   await c.put('./__last', new Response(JSON.stringify({ key })));
 }
 self.addEventListener('notificationclick', e => {

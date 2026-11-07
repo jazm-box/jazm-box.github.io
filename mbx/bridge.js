@@ -2,6 +2,7 @@
    Entsperrt den Bereich mit dem MyBox-Passwort, meldet Aktivität für die Auto-Sperre,
    öffnet Links zu den anderen Boxen innerhalb von MyBox und stellt Daten fürs Dashboard bereit. */
 'use strict';
+window.MBX_EMBED=true; /* schaltet in den Apps den MyBox-Modus ein */
 (function(){
   const P=(()=>{try{return window.parent!==window&&window.parent.MBX?window.parent.MBX:null}catch(e){return null}})();
   if(!P){location.replace('../');return}
@@ -23,12 +24,35 @@
   addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-mbx-go],[data-mbx-do]');if(!g)return;
     e.preventDefault();e.stopImmediatePropagation();
     try{if(g.dataset.mbxGo){const o=JSON.parse(g.dataset.mbxGo);P.go(o.app,o.ref)}else A.act&&A.act(g.dataset.mbxDo,g)}catch(x){}},true);
-  /* Knopf „Sperren“ oben wird zum Knopf „Übersicht“ (zurück zum MyBox-Dashboard) */
-  const HOME='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>';
+  /* Knopf „Sperren“ bzw. „Übersicht“ oben brauchen wir nicht mehr – unten gibt es die MyBox-Leiste */
   function homeBtn(){const sel=A.cfg&&A.cfg.lockBtn;if(!sel)return;const b=document.querySelector(sel);if(!b||b.dataset.mbx)return;
-    b.dataset.mbx='1';b.innerHTML=HOME;b.setAttribute('aria-label','Zur MyBox-Übersicht');b.title='Zur MyBox-Übersicht'}
+    b.dataset.mbx='1';b.classList.add('mbx-gone');b.setAttribute('aria-hidden','true');b.tabIndex=-1}
   addEventListener('click',e=>{const sel=A.cfg&&A.cfg.lockBtn;if(!sel)return;const b=e.target.closest&&e.target.closest(sel);if(!b)return;
     e.preventDefault();e.stopImmediatePropagation();P.home()},true);
+  /* Suche oben im Bereich öffnet die gemeinsame MyBox-Suche */
+  addEventListener('click',e=>{const sel=A.cfg&&A.cfg.search;if(!sel)return;const b=e.target.closest&&e.target.closest(sel);if(!b)return;
+    e.preventDefault();e.stopImmediatePropagation();try{P.search()}catch(x){}},true);
+  /* Einheitliches Aussehen: Bereichsname statt App-Name, Reiter oben statt unten, Menü-Titel */
+  function decorate(){const c=A.cfg;if(!c)return;
+    if(c.brand){const h=document.querySelector(c.brand);if(h&&h.textContent!==c.title)h.textContent=c.title}
+    if(c.nav&&c.header){const n=document.querySelector(c.nav),h=document.querySelector(c.header);
+      if(n&&h&&n.parentElement!==h){h.appendChild(n);h.classList.add('mbx-hd');n.classList.add('mbx-tt');(n.querySelector(':scope > .in')||n).classList.add('mbx-tt-row')}}
+    if(c.tabRename&&c.nav){const n=document.querySelector(c.nav);if(n)n.querySelectorAll('button').forEach(b=>{for(const t of b.childNodes)if(t.nodeType===3&&c.tabRename[t.textContent.trim()])t.textContent=c.tabRename[t.textContent.trim()]})}
+    if(c.menuTitle){document.querySelectorAll('h2').forEach(x=>{if(x.textContent.trim()==='Daten & Sicherheit')x.textContent=c.menuTitle});
+      if(c.menuBtn){const m=document.querySelector(c.menuBtn);if(m&&m.getAttribute('aria-label')!==c.menuTitle){m.setAttribute('aria-label',c.menuTitle);m.title=c.menuTitle}}}}
+  /* Neu anlegen über den Plus-Knopf von MyBox: die Aktionen des Bereichs (aus seinem eigenen Plus-Menü) */
+  const fanBtns=()=>{const c=A.cfg;if(!c||!c.fan)return [];const L=[...document.querySelectorAll(c.fan)];
+    if(c.fanOrder)L.sort((a,b)=>{const i=x=>{const k=c.fanOrder.indexOf(x.textContent.trim());return k<0?99:k};return i(a)-i(b)});return L};
+  const addApi=()=>{const api=A.api;if(!api||api.newItems)return;
+    api.newItems=()=>fanBtns().map((b,i)=>({k:i,label:(A.cfg.fanLabel&&A.cfg.fanLabel[b.textContent.trim()])||b.textContent.trim(),svg:(b.querySelector('svg')||{}).outerHTML||''}));
+    api.doNew=k=>{const b=fanBtns()[k];if(b)b.click()};
+    /* Zurück-Taste: zuerst offene Fenster und Blätter des Bereichs schließen */
+    api.back=()=>{const d=[...document.querySelectorAll('dialog[open]')].pop();if(d){try{d.close()}catch(e){}return true}
+      let open=false;try{open=!!(A.cfg.overlay&&A.cfg.overlay())}catch(e){}
+      if(!open){const n=A.cfg.nav&&document.querySelector(A.cfg.nav),bs=n?[...n.querySelectorAll('button')]:[],sel=bs.findIndex(x=>x.matches('[aria-selected="true"],.on,[aria-current="page"],.active,.sel'));
+        if(sel>0){bs[0].click();scrollTo(0,0);return true}return false}
+      const ev=new KeyboardEvent('keydown',{key:'Escape',code:'Escape',keyCode:27,bubbles:true,cancelable:true});(document.activeElement||document).dispatchEvent(ev);return true};
+    api.home=()=>{const c=A.cfg,n=c.nav&&document.querySelector(c.nav),t=n&&n.querySelector('button');if(t)t.click();scrollTo({top:0,behavior:'smooth'})}};
 
   /* Datei-Ausgabe abfangen, wenn MyBox eine gemeinsame Sicherung baut */
   A.capture=async fn=>{let out=null;window.MBX_CAP=(name,data)=>{out={name,data}};try{await fn()}finally{window.MBX_CAP=null}
@@ -47,7 +71,7 @@
       A.waitOld=false;return 'ok'}
     finally{A.busy=false}};
   async function tick(){
-    homeBtn();
+    homeBtn();decorate();addApi();
     if(A.busy||!A.cfg||!P.unlocked())return;
     if(!A.cfg.locked()){if(!A.ready){A.ready=true;try{P.reg(APP,A.api)}catch(e){}}return}
     if(A.ready){A.ready=false;try{P.unreg(APP)}catch(e){}}
@@ -57,6 +81,6 @@
     try{r=await A.submit(P.pw())}finally{A.busy=false}
     if(r==='wrong'){A.waitOld=true;P.needOld(APP,A.migrate)}
     else if(r!=='ok'&&r!=='noform')P.areaErr(APP,r)}
-  A.start=()=>{setInterval(tick,300);tick()};
+  A.start=()=>{setInterval(tick,120);tick()};
   A.retry=()=>{A.waitOld=false};
 })();

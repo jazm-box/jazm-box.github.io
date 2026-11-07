@@ -520,7 +520,7 @@ function openEditor(id){
 const BB_BASE = "https://jazm-belegbox.github.io/";
 const b64url = t => btoa(String.fromCharCode(...new TextEncoder().encode(t))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 function bbLink(d){
-  const here = "https://jazm-smartbox.github.io/";
+  const here = window.MBX_EMBED ? "https://jazm-smartbox.github.io/" : location.origin + location.pathname.replace(/index\.html$/, "");
   const p = {k: "d", ref: "mysmartbox:" + d.id, url: here + "?ref=" + encodeURIComponent(d.id), what: "Raum, Grundriss und Bedienung", name: d.name || "", raum: d.room || "", kategorie: "Technik"};
   return BB_BASE + "#neu=" + b64url(JSON.stringify(p));
 }
@@ -1544,7 +1544,7 @@ async function uploadPlan(file){
 
 
 /* ================= Spielereien ================= */
-const APP_LINK = "https://jazm-smartbox.github.io/";
+const APP_LINK = window.MBX_EMBED ? "https://jazm-box.github.io/" : "https://jazm-smartbox.github.io/";
 function buzz(p){ if (!fx.haptic || !navigator.vibrate) return; try { navigator.vibrate(p); } catch(_){} }
 
 /* --- Datenpuls über die Leiterbahnen --- */

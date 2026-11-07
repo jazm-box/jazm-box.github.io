@@ -288,6 +288,59 @@ svg.ln{width:100%;height:auto;display:block;overflow:visible}
 .cd i{display:flex;gap:2px;justify-content:center;min-height:9px}
 .calw{margin-bottom:10px}
 .ctip{position:fixed;z-index:150;max-width:min(300px,calc(100vw - 16px));background:var(--ink);color:var(--bg);padding:8px 11px;border-radius:10px;font-size:13px;line-height:1.4;white-space:pre-line;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+/* Leiste unten: Übersicht · Haus · Neu · Gesundheit · Belege */
+#nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:0 max(6px,env(safe-area-inset-left,0px)) env(safe-area-inset-bottom,0px)}
+#nav .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;height:64px}
+#nav .nb{all:unset;box-sizing:border-box;cursor:pointer;display:grid;justify-items:center;gap:3px;padding:6px 2px;font-size:11.5px;font-weight:600;color:var(--muted);-webkit-tap-highlight-color:transparent;position:relative}
+#nav .nb .pi{display:grid;place-items:center;width:52px;height:30px;border-radius:999px;transition:background .18s}
+#nav .nb img{width:22px;height:22px;border-radius:6px;opacity:.85;transition:opacity .18s,transform .18s}
+#nav .nb svg{width:22px;height:22px}
+#nav .nb[aria-current="page"]{color:var(--ink)}
+#nav .nb[aria-current="page"] .pi{background:color-mix(in srgb,var(--ac,var(--accent)) 15%,transparent)}
+#nav .nb[aria-current="page"] img{opacity:1;transform:scale(1.06)}
+#nav .nb .lk{position:absolute;top:4px;right:calc(50% - 22px);width:15px;height:15px;border-radius:50%;background:var(--surface);color:var(--muted);display:grid;place-items:center;box-shadow:0 0 0 1px var(--line)}
+#nav .nb .lk svg{width:10px;height:10px}
+#nav .plus{all:unset;box-sizing:border-box;cursor:pointer;justify-self:center;width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 35%,transparent);transition:transform .15s}
+#nav .plus:active{transform:scale(.94)}#nav .plus svg{width:26px;height:26px}
+#nav .nb:focus-visible,#nav .plus:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:12px}
+body.navon main{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 96px)}
+body.navon #areas{bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+body.navon #toast{bottom:calc(env(safe-area-inset-bottom,0px) + 82px)}
+/* Adressbuch, Jahresübersicht, Gerätepass */
+.sback{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:var(--accent);margin:0 0 10px}.sback svg{width:16px;height:16px;transform:rotate(180deg)}
+.avt{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px;background:color-mix(in srgb,var(--ac) 14%,var(--surface));color:var(--ac);flex:none}
+.avt.big{width:64px;height:64px;font-size:22px}
+.ctrow{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;width:100%}
+.ctrow+.ctrow{border-top:1px solid var(--line)}
+.ctrow .rt b{font-size:15.5px}.ctrow .rt small{white-space:normal}
+.ctcall{all:unset;cursor:pointer;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--sunk);color:var(--ink)}.ctcall svg{width:19px;height:19px}
+.cthd{display:grid;justify-items:center;gap:6px;text-align:center;margin:4px 0 14px}.cthd h3{margin:4px 0 0;font-size:21px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.chips span{font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--sunk);color:var(--ink);display:inline-flex;gap:5px;align-items:center}
+.ctacts{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:8px;margin:0 0 14px}
+.ctacts a,.ctacts button{all:unset;box-sizing:border-box;cursor:pointer;display:grid;justify-items:center;gap:4px;padding:10px 4px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:12.5px;font-weight:700;color:var(--ink);text-align:center}
+.ctacts svg{width:20px;height:20px;color:var(--accent)}
+.ctnote{font-size:14px;color:var(--muted);background:var(--sunk);border-radius:12px;padding:10px 12px;margin:0 0 12px;white-space:pre-line}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px 14px;font-size:14.5px;margin:0}
+.kv dt{color:var(--muted)}.kv dd{margin:0;font-weight:600;text-align:right;overflow-wrap:anywhere}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px 14px 14px;margin:0 0 12px}
+.pcard h4{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--ac,var(--muted))}
+.pcard h4 img{width:20px;height:20px;border-radius:6px}
+.phd{display:flex;gap:12px;align-items:center;margin:0 0 14px}.phd img{width:52px;height:52px;border-radius:14px}.phd b{display:block;font-size:20px;line-height:1.2}.phd small{color:var(--muted);font-size:14px}
+.ytot{font-size:34px;font-weight:800;letter-spacing:-.02em;margin:2px 0 0;font-variant-numeric:tabular-nums}
+.ysub{color:var(--muted);font-size:14px;margin:0 0 12px}
+.yrow{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;width:100%;font-size:14px}
+.yrow+.yrow{border-top:1px solid var(--line)}.yrow small{display:block;color:var(--muted);font-size:12.5px}.yrow b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.taxsum{font-variant-numeric:tabular-nums;font-weight:800}
+/* Neu-Blatt: alle Aktionen aus allen Bereichen */
+.nwgrp{margin:0 0 14px}
+.nwh{display:flex;align-items:center;gap:8px;margin:0 2px 8px;font-size:13px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--ac)}
+.nwh img{width:20px;height:20px;border-radius:6px}
+.nwh small{margin-left:auto;font-size:12px;letter-spacing:0;text-transform:none;color:var(--muted);font-weight:600;display:inline-flex;gap:4px;align-items:center}.nwh small svg{width:13px;height:13px}
+.nwg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.nwb{all:unset;box-sizing:border-box;cursor:pointer;display:grid;justify-items:center;align-content:center;gap:6px;min-height:78px;padding:10px 6px;border-radius:16px;background:var(--surface);border:1px solid var(--line);text-align:center;font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.2}
+.nwb span.ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:color-mix(in srgb,var(--ac) 13%,var(--surface));color:var(--ac)}
+.nwb svg{width:20px;height:20px}
+.nwb:active{transform:scale(.97)}.nwb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (min-width:700px){.areas{grid-template-columns:1fr}.charts{grid-template-columns:1fr 1fr}}
 @media (prefers-reduced-motion:reduce){#spanel,#sheet .sbg{transition:none}.aload img{animation:none}}
 </style>
@@ -320,6 +373,7 @@ svg.ln{width:100%;height:auto;display:block;overflow:visible}
 <div id="app" hidden>
   <header class="hd">
     <img src="icons/mybox-192.png" alt="" width="36" height="36"><h1>MyBox</h1>
+    <button class="icobtn" id="ctBtn" type="button" aria-label="Kontakte" title="Kontakte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-1a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v1"/><circle cx="10" cy="7" r="4"/><path d="M21 21v-1a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></button>
     <button class="icobtn" id="searchBtn" type="button" aria-label="Suchen" title="Suchen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
     <button class="icobtn" id="lockBtn" type="button" aria-label="Sperren" title="Sperren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
     <button class="icobtn" id="menuBtn" type="button" aria-label="Daten &amp; Sicherheit" title="Daten &amp; Sicherheit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
@@ -327,6 +381,13 @@ svg.ln{width:100%;height:auto;display:block;overflow:visible}
   <main id="dash"></main>
 </div>
 <div id="areas" class="off"></div>
+<nav id="nav" aria-label="MyBox" hidden><div class="in">
+  <button type="button" class="nb" data-nav="" aria-current="page"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-4-2.25L4 16.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span>Übersicht</button>
+  <button type="button" class="nb" data-nav="smart" style="--ac:var(--c-smart)"><span class="pi"><img src="boxen/smartbox.png" alt=""></span>Haus</button>
+  <button type="button" class="plus" id="newBtn" aria-label="Neu anlegen" title="Neu anlegen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button type="button" class="nb" data-nav="gesund" style="--ac:var(--c-gesund)"><span class="pi"><img src="boxen/gesundbox.png" alt=""></span>Gesundheit</button>
+  <button type="button" class="nb" data-nav="beleg" style="--ac:var(--c-beleg)"><span class="pi"><img src="boxen/belegbox.png" alt=""></span>Belege</button>
+</div></nav>
 <div id="sheet" hidden><div class="sbg"></div><div id="spanel" role="dialog" aria-modal="true" aria-labelledby="sheetH"><div class="ds-grab"></div>
   <div class="shd"><h2 id="sheetH">Daten &amp; Sicherheit</h2><button type="button" class="ds-x" id="sheetX" aria-label="Schließen">✕</button></div>
   <div id="sheetBody"></div></div></div>
@@ -336,7 +397,7 @@ svg.ln{width:100%;height:auto;display:block;overflow:visible}
 
 <script>
 'use strict';
-const APP_VERSION='0.3.4';
+const APP_VERSION='0.5.0';
 /* ---------- Bereiche ---------- */
 const AREAS=[
   {id:'smart',name:'Haus',app:'MySmartBox',path:'smart/',img:'boxen/smartbox.png',dir:'smartbox',host:'jazm-smartbox.github.io',def:{owner:'jazm-smartbox',repo:'smartbox-daten'}},
@@ -389,7 +450,16 @@ async function loadVault(){const a=lsGet(VKEY);let b=null;try{b=await idb.get('v
 async function writeVault(json){let ok=false;try{await idb.put('vault',json);ok=true}catch{}if(lsSet(VKEY,json))ok=true;if(!ok)throw new Error('store');vaultJson=json}
 let saving=Promise.resolve();
 function saveCfg(){if(!KEY||!CFG)return saving;const k=KEY,s=SALT,c=JSON.parse(JSON.stringify(CFG));
-  saving=saving.then(async()=>writeVault(JSON.stringify(await seal(c,k,s)))).catch(()=>toast('Speichern fehlgeschlagen.'));return saving}
+  saving=saving.then(async()=>writeVault(JSON.stringify(await seal(c,k,s)))).catch(()=>toast('Speichern fehlgeschlagen.'));shellGhQueue();return saving}
+/* Einstellungen und Adressbuch von MyBox ebenfalls verschlüsselt ins GitHub-Repo (Ordner mybox) */
+let shGhT=0,SHGH={err:'',at:0};
+function shellGhQueue(ms){clearTimeout(shGhT);if(!CFG||!CFG.gh)return;shGhT=setTimeout(()=>shellGhPush().catch(()=>{}),ms??4000)}
+async function shellGhPush(){const g=CFG&&CFG.gh;if(!g||!vaultJson)return;await saving;const path=`/repos/${encodeURIComponent(g.owner)}/${encodeURIComponent(g.repo)}/contents/mybox/einstellungen.json`;
+  try{const old=await gh(path,{allow404:true},g.token);await gh(path,{method:'PUT',body:JSON.stringify({message:'MyBox: Einstellungen & Kontakte',content:b64(te.encode(vaultJson)),...(old&&old.sha?{sha:old.sha}:{})})},g.token);SHGH={err:'',at:Date.now()}}
+  catch(x){SHGH={err:x.message||'Fehler',at:SHGH.at}}}
+async function shellGhPull(){const g=CFG&&CFG.gh;if(!g)return 'none';const j=await gh(`/repos/${encodeURIComponent(g.owner)}/${encodeURIComponent(g.repo)}/contents/mybox/einstellungen.json`,{allow404:true},g.token);if(!j||!j.content)return 'none';
+  const p=JSON.parse(td.decode(unb64(j.content.replace(/\s/g,''))));let c;try{c=await unseal(p,await derive(PW,unb64(p.salt)))}catch{return 'pw'}
+  CFG.contacts=Object.assign({},c.contacts||{},CFG.contacts||{});if(c.gLock)CFG.gLock=true;await saveCfg();return 'ok'}
 const defCfg=()=>({v:1,gh:null,upd:null,remind:{on:false,lead:14,bg:false},created:today()});
 
 /* ---------- Fingerabdruck: Passkey mit PRF (Google Passwortmanager), schützt das MyBox-Passwort ---------- */
@@ -413,10 +483,10 @@ async function bioGetPassword(){const b=JSON.parse(lsGet(BKEY));const k=await pr
   try{return td.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(b.iv)},k,unb64(b.ct)))}catch{throw new Error('nopw')}}
 
 /* ---------- Sperrbildschirm ---------- */
-let UNLOCKED=false,bioBusy=false;
+let UNLOCKED=false,bioBusy=false,preT=0;
 function showLock(auto){
   const has=!!vaultJson;
-  $('#app').hidden=true;$('#areas').innerHTML='';$('#areas').classList.add('off');closeSheet(true);try{$('#dlg').open&&$('#dlg').close()}catch{}
+  $('#app').hidden=true;navShow(false);$('#areas').innerHTML='';for(const k in FR)delete FR[k];clearTimeout(preT);preT=setTimeout(()=>{if(!UNLOCKED&&!$('#areas').children.length)startAreas()},700);$('#areas').classList.add('off');closeSheet(true);try{$('#dlg').open&&$('#dlg').close()}catch{}
   $('#lock').hidden=false;$('#lver').textContent='Version '+APP_VERSION;
   $('#pw2').hidden=has;$('#pw2').required=!has;$('#pw').value='';$('#pw2').value='';$('#lockErr').textContent='';
   $('#pw').autocomplete=has?'current-password':'new-password';
@@ -429,10 +499,10 @@ function showLock(auto){
 async function unlockWith(pw){
   const p=JSON.parse(vaultJson),salt=unb64(p.salt),k=await derive(pw,salt),c=await unseal(p,k);
   KEY=k;SALT=salt;PW=pw;CFG=Object.assign(defCfg(),c);UNLOCKED=true;lastAct=Date.now();
-  cubeOpen(()=>{if(!UNLOCKED)return;$('#lock').hidden=true;$('#app').hidden=false;renderDash();
+  cubeOpen(()=>{if(!UNLOCKED)return;$('#lock').hidden=true;$('#app').hidden=false;navShow(true);renderDash();
     try{$('#app').animate([{opacity:0,transform:'scale(.97)'},{opacity:1,transform:'none'}],{duration:360,easing:'cubic-bezier(.2,.85,.25,1)'})}catch{}});
   try{navigator.storage?.persist?.()}catch{}
-  startAreas();
+  startT=Date.now();clearTimeout(preT);if(!FR.smart||!$('#areas').contains(FR.smart))startAreas();setTimeout(runPass,8500);
 }
 $('#lockForm').onsubmit=async e=>{e.preventDefault();
   const pw=$('#pw').value,btn=$('#lockGo'),has=!!vaultJson;$('#lockErr').textContent='';
@@ -497,7 +567,7 @@ const API={},FR={},NEED=[],OLDQ=new Map();let curArea=null,dashT=0;
 window.MBX={
   unlocked:()=>UNLOCKED,
   pw:()=>UNLOCKED?PW:null,
-  reg(app,api){API[app]=api;OLDQ.delete(app);syncArea(app);updLoad();schedDash(80);setTimeout(runGo,300)},
+  reg(app,api){API[app]=api;OLDQ.delete(app);syncArea(app);updLoad();schedDash(80);setTimeout(runGo,300);setTimeout(runPass,400);if(API.beleg&&API.gesund)setTimeout(runShare,500)},
   unreg(app){delete API[app];updLoad();schedDash(80)},
   needOld(app,fn){OLDQ.set(app,fn);updLoad();schedDash(80);nextOld()},
   areaErr(app,msg){toast(AR(app).name+': '+String(msg).replace(/^err:/,''))},
@@ -530,10 +600,10 @@ function sameGh(api,g){try{const c=api.ghCur();
   return !!c&&c.owner===g.owner&&c.repo===g.repo&&c.token===g.token&&(c.dir||'')===(g.dir||'')}catch(e){return false}}
 function openArea(id){if(!UNLOCKED)return;if(curArea==='gesund'&&id!=='gesund')gLeft=Date.now();closeSheet(true);const box=$('#areas');try{API[id]&&API[id].refresh&&API[id].refresh()}catch(e){}
   for(const f of Object.values(FR))f.classList.toggle('on',f.dataset.area===id);
-  box.classList.remove('off');curArea=id;if(history.state?.mbx!=='area')history.pushState({mbx:'area'},'');updLoad();buzz(6);
+  box.classList.remove('off');curArea=id;if(history.state?.mbx!=='area')history.pushState({mbx:'area'},'');updLoad();navSync();buzz(6);
   try{FR[id].contentWindow.focus()}catch{}}
 function showDash(){if(!curArea)return;if(curArea==='gesund')gLeft=Date.now();curArea=null;$('#areas').classList.add('off');for(const f of Object.values(FR))f.classList.remove('on');
-  if(history.state?.mbx==='area'){ignorePop=true;history.back()}renderDash()}
+  if(history.state?.mbx==='area'){ignorePop=true;history.back()}navSync();renderDash();scrollTo(0,0)}
 function updLoad(){const el=$('#aload');if(!el)return;const id=curArea;if(!id||API[id]){el.hidden=true;return}
   const a=AR(id);el.hidden=false;
   el.innerHTML=OLDQ.has(id)?`<img src="${a.img}" alt=""><b>${esc(a.name)}: Passwort nötig</b><span>Die Daten sind noch mit einem anderen Passwort verschlüsselt.</span><button type="button" class="ds-btn pri" id="oldGo">Passwort eingeben</button><button type="button" class="ds-btn" id="aHome">Zur Übersicht</button>`
@@ -605,6 +675,8 @@ function chartsHtml(){const out=[],S=a=>API[a]&&API[a].stats?safe(()=>API[a].sta
   if(g&&g.bp.length>=2)out.push(chartCard('gesund','Blutdruck',`letzte ${g.bp.length} Messungen`,bpLine(g.bp,g.ziel)));
   if(g&&g.medis.length)out.push(chartCard('gesund','Medikamente','so lange reicht der Vorrat',bars(g.medis.slice(0,6).map(m=>[m.name,m.reicht,m.reicht<=Math.min(3,m.vorlauf)?'var(--crit)':m.reicht<=m.vorlauf?'var(--warn)':'var(--ok)',m.name+': noch '+m.reicht+' Tage, bis '+fmtD(m.leer)]),'',v=>v+(v===1?' Tag':' Tage'),Math.max(30,...g.medis.map(m=>m.reicht)))));
   if(CFG.gLock&&!gOK()&&API.gesund)out.push(`<button type="button" class="chart lockd" data-go="gesund">${shp('gesund',12)}<span><b>Gesundheit ist geschützt</b><small>Zum Anzeigen entsperren</small></span>${I.lock}</button>`);
+  {const Y=new Date().getFullYear(),c=costsAll(Y);if(c.rows.length){const by=costCats(c.rows),tot=c.rows.reduce((x,r)=>x+r.amount,0);
+    out.push(`<div class="chart" style="--ac:var(--accent)"><button type="button" class="chd" data-sheet="year"><span class="ti" style="width:22px;height:22px;border-radius:7px">${I.cal}</span><span><b>Ausgaben ${Y}</b><small>${fmtE(tot)} bisher · Jahresübersicht &amp; Steuer</small></span><span class="chev">${I.chev}</span></button>${bars(by.slice(0,4).map(([l,v,app])=>[l,v,'var(--c-'+app+')']),'var(--accent)',fmtE)}</div>`)}}
   if(s&&s.rooms.length)out.push(chartCard('smart','Geräte nach Raum',s.rooms.reduce((x,r)=>x+r[1],0)+' Geräte',bars(s.rooms.slice(0,6),'var(--c-smart)',v=>String(v))));
   return out.length?`<div class="sec">Überblick</div><div class="charts">${out.join('')}</div>`:''}
 
@@ -642,10 +714,12 @@ function renderDash(){
   $('#dash').innerHTML=h;
   $('#dash').querySelectorAll('[data-area]').forEach(b=>b.onclick=()=>{const id=b.dataset.area;if(OLDQ.has(id)&&!API[id])askOld(id);else openAreaG(id)});
   $('#dash').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>openAreaG(b.dataset.go));
+  $('#dash').querySelectorAll('[data-sheet]').forEach(b=>b.onclick=()=>openSheet(b.dataset.sheet,b.dataset.sheet==='year'?new Date().getFullYear():undefined));
   $('#dash').querySelectorAll('[data-tl]').forEach(b=>b.onclick=()=>goRef(tl[+b.dataset.tl]));
   $('#dash').querySelectorAll('[data-td]').forEach(b=>b.onclick=()=>goRef(td[+b.dataset.td]));
   const tm=$('#tlMore');if(tm)tm.onclick=()=>{showAllTl=!showAllTl;renderDash()};
   const rm=$('#dsRemind');if(rm)rm.onclick=()=>{ACC.add('bk');openSheet('menu')};
+  navSync();
 }
 let showAllTl=false;
 async function goRef(x){if(!x||!API[x.app])return;if(!await openAreaG(x.app))return;if(x.ref)setTimeout(()=>{try{API[x.app].open(x.ref)}catch(e){}},120)}
@@ -660,9 +734,10 @@ async function goRef(x){if(!x||!API[x.app])return;if(!await openAreaG(x.app))ret
   addEventListener('scroll',hide,{passive:true});document.addEventListener('click',e=>{if(!e.target.closest('[data-tip]'))hide()});})();
 
 /* ---------- Blatt (Menü und Suche) ---------- */
-let SHMODE='menu';const ACC=new Set();
+let SHMODE='menu',SHARG=null;const ACC=new Set();
+const SHT={share:'Geteilt – wohin damit?',search:'Suchen',new:'Neu anlegen',contacts:'Kontakte',contact:'Kontakt',year:'Jahresübersicht',pass:'Gerätepass'};
 const sheetOpen=()=>!$('#sheet').hidden;
-function openSheet(mode){SHMODE=mode;const sh=$('#sheet');$('#sheetH').textContent=mode==='search'?'Suchen':'Daten & Sicherheit';fillSheet();
+function openSheet(mode,arg){SHMODE=mode;if(arg!==undefined)SHARG=arg;const sh=$('#sheet');$('#sheetH').textContent=SHT[mode]||'Daten & Sicherheit';fillSheet();
   if(sh.hidden){sh.hidden=false;if(history.state?.mbx!=='sheet')history.pushState({mbx:'sheet'},'');requestAnimationFrame(()=>requestAnimationFrame(()=>sh.classList.add('show')))}
   $('#spanel').scrollTop=0;buzz(6);if(mode==='search')setTimeout(()=>{const q=$('#sq');if(q)q.focus()},motion()?320:0)}
 function closeSheet(quiet){const sh=$('#sheet');if(sh.hidden)return;sh.classList.remove('show');setTimeout(()=>{if(!sh.classList.contains('show'))sh.hidden=true},quiet||!motion()?0:300);
@@ -670,10 +745,16 @@ function closeSheet(quiet){const sh=$('#sheet');if(sh.hidden)return;sh.classList
 function fillSheet(){const b=$('#sheetBody');
   if(SHMODE==='search'){b.innerHTML=`<label class="ds-srch"><span class="sr">Suchbegriff</span><input id="sq" type="search" placeholder="Geräte, Termine, Verträge, Ärzte …" autocomplete="off" enterkeyhint="search"></label><div class="ds-qres" id="sqres">${searchRes('')}</div>`;
     const q=$('#sq');q.addEventListener('input',()=>{$('#sqres').innerHTML=searchRes(q.value)});return}
+  if(SHMODE==='new'){b.innerHTML=newHtml();return}
+  if(SHMODE==='contacts'){b.innerHTML=ctListHtml();const q=$('#cq');q.value=CTQ;q.addEventListener('input',()=>{CTQ=q.value;$('#ctres').innerHTML=ctRows(CTQ)});return}
+  if(SHMODE==='contact'){b.innerHTML=ctHtml(SHARG);return}
+  if(SHMODE==='year'){b.innerHTML=yearHtml(SHARG||new Date().getFullYear());return}
+  if(SHMODE==='pass'){b.innerHTML=passHtml(SHARG);return}
+  if(SHMODE==='share'){b.innerHTML=shareHtml();return}
   const y=$('#spanel').scrollTop;b.innerHTML=menuHtml();$('#spanel').scrollTop=y}
 function refreshSheet(){if(sheetOpen()&&SHMODE==='menu')fillSheet()}
 $('#sheetX').onclick=()=>closeSheet();$('#sheet .sbg').onclick=()=>closeSheet();
-$('#searchBtn').onclick=()=>openSheet('search');$('#menuBtn').onclick=()=>openSheet('menu');
+$('#searchBtn').onclick=()=>openSheet('search');$('#ctBtn').onclick=()=>{CTQ='';openSheet('contacts')};$('#menuBtn').onclick=()=>openSheet('menu');
 $('#sheetBody').addEventListener('toggle',e=>{const d=e.target;if(d.matches?.('details.acc')){d.open?ACC.add(d.dataset.k):ACC.delete(d.dataset.k)}},true);
 /* Nach unten wischen schließt das Blatt */
 (()=>{let y0=0,dy=0,on=false;const p=$('#spanel');
@@ -685,7 +766,9 @@ let SRES=[];
 function searchRes(raw){const q=String(raw||'').trim();
   if(!q)return `<p class="ds-qhint">Sucht in allen drei Bereichen: Geräte und Routinen, Termine, Ärzte, Vorsorge und Dokumente, Verträge und Belege.</p>`;
   SRES=[];let h='';
-  for(const a of AREAS){const api=API[a.id];if(!api)continue;const r=safe(()=>api.search(q),[]);if(!r.length)continue;
+  const cs=contactsAll().list.filter(c=>ctMatch(c,q.toLowerCase())).slice(0,6);
+  if(cs.length)h+=`<div class="ds-lbl">Kontakte · ${cs.length}</div><div class="ds-qlist">${cs.map(c=>`<button type="button" class="ds-qrow" data-ct="${esc(c.key)}"><span class="ds-qi" style="background:none"><span class="avt" style="--ac:var(--c-${c.app});width:32px;height:32px;font-size:12px">${esc(ini(c.name))}</span></span><span class="ds-qt"><b>${esc(c.name)}</b><small>${esc(c.roles.join(' · '))}</small></span></button>`).join('')}</div>`;
+  for(const a of areaOrder()){const api=API[a.id];if(!api)continue;const r=safe(()=>api.search(q),[]);if(!r.length)continue;
     if(a.id==='gesund'&&!gOK()){h+=`<div class="ds-lbl" style="color:var(--c-gesund)">${esc(a.name)} · ${r.length}</div><div class="ds-qlist"><button type="button" class="ds-qrow" data-gunlock="1"><span class="ds-qi">${I.lock}</span><span class="ds-qt"><b>Geschützt</b><small>Zum Anzeigen der Treffer entsperren</small></span></button></div>`;continue}
     h+=`<div class="ds-lbl" style="color:var(--c-${a.id})">${esc(a.name)} · ${r.length}</div><div class="ds-qlist">${r.slice(0,25).map(x=>{SRES.push({...x,app:a.id});
       return `<button type="button" class="ds-qrow" data-sr="${SRES.length-1}"><span class="ds-qi" style="background:color-mix(in srgb,var(--c-${a.id}) 13%,var(--surface));color:var(--c-${a.id})"><img src="${a.img}" alt="" width="22" height="22" style="border-radius:6px"></span><span class="ds-qt"><b>${esc(x.title)}</b><small>${esc([x.g,x.sub].filter(Boolean).join(' · '))}</small></span></button>`}).join('')}</div>`}
@@ -693,6 +776,169 @@ function searchRes(raw){const q=String(raw||'').trim();
 $('#sheetBody').addEventListener('click',async e=>{const gu=e.target.closest('[data-gunlock]');if(gu){if(await askGesund()){const q=$('#sq');$('#sqres').innerHTML=searchRes(q.value)}return}
   const r=e.target.closest('[data-sr]');if(!r)return;const x=SRES[+r.dataset.sr];closeSheet(true);
   if(history.state?.mbx==='sheet')history.replaceState({mbx:'none'},'');goRef(x)});
+
+/* ---------- Leiste unten ---------- */
+const areaOrder=()=>{const c=curArea||lastArea;return c?[AR(c),...AREAS.filter(a=>a.id!==c)]:AREAS};let lastArea=null;
+function navShow(on){$('#nav').hidden=!on;document.body.classList.toggle('navon',on);if(on)navSync()}
+function navSync(){if(curArea)lastArea=curArea;const G=gOK();
+  $('#nav').querySelectorAll('.nb').forEach(b=>{const id=b.dataset.nav;if((curArea||'')===id)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
+    const lk=b.querySelector('.lk');const need=id==='gesund'&&CFG&&CFG.gLock&&!G;if(need&&!lk)b.insertAdjacentHTML('beforeend','<span class="lk" aria-hidden="true">'+I.lock+'</span>');else if(!need&&lk)lk.remove()})}
+$('#nav').addEventListener('click',e=>{const b=e.target.closest('.nb');if(!b||!UNLOCKED)return;const id=b.dataset.nav;closeSheet(true);
+  if(!id){if(curArea)showDash();else scrollTo({top:0,behavior:motion()?'smooth':'auto'});return}
+  if(curArea===id){try{API[id]&&API[id].home&&API[id].home()}catch{}return}
+  if(OLDQ.has(id)&&!API[id]){askOld(id);return}openAreaG(id).then(navSync)});
+$('#newBtn').onclick=()=>{if(UNLOCKED)openSheet('new')};
+/* Neu anlegen: alle Aktionen, der aktuelle Bereich zuerst */
+let NEWS=[];
+function newHtml(){NEWS=[];const G=gOK();
+  const h=areaOrder().map(a=>{const api=API[a.id];const it=api&&api.newItems?safe(()=>api.newItems(),[]):[];if(!it.length)return '';
+    return `<div class="nwgrp" style="--ac:var(--c-${a.id})"><div class="nwh"><img src="${a.img}" alt="">${esc(a.name)}${a.id==='gesund'&&CFG.gLock&&!G?`<small>${I.lock}geschützt</small>`:''}</div><div class="nwg">${it.map(x=>{NEWS.push({app:a.id,k:x.k});
+      return `<button type="button" class="nwb" data-nw="${NEWS.length-1}"><span class="ic">${x.svg||''}</span>${esc(x.label)}</button>`}).join('')}</div></div>`}).join('');
+  return h||'<p class="ds-qhint">Die Bereiche werden noch geöffnet …</p>'}
+$('#sheetBody').addEventListener('click',async e=>{const b=e.target.closest('[data-nw]');if(!b)return;const x=NEWS[+b.dataset.nw];if(!x)return;
+  closeSheet(true);if(history.state?.mbx==='sheet')history.replaceState({mbx:'none'},'');
+  if(!await openAreaG(x.app))return;navSync();setTimeout(()=>{try{API[x.app].doNew(x.k)}catch(err){console.warn(err)}},180)});
+MBX.search=()=>openSheet('search');
+MBX.pass=id=>openPass(id);
+
+/* ---------- Adressbuch: Kontakte aus allen Bereichen, zusammengeführt nach Namen ---------- */
+const IC={phone:SVG('<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>'),mail:SVG('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>'),
+  map:SVG('<path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>'),web:SVG('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'),
+  edit:SVG('<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/>'),plus:SVG('<path d="M12 5v14M5 12h14"/>')};
+const ckey=n=>String(n||'').trim().toLowerCase().replace(/\s+/g,' ');
+const ini=n=>String(n||'?').replace(/^(dr\.?|prof\.?)\s+/i,'').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'?';
+const telHref=t=>{const x=String(t||'').replace(/[^\d+]/g,'');return x?'tel:'+x:''};
+const webHref=u=>{u=String(u||'').trim();if(!u)return '';if(!/^https?:\/\//i.test(u))u='https://'+u;try{const x=new URL(u);return /^https?:$/.test(x.protocol)?x.href:''}catch{return ''}};
+const mailHref=m=>/^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(String(m||'').trim())?'mailto:'+String(m).trim():'';
+function contactsAll(){const G=gOK(),map=new Map();let hidden=false;
+  for(const a of AREAS){const api=API[a.id];if(!api||!api.contacts)continue;if(a.id==='gesund'&&!G){hidden=true;continue}
+    for(const c of safe(()=>api.contacts(),[])){const k=ckey(c.name);if(!k)continue;
+      const e=map.get(k)||{key:k,name:c.name.trim(),roles:[],tel:'',addr:'',web:'',mail:'',notes:[],items:[],refs:[],app:a.id};
+      if(c.role&&!e.roles.includes(c.role))e.roles.push(c.role);e.tel=e.tel||c.tel||'';e.addr=e.addr||c.addr||'';e.web=e.web||c.web||'';e.mail=e.mail||c.mail||'';
+      if(c.note&&!e.notes.includes(c.note))e.notes.push(c.note);(c.items||[]).forEach(i=>e.items.push({...i,app:a.id}));if(c.ref)e.refs.push({app:a.id,ref:c.ref});map.set(k,e)}}
+  for(const [k,x] of Object.entries((CFG&&CFG.contacts)||{})){let e=map.get(k);
+    if(!e){if(!x.own)continue;e={key:k,name:x.name,roles:[],tel:'',addr:'',web:'',mail:'',notes:[],items:[],refs:[],app:null};map.set(k,e)}
+    e.own=!!x.own;e.x=x;if(x.role&&!e.roles.includes(x.role))e.roles.unshift(x.role);e.tel=x.tel||e.tel;e.mail=x.mail||e.mail;e.addr=x.addr||e.addr;e.web=x.web||e.web;if(x.notiz)e.notes.unshift(x.notiz)}
+  const list=[...map.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'));return{list,hidden}}
+const ctMatch=(c,q)=>!q||[c.name,c.roles.join(' '),c.tel,c.addr,c.mail,c.notes.join(' '),c.items.map(i=>i.title).join(' ')].join(' ').toLowerCase().includes(q);
+let CTQ='';
+function ctRows(q){const {list,hidden}=contactsAll(),L=list.filter(c=>ctMatch(c,String(q||'').trim().toLowerCase()));
+  const h=L.map(c=>{const t=telHref(c.tel);return `<div class="ctrow" role="button" tabindex="0" data-ct="${esc(c.key)}"><span class="avt" style="--ac:${c.app?'var(--c-'+c.app+')':'var(--accent)'}">${esc(ini(c.name))}</span><span class="rt"><b>${esc(c.name)}</b><small>${esc([c.roles.join(' · '),c.items.length?(c.items.length===1?'1 Eintrag':c.items.length+' Einträge'):''].filter(Boolean).join(' · '))}</small></span>${t?`<a class="ctcall" href="${esc(t)}" aria-label="${esc(c.name)} anrufen">${IC.phone}</a>`:'<span></span>'}</div>`}).join('');
+  return (h?`<div class="list">${h}</div>`:`<div class="list"><div class="empty">${q?'Kein Kontakt gefunden.':'Noch keine Kontakte. Sie entstehen automatisch aus Ärzten, Wartungsfirmen, Händlern und Vertragspartnern – oder du legst sie hier an.'}</div></div>`)
+    +(hidden?`<button type="button" class="chart lockd" data-gunlock-ct="1" style="margin-top:12px">${shp('gesund',12)}<span><b>Ärzte und Optiker sind geschützt</b><small>Zum Anzeigen Gesundheit entsperren</small></span>${I.lock}</button>`:'')}
+function ctListHtml(){return `<div class="ds-acts" style="margin:0 0 10px"><button type="button" class="ds-btn" data-ctnew="1">${IC.plus} Neuer Kontakt</button></div><label class="ds-srch"><span class="sr">Kontakt suchen</span><input id="cq" type="search" placeholder="Name, Rolle, Telefon …" autocomplete="off"></label><div id="ctres" style="margin-top:10px">${ctRows(CTQ)}</div>`}
+function ctHtml(k){const c=contactsAll().list.find(x=>x.key===k);if(!c)return `<button type="button" class="sback" data-ctback="1">${I.chev}Alle Kontakte</button><p class="ds-qhint">Dieser Kontakt ist nicht mehr da.</p>`;
+  const t=telHref(c.tel),m=mailHref(c.mail),w=webHref(c.web),mp=c.addr?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(c.addr):'';
+  const items=c.items.slice().sort((a,b)=>(a.d?0:1)-(b.d?0:1)||String(a.d||'').localeCompare(String(b.d||'')));CTI=items;
+  return `<button type="button" class="sback" data-ctback="1">${I.chev}Alle Kontakte</button>
+  <div class="cthd"><span class="avt big" style="--ac:${c.app?'var(--c-'+c.app+')':'var(--accent)'}">${esc(ini(c.name))}</span><h3>${esc(c.name)}</h3><div class="chips">${c.roles.map(r=>`<span>${esc(r)}</span>`).join('')}</div></div>
+  ${t||m||mp||w?`<div class="ctacts">${t?`<a href="${esc(t)}">${IC.phone}Anrufen</a>`:''}${m?`<a href="${esc(m)}">${IC.mail}E-Mail</a>`:''}${mp?`<a href="${esc(mp)}" target="_blank" rel="noopener noreferrer">${IC.map}Route</a>`:''}${w?`<a href="${esc(w)}" target="_blank" rel="noopener noreferrer">${IC.web}Website</a>`:''}</div>`:''}
+  ${[c.tel?'Telefon: '+c.tel:'',c.mail?'E-Mail: '+c.mail:'',c.addr?'Adresse: '+c.addr:'',...c.notes].filter(Boolean).length?`<div class="ctnote">${esc([c.tel?'Telefon: '+c.tel:'',c.mail?'E-Mail: '+c.mail:'',c.addr?'Adresse: '+c.addr:'',...c.notes].filter(Boolean).join('\n'))}</div>`:''}
+  ${items.length?`<div class="sec" style="margin-top:6px">Verknüpft<small>${items.length===1?'1 Eintrag':items.length+' Einträge'}</small></div><div class="list">${items.map((x,i)=>`<button type="button" class="row" style="--ac:var(--c-${x.app})" data-cti="${i}"><span class="ti">${shp(x.app,14)}</span><span class="rt"><b>${esc(x.title)}</b><small>${esc(AR(x.app).name+(x.sub?' · '+x.sub:''))}</small></span><span class="chev">${I.chev}</span></button>`).join('')}</div>`:''}
+  <div class="ds-acts" style="margin-top:14px"><button type="button" class="ds-btn" data-ctedit="${esc(c.key)}">${IC.edit} Telefon, E-Mail, Notiz</button>${c.refs.map(r=>`<button type="button" class="ds-btn" data-ctref="${esc(JSON.stringify(r))}">In ${esc(AR(r.app).name)} bearbeiten</button>`).join('')}${c.own&&!c.items.length?`<button type="button" class="ds-btn dng" data-ctdel="${esc(c.key)}">Löschen</button>`:''}</div>
+  <p class="ds-hint" style="margin-top:10px">Telefon, E-Mail und Notiz hier gelten nur für das Adressbuch von MyBox. Name, Praxis oder Firma änderst du im jeweiligen Bereich.</p>`}
+let CTI=[];
+function ctEdit(k){const c=contactsAll().list.find(x=>x.key===k),x=(CFG.contacts||{})[k]||{};const isNew=!c;
+  form(isNew?'Neuer Kontakt':c.name,[...(isNew?[{k:'name',l:'Name / Firma',req:true}]:[]),{k:'role',l:'Rolle (z. B. Hausverwaltung, Schornsteinfeger)',v:x.role||''},{k:'tel',l:'Telefon',t:'tel',v:x.tel||''},{k:'mail',l:'E-Mail',t:'email',v:x.mail||''},{k:'addr',l:'Adresse',v:x.addr||''},{k:'web',l:'Website',v:x.web||''},{k:'notiz',l:'Notiz (z. B. Kundennummer, Ansprechpartner)',v:x.notiz||''}],
+    async(v,fail)=>{const name=isNew?v.name.trim():c.name,key=ckey(name);if(!key)return fail('Bitte einen Namen eintragen.');if(v.mail.trim()&&!mailHref(v.mail))return fail('Die E-Mail-Adresse sieht nicht richtig aus.');
+      CFG.contacts=CFG.contacts||{};const own=isNew||!!x.own;const o={name,own,role:v.role.trim(),tel:v.tel.trim(),mail:v.mail.trim(),addr:v.addr.trim(),web:v.web.trim(),notiz:v.notiz.trim()};
+      if(!own&&!o.role&&!o.tel&&!o.mail&&!o.addr&&!o.web&&!o.notiz)delete CFG.contacts[key];else CFG.contacts[key]=o;
+      await saveCfg();SHARG=key;openSheet('contact');toast('Gespeichert.')},{ok:'Speichern'})}
+$('#sheetBody').addEventListener('click',async e=>{const t=e.target;
+  if(t.closest('.ctcall'))return;
+  const ct=t.closest('[data-ct]');if(ct){openSheet('contact',ct.dataset.ct);return}
+  if(t.closest('[data-ctback]')){openSheet('contacts');return}
+  if(t.closest('[data-ctnew]')){ctEdit('');return}
+  const ed=t.closest('[data-ctedit]');if(ed){ctEdit(ed.dataset.ctedit);return}
+  const dl=t.closest('[data-ctdel]');if(dl){if(!confirm('Kontakt aus dem Adressbuch löschen?'))return;delete CFG.contacts[dl.dataset.ctdel];await saveCfg();openSheet('contacts');return}
+  const rf=t.closest('[data-ctref]');if(rf){const r=JSON.parse(rf.dataset.ctref);sheetGo({app:r.app,ref:r.ref});return}
+  const ci=t.closest('[data-cti]');if(ci){sheetGo(CTI[+ci.dataset.cti]);return}
+  if(t.closest('[data-gunlock-ct]')){if(await askGesund())fillSheet();return}
+  const yi=t.closest('[data-yi]');if(yi){sheetGo(YRS[+yi.dataset.yi]);return}
+  const yy=t.closest('[data-year]');if(yy){openSheet('year',+yy.dataset.year);return}
+  if(t.closest('[data-ycsv]')){yearCsv(SHARG);return}
+  const pg=t.closest('[data-pgo]');if(pg){sheetGo(JSON.parse(pg.dataset.pgo));return}
+  if(t.closest('[data-pnew]')){closeSheet(true);if(history.state?.mbx==='sheet')history.replaceState({mbx:'none'},'');try{API.smart.belegNeu(SHARG)}catch(x){}return}});
+$('#sheetBody').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.ctrow'))e.target.click()});
+function sheetGo(x){if(!x)return;closeSheet(true);if(history.state?.mbx==='sheet')history.replaceState({mbx:'none'},'');goRef(x)}
+
+/* ---------- Jahresübersicht: Ausgaben aus allen Bereichen, mit Steuer-Hilfe ---------- */
+const TAX={handwerk:{t:'Handwerkerleistungen',s:'Wartung, Reparatur, Handwerker im Haushalt',h:'Absetzbar sind in der Regel nur Arbeits- und Fahrtkosten (nicht das Material), mit Rechnung und Überweisung – 20 % davon, höchstens 1.200 € Steuerermäßigung im Jahr.'},
+  krankheit:{t:'Krankheitskosten',s:'Zuzahlungen, Brillen, selbst bezahlte Behandlungen',h:'Zählen als außergewöhnliche Belastung, soweit sie die zumutbare Belastung übersteigen. Belege aufheben.'},
+  vorsorge:{t:'Versicherungen',s:'Beiträge aus deinen Verträgen',h:'Viele Versicherungsbeiträge sind Vorsorgeaufwendungen (z. B. Haftpflicht, Unfall, Kranken-, Pflegeversicherung). Hausrat- und Kfz-Kasko zählen meist nicht.'}};
+let YRS=[];
+function costsAll(y){const G=gOK(),rows=[];let hidden=false;
+  for(const a of AREAS){const api=API[a.id];if(!api||!api.costs)continue;if(a.id==='gesund'&&!G){if(safe(()=>api.costs(y),[]).length)hidden=true;continue}
+    for(const r of safe(()=>api.costs(y),[]))rows.push({...r,app:a.id})}
+  rows.sort((a,b)=>String(b.d).localeCompare(String(a.d)));return{rows,hidden}}
+function costCats(rows){const by={};rows.forEach(r=>{const k=r.cat;by[k]=by[k]||[k,0,r.app];by[k][1]+=r.amount});return Object.values(by).sort((a,b)=>b[1]-a[1])}
+function yearHtml(y){const Y=+y,now=new Date().getFullYear(),{rows,hidden}=costsAll(Y);YRS=rows;const tot=rows.reduce((s,r)=>s+r.amount,0);
+  const yrs=[now,now-1,now-2];
+  const row=(r)=>{const i=YRS.indexOf(r);return `<button type="button" class="yrow" data-yi="${i}"><span>${shp(r.app,9)} ${esc(r.title)}<small>${esc([/^\d{4}-\d\d-\d\d$/.test(r.d)&&r.cat!=='Versicherungen'&&r.cat!=='Verträge & Abos'?fmtD(r.d):'',r.sub,r.cat].filter(Boolean).join(' · '))}</small></span><b>${esc(fmtE(r.amount))}</b></button>`};
+  let h=`<div class="ds-seg" role="radiogroup" aria-label="Jahr" style="margin:0 0 12px">${yrs.map(v=>`<button type="button" role="radio" aria-checked="${v===Y}" data-year="${v}">${v}</button>`).join('')}</div>`;
+  h+=`<div class="pcard"><div class="ytot">${esc(fmtE(tot))}</div><p class="ysub">${Y===now?'bisher in '+Y+' – Verträge bis einschließlich diesen Monat':'Ausgaben '+Y} · aus Belegen${hidden?'':', Gesundheit'} und Verträgen</p>${rows.length?bars(costCats(rows).map(([l,v,app])=>[l,v,'var(--c-'+app+')']),'var(--accent)',fmtE):'<p class="ds-qhint" style="margin:0">Für dieses Jahr ist noch nichts mit Betrag eingetragen.</p>'}</div>`;
+  if(hidden)h+=`<button type="button" class="chart lockd" data-gunlock-ct="1" style="margin:0 0 12px">${shp('gesund',12)}<span><b>Gesundheitskosten sind geschützt</b><small>Zum Mitzählen Gesundheit entsperren</small></span>${I.lock}</button>`;
+  h+=`<div class="sec">Für die Steuererklärung</div>`;
+  for(const [k,T] of Object.entries(TAX)){const L=rows.filter(r=>r.tax===k),sm=L.reduce((s,r)=>s+r.amount,0);
+    h+=acc('tax-'+k,k==='handwerk'?'pkg':k==='krankheit'?'shield':'check',T.t+` · <span class="taxsum">${esc(fmtE(sm))}</span>`,T.s,`<p class="ds-hint">${esc(T.h)}</p>${L.length?L.map(row).join(''):'<p class="ds-qhint">Nichts eingetragen.</p>'}`)}
+  h+=acc('y-all','cal','Alle Ausgaben',rows.length+(rows.length===1?' Eintrag':' Einträge'),rows.length?rows.map(row).join(''):'<p class="ds-qhint">Nichts eingetragen.</p>');
+  h+=`<div class="ds-acts" style="margin-top:6px"><button type="button" class="ds-btn pri" data-ycsv="1"${rows.length?'':' disabled'}>${I.down} Als Tabelle exportieren (CSV)</button></div>
+  <p class="ds-hint" style="margin-top:10px">So kommen Beträge hierher: <b>Belege</b> – Kaufpreis der Geräte, Kosten beim Abhaken einer Wartung, Verträge anteilig nach Monaten. <b>Gesundheit</b> – „Selbst bezahlt“ beim Termin, Zuzahlung bei „Neue Packung“, Preis bei Brille und Kontaktlinsen.</p>
+  <p class="ds-hint">Keine Steuerberatung: Was du absetzen kannst, hängt von deiner Situation ab. Im Zweifel Steuerberater oder Lohnsteuerhilfe fragen.</p>`;
+  return h}
+async function yearCsv(y){const {rows}=costsAll(+y);if(!rows.length)return;const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const lines=[['Datum','Bereich','Kategorie','Steuer','Beschreibung','Betrag (EUR)'].map(q).join(';'),...rows.slice().reverse().map(r=>[/^\d{4}-\d\d-\d\d$/.test(r.d)?fmtD(r.d):r.d,AR(r.app).name,r.cat,r.tax?TAX[r.tax].t:'',r.title+(r.sub?' ('+r.sub+')':''),r.amount.toFixed(2).replace('.',',')].map(q).join(';'))];
+  if(await deliver(`mybox-ausgaben-${y}.csv`,'﻿'+lines.join('\r\n')+'\r\n','text/csv'))toast('Tabelle erstellt – öffnet sich z. B. mit Excel oder Google Tabellen.')}
+
+/* ---------- Gerätepass: ein Gerät mit allem aus Haus und Belege (auch per QR-Aufkleber) ---------- */
+let PASS=(()=>{try{const m=(location.hash||'').match(/[#&]g=([^&]+)/);if(!m)return null;history.replaceState(null,'',location.pathname+location.search);return decodeURIComponent(m[1])}catch{return null}})();
+function openPass(id){if(!API.smart){toast('Der Bereich Haus ist noch nicht bereit.');return}openSheet('pass',id)}
+function runPass(){if(!PASS||!UNLOCKED||$('#app').hidden||!API.smart)return;if(!API.beleg&&!OLDQ.has('beleg')&&Date.now()-startT<8000)return;const id=PASS;PASS=null;setTimeout(()=>openPass(id),300)}
+let startT=Date.now();
+function passHtml(id){const s=API.smart&&safe(()=>API.smart.passInfo(id),null);if(!s)return '<p class="ds-qhint">Dieses Gerät gibt es im Bereich Haus nicht (mehr).</p>';
+  const b=API.beleg&&safe(()=>API.beleg.passInfo('mysmartbox:'+id),null);
+  const kv=L=>`<dl class="kv">${L.filter(x=>x[1]).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${v}</dd>`).join('')}</dl>`;
+  let h=`<div class="phd"><img src="boxen/smartbox.png" alt=""><span><b>${esc(s.name)}</b><small>${esc([s.room,s.floor].filter(Boolean).join(' · ')||'ohne Raum')}</small></span></div>`;
+  h+=`<div class="pcard" style="--ac:var(--c-smart)"><h4><img src="boxen/smartbox.png" alt="">Im Haus</h4>${kv([['Raum',esc(s.room)],['Etage',esc(s.floor)],['Art',esc(s.type)],['App',esc(s.app)],['Sicherung',esc(s.circuit)],['Verbindung',esc(s.conn)],['IP-Adresse',esc(s.ip)]])}${s.note?`<div class="ctnote" style="margin:10px 0 0">${esc(s.note)}</div>`:''}
+    <div class="ds-acts" style="margin-top:10px"><button type="button" class="ds-btn" data-pgo="${esc(JSON.stringify({app:'smart',ref:{a:'edit',id}}))}">Im Bereich Haus öffnen</button></div></div>`;
+  if(b){const sc=b.schutz;const st=sc?`<i class="dot ${sc.tage<=90?'warn':'ok'}"></i>${esc(sc.typ)} bis ${esc(sc.bis)}`:'<i class="dot"></i>abgelaufen';
+    h+=`<div class="pcard" style="--ac:var(--c-beleg)"><h4><img src="boxen/belegbox.png" alt="">Kauf &amp; Garantie</h4>${kv([['Gekauft',esc(b.kauf)],['Preis',esc(b.preis)],['Händler',esc(b.haendler)],['Hersteller',esc(b.hersteller)],['Seriennr.',esc(b.sn)],['Schutz',st],['Kaufbeleg',b.beleg?'<i class="dot ok"></i>vorhanden':'<i class="dot crit"></i>fehlt']])}
+      ${b.docs.length?`<div class="ds-lbl sep">Dokumente</div><p class="ds-hint" style="margin:0">${b.docs.map(esc).join(' · ')}</p>`:''}
+      <div class="ds-acts" style="margin-top:10px"><button type="button" class="ds-btn" data-pgo="${esc(JSON.stringify({app:'beleg',ref:{k:'d',id:b.id}}))}">Beleg${b.docs.length?' und Dokumente':''} öffnen</button></div></div>`;
+    if(b.wartung){const w=b.wartung,t=telHref(w.tel);h+=`<div class="pcard" style="--ac:var(--c-beleg)"><h4>${I.todo}Wartung</h4>${kv([['Nächste',`<i class="dot ${w.n<0?'crit':w.n<=30?'warn':'ok'}"></i>${esc(w.next)}${w.n<0?' (überfällig)':''}`],['Alle',esc(w.monate+' Monate')],['Firma',esc(w.firma)]])}
+      ${b.log.length?`<div class="ds-lbl sep">Zuletzt</div><p class="ds-hint" style="margin:0">${b.log.map(esc).join('<br>')}</p>`:''}${t?`<div class="ds-acts" style="margin-top:10px"><a class="ds-btn" href="${esc(t)}">${IC.phone} ${esc(w.firma||'Firma')} anrufen</a></div>`:''}</div>`}}
+  else if(API.beleg)h+=`<div class="pcard" style="--ac:var(--c-beleg)"><h4><img src="boxen/belegbox.png" alt="">Kauf &amp; Garantie</h4><p class="ds-hint" style="margin:0 0 10px">Noch kein Kaufbeleg verknüpft. Leg ihn an – dann stehen Kaufdatum, Garantie und Wartung hier.</p><div class="ds-acts"><button type="button" class="ds-btn pri" data-pnew="1">Kaufbeleg anlegen</button></div></div>`;
+  return h}
+
+/* ---------- Teilen → MyBox: Fotos, PDFs, Kalender-Dateien oder Text aus anderen Apps ---------- */
+let SHARE=(()=>{try{const u=new URL(location.href);if(!u.searchParams.has('geteilt'))return false;u.searchParams.delete('geteilt');history.replaceState(null,'',u.pathname+u.search+u.hash);return true}catch{return false}})();
+let SHI=null;
+async function shareItems(){if(!('caches' in window))return null;const c=await caches.open('share-mybox'),ks=await c.keys();if(!ks.length)return null;
+  const files=[],keys=[];let meta=null;
+  for(const k of ks){const r=await c.match(k);if(!r)continue;keys.push(k);
+    if(r.headers.get('content-type')==='application/x-mybox-share'){try{meta=await r.json()}catch{}continue}
+    const b=await r.blob();files.push(new File([b],decodeURIComponent(r.headers.get('x-name')||'Datei'),{type:r.headers.get('content-type')||b.type}))}
+  if(meta&&Date.now()-meta.at>48*3600e3&&!files.length){await shareClear(keys);return null}
+  return{files,keys,title:meta?meta.title:'',text:[meta&&meta.text,meta&&meta.url].filter(Boolean).join('\n')}}
+async function shareClear(keys){try{const c=await caches.open('share-mybox');for(const k of keys||[])await c.delete(k)}catch{}}
+async function runShare(){if(!UNLOCKED||$('#app').hidden)return;if(!SHARE&&!(await caches.has?.('share-mybox')))return;
+  const it=await shareItems().catch(()=>null);SHARE=false;if(!it)return;SHI=it;openSheet('share')}
+const isDoc=f=>/^(image\/|application\/pdf)/.test(f.type||'')||/\.(pdf|jpe?g|png|heic|webp)$/i.test(f.name||'');
+function shareHtml(){const it=SHI;if(!it)return '<p class="ds-qhint">Nichts mehr da.</p>';const docs=it.files.filter(isDoc),other=it.files.filter(f=>!isDoc(f));
+  const list=it.files.map(f=>`<span>${esc(f.name)}</span>`).join('');
+  const txt=it.text?`<div class="ctnote">${esc(it.text.slice(0,300))}${it.text.length>300?' …':''}</div>`:'';
+  const opt=(app,t,sub,dis)=>`<button type="button" class="ctrow" data-share="${app}"${dis?' disabled style="opacity:.45;pointer-events:none"':''}><span class="avt" style="--ac:var(--c-${app})"><img src="${AR(app).img}" alt="" style="width:26px;height:26px;border-radius:7px"></span><span class="rt"><b>${esc(t)}</b><small>${esc(sub)}</small></span><span class="chev">${I.chev}</span></button>`;
+  return `<p class="ds-hint">${it.files.length?(it.files.length===1?'1 Datei':it.files.length+' Dateien')+' angekommen':'Text angekommen'} – sie wird erst im gewählten Bereich verschlüsselt gespeichert.</p>
+    ${list?`<div class="chips" style="justify-content:flex-start;margin:0 0 10px">${list}</div>`:''}${txt}
+    <div class="list">${opt('beleg','Belege',docs.length?'Kassenbon, Rechnung, Garantie – als neues Gerät, Vertrag oder zu einem vorhandenen Eintrag':'Text zu einem Gerät oder Vertrag speichern',other.length&&!docs.length)}
+    ${opt('gesund','Gesundheit',docs.length?'Befund, Rezept, Überweisung, Arztrechnung – als Dokument':other.length?'Kalender-Datei, Messwerte (CSV) oder Samsung Health':'Als Termin (Datum wird erkannt)')}</div>
+    <div class="ds-acts" style="margin-top:12px"><button type="button" class="ds-btn dng" data-share="x">Verwerfen</button></div>`}
+$('#sheetBody').addEventListener('click',async e=>{const b=e.target.closest('[data-share]');if(!b||!SHI)return;const to=b.dataset.share,it=SHI;
+  if(to==='x'){await shareClear(it.keys);SHI=null;closeSheet();toast('Verworfen.');return}
+  closeSheet(true);if(history.state?.mbx==='sheet')history.replaceState({mbx:'none'},'');
+  if(!await openAreaG(to))return;navSync();
+  try{if(to==='beleg')await API.beleg.share(to==='beleg'?it.files.filter(isDoc):it.files,it.text);else await API.gesund.share(it.files,it.title,it.text);await shareClear(it.keys);SHI=null}
+  catch(x){toast('Das hat nicht geklappt: '+(x&&x.message||x))}});
 
 /* ---------- Fenster für kleine Formulare ---------- */
 function form(title,fields,onSave,o={}){
@@ -736,11 +982,12 @@ function menuHtml(){
     <div class="ds-lbl">Automatisch in GitHub</div>
     ${g?`<p class="ds-hint">Nach jeder Änderung landet der verschlüsselte Stand jedes Bereichs in <b>${esc(g.owner)}/${esc(g.repo)}</b>, jeder in seinem eigenen Ordner. GitHub sieht nur verschlüsselte Daten.</p>
       ${rows(a=>{const s=areaBk(a);return `<b>${esc(a.name)} <span style="font-weight:400;color:var(--muted)">· /${esc(a.dir)}</span></b><span><i class="dot ${s.cls}"></i>${esc(s.txt)}</span>`})}
+      <div class="brow"><img src="icons/mybox-192.png" alt=""><div class="bt"><b>Einstellungen &amp; Kontakte <span style="font-weight:400;color:var(--muted)">· /mybox</span></b><span><i class="dot ${SHGH.err?'crit':SHGH.at?'ok':''}"></i>${esc(SHGH.err?'Problem: '+SHGH.err:SHGH.at?'gesichert '+new Date(SHGH.at).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'wird bei der nächsten Änderung gesichert')}</span></div></div>
       <div class="ds-acts" style="margin-top:10px"><button type="button" class="ds-btn pri" data-m="bk-now">Jetzt sichern</button><button type="button" class="ds-btn" data-m="bk-pull">Alles von GitHub laden</button><button type="button" class="ds-btn" data-m="bk-off">Trennen</button></div>`
     :`<p class="ds-hint">Ein privates GitHub-Repo und ein Zugangsschlüssel für alle drei Bereiche. Gesichert wird nach jeder Änderung, jeder Bereich in seinem eigenen Ordner (smartbox, gesundbox, belegbox).</p>
       <div class="ds-acts"><button type="button" class="ds-btn pri" data-m="bk-setup">GitHub einrichten</button></div>`}
     <div class="ds-lbl sep">Sicherungsdatei</div>
-    <p class="ds-hint">Eine Datei mit allen drei Bereichen und allen Dokumenten, verschlüsselt mit deinem aktuellen Passwort. Leg sie an einem zweiten Ort ab.</p>
+    <p class="ds-hint">Eine Datei mit allen drei Bereichen, allen Dokumenten, Einstellungen und Kontakten – verschlüsselt mit deinem aktuellen Passwort. Leg sie an einem zweiten Ort ab. Beim Laden kannst du auch nur einzelne Bereiche zurückholen.</p>
     <div class="ds-acts"><button type="button" class="ds-btn${g?'':' pri'}" data-m="file-out">Sicherung erstellen</button><button type="button" class="ds-btn" data-m="file-in">Sicherung laden</button></div>`,!!(g&&bkAll().ghErr))
   +acc('move','move','Umzug aus den Einzel-Apps','MySmartBox, MyGesundBox, MyBelegBox übernehmen',`
     <p class="ds-hint">So holst du deine bisherigen Daten nach MyBox: In der alten App unter Daten &amp; Sicherheit → Datensicherung auf <b>„Sicherung erstellen“</b> tippen und die Datei hier laden – oder direkt aus deren GitHub-Sicherung. Danach fragt MyBox einmal nach dem bisherigen Passwort. Die alten Apps bleiben unverändert.</p>
@@ -795,13 +1042,14 @@ async function menuAct(m,aid,btn){
   case 'bk-setup':form('GitHub-Sicherung einrichten',[{k:'owner',l:'Konto / Organisation',req:true,v:'jazm-box'},{k:'repo',l:'Privates Repo',req:true,v:'mybox-daten'},{k:'token',l:'Zugangsschlüssel (github_pat_…)',t:'password',req:true}],async(v,fail)=>{
       const g={owner:v.owner.trim(),repo:v.repo.trim(),token:v.token.trim()};if(!g.owner||!g.repo||!g.token)return fail('Bitte alle drei Felder ausfüllen.');
       try{await ghCheck(g)}catch(x){return fail(x.message)}
-      CFG.gh=g;await saveCfg();for(const a of AREAS)if(API[a.id])try{await API[a.id].bkSet(MBX.bkCfg(a.id))}catch{}
+      CFG.gh=g;await saveCfg();shellGhQueue(500);for(const a of AREAS)if(API[a.id])try{await API[a.id].bkSet(MBX.bkCfg(a.id))}catch{}
       DS.yay('GitHub verbunden');toast('Automatische Sicherung ist für alle Bereiche aktiv ✓');refreshSheet();setTimeout(refreshSheet,6000)},
       {ok:'Verbinden & sichern',html:'<p class="ds-dlg-intro">Lege auf GitHub ein <b>privates</b> Repo an, z. B. <b>mybox-daten</b>, und einen Fine-grained-Zugangsschlüssel nur für dieses Repo mit <b>Contents: Read and write</b>. Alle drei Bereiche sichern dorthin, jeder in seinen eigenen Ordner. GitHub sieht nur verschlüsselte Daten.</p>'});break;
-  case 'bk-now':allReady();btn.disabled=true;btn.textContent='Sichere …';for(const a of AREAS)await API[a.id].bkNow().catch(()=>{});
+  case 'bk-now':allReady();btn.disabled=true;btn.textContent='Sichere …';for(const a of AREAS)await API[a.id].bkNow().catch(()=>{});await shellGhPush().catch(()=>{});
     const er=bkAll().ghErr;if(!er){buzz(10);toast('Alle Bereiche auf GitHub gesichert ✓')}else toast('Problem: '+er);refreshSheet();break;
   case 'bk-pull':allReady();if(!confirm('Die Daten aller Bereiche auf diesem Gerät durch den Stand auf GitHub ersetzen?'))return;btn.disabled=true;btn.textContent='Lade …';
     for(const a of AREAS){try{await API[a.id].ghPull(MBX.bkCfg(a.id))}catch(x){toast(a.name+': '+(x.message||'nicht geladen'))}}
+    try{const r=await shellGhPull();if(r==='pw')toast('Kontakte und Einstellungen wurden mit einem anderen Passwort gesichert und nicht übernommen.')}catch{}
     toast('Geladen. Falls ein Bereich mit einem anderen Passwort gesichert wurde, fragt MyBox gleich danach.');refreshSheet();break;
   case 'bk-off':if(!confirm('GitHub-Sicherung für alle Bereiche trennen? Im Repo bleibt alles liegen.'))return;CFG.gh=null;await saveCfg();
     for(const a of AREAS)if(API[a.id])try{await API[a.id].bkSet(null)}catch{}toast('GitHub-Sicherung getrennt.');refreshSheet();break;
@@ -813,9 +1061,17 @@ async function menuAct(m,aid,btn){
   case 'file-in':{allReady();const f=await pickFile('.mybox,application/json');if(!f)return;let o;
     try{o=JSON.parse(await f.text())}catch{throw new Error('Das ist keine MyBox-Sicherung.')}
     if(!o||o.app!=='mybox'||!o.boxes||!o.shell)throw new Error(/smartbox|gesundbox|belegbox/i.test(f.name)?'Das ist eine Sicherung einer Einzel-App. Lade sie unter „Umzug aus den Einzel-Apps“.':'Das ist keine MyBox-Sicherung.');
-    if(!confirm(`Alle Daten auf diesem Gerät durch die Sicherung vom ${new Date(o.exported).toLocaleDateString('de-DE')} ersetzen? Danach entsperrst du mit dem Passwort, das beim Sichern galt.`))return;
-    UNLOCKED=false;for(const a of AREAS){if(o.boxes[a.id])try{await API[a.id].restore(o.boxes[a.id])}catch(x){toast(a.name+': '+x.message)}}
-    await writeVault(JSON.stringify(o.shell));lsDel(BKEY);UNLOCKED=true;await lockAll();toast('Sicherung geladen. Entsperre mit dem Passwort, das beim Sichern galt.');break}
+    const av=AREAS.filter(a=>o.boxes[a.id]);
+    form('Sicherung vom '+new Date(o.exported).toLocaleDateString('de-DE'),[...av.map(a=>({k:a.id,l:a.name+' ersetzen',t:'check',v:true})),{k:'shell',l:'Einstellungen und Kontakte übernehmen',t:'check',v:true}],async(v,fail)=>{
+      const sel=av.filter(a=>v[a.id]);if(!sel.length&&!v.shell)return fail('Bitte mindestens einen Bereich wählen.');
+      if(sel.length===av.length&&v.shell){UNLOCKED=false;for(const a of AREAS){if(o.boxes[a.id])try{await API[a.id].restore(o.boxes[a.id])}catch(x){toast(a.name+': '+x.message)}}
+        await writeVault(JSON.stringify(o.shell));lsDel(BKEY);UNLOCKED=true;await lockAll();toast('Sicherung geladen. Entsperre mit dem Passwort, das beim Sichern galt.');return}
+      $('#fok').textContent='Lade …';
+      for(const a of sel){try{await API[a.id].restore(o.boxes[a.id]);reloadArea(a.id)}catch(x){return fail(a.name+': '+(x.message||'nicht geladen'))}}
+      if(v.shell){let c=null;try{c=await unseal(o.shell,await derive(PW,unb64(o.shell.salt)))}catch{}
+        if(c){CFG.contacts=Object.assign({},CFG.contacts||{},c.contacts||{});await saveCfg()}else toast('Kontakte und Einstellungen sind mit einem anderen Passwort gesichert – dafür bitte alles zusammen laden.')}
+      refreshSheet();toast(sel.length?sel.map(a=>a.name).join(', ')+' geladen. Falls beim Sichern ein anderes Passwort galt, fragt MyBox gleich danach.':'Kontakte übernommen.')},
+      {ok:'Laden',html:'<p class="ds-dlg-intro">Was soll aus der Sicherung zurückgeholt werden? Alles andere bleibt, wie es ist. Wählst du alles, wird MyBox komplett ersetzt und danach mit dem Passwort entsperrt, das beim Sichern galt.</p>'});break}
   case 'mv-file':{const a=AR(aid),api=API[aid];if(!api)return;if(aid==='gesund'&&!gOK()&&!await askGesund())return;const f=await pickFile('');if(!f)return;
     if(api.count()&&!confirm(`Die Daten im Bereich ${a.name} in MyBox durch diese Sicherung ersetzen?`))return;
     closeSheet();openArea(aid);await api.restoreFile(f);break}
@@ -846,7 +1102,7 @@ async function menuAct(m,aid,btn){
 
 /* ---------- Erinnerungen über alle Bereiche (Service Worker zeigt sie an, auch bei geschlossener App) ---------- */
 const SCHED='sched-mybox',LEADS=[7,14,30];let lastSched='',SCH={};
-const RML={'b.k':'Kündigungsfrist','b.g':'Garantie-Ende','b.p':'Preisänderung','g.t':'Arzttermin','g.v':'Vorsorge','g.u':'Ablauf eines Dokuments','g.w':'Kontaktlinsen-Wechsel','g.n':'Kontaktlinsen nachbestellen'};
+const RML={'b.k':'Kündigungsfrist','b.g':'Garantie-Ende','b.p':'Preisänderung','b.w':'Wartung','g.t':'Arzttermin','g.v':'Vorsorge','g.u':'Ablauf eines Dokuments','g.w':'Kontaktlinsen-Wechsel','g.n':'Kontaktlinsen nachbestellen','g.m':'Rezept für ein Medikament'};
 function schedAll(){const L=(CFG.remind&&CFG.remind.lead)||14;
   for(const a of AREAS){const api=API[a.id];if(api)SCH[a.id]=safe(()=>api.sched(L),[]).map(x=>({d:x.d,t:a.id[0]+'.'+x.t,l:+x.l||L}))}
   return Object.values(SCH).flat().filter(x=>x.d>=today()).sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0)}
@@ -878,10 +1134,10 @@ function remindNext(){const it=schedAll();if(!it.length)return 'Gerade steht nic
 function remindHtml(){
   if(!('Notification' in window&&'serviceWorker' in navigator))return '<p class="ds-hint">Dieser Browser kann keine Benachrichtigungen anzeigen.</p>';
   const R=CFG.remind||{};
-  if(!R.on)return `<p class="ds-hint">MyBox meldet sich vor <b>Arztterminen</b>, fälligen <b>Vorsorgen</b>, ablaufenden <b>Überweisungen</b>, beim <b>Kontaktlinsen-Wechsel</b>, vor <b>Kündigungsfristen</b>, <b>Garantie-Enden</b> und <b>Preisänderungen</b> – auch bei geschlossener App. Dafür liegen nur die <b>Daten ohne Namen, Ärzte oder Beträge</b> unverschlüsselt auf dem Handy.</p>
+  if(!R.on)return `<p class="ds-hint">MyBox meldet sich einmal am Tag mit einer Zusammenfassung: <b>Arzttermine</b>, fällige <b>Vorsorgen</b>, ablaufende <b>Überweisungen</b>, <b>Rezepte</b> für Medikamente, <b>Kontaktlinsen</b>, <b>Kündigungsfristen</b>, <b>Garantie-Enden</b>, <b>Preisänderungen</b> und <b>Wartungen</b> – auch bei geschlossener App. Dafür liegen nur die <b>Daten ohne Namen, Ärzte oder Beträge</b> unverschlüsselt auf dem Handy.</p>
     <div class="ds-acts"><button type="button" class="ds-btn pri" data-m="rm-on">Einschalten</button></div>`;
   const P=Notification.permission;
-  return `<p class="ds-hint">An. MyBox meldet sich einmal am Tag mit einer neutralen Benachrichtigung. Geprüft wird bei jedem Öffnen der App${R.bg?' und ab und zu bei geschlossener App – wie oft, entscheidet Android':'. Bei geschlossener App nur, wenn sie auf dem Startbildschirm installiert ist'}. Ganz sicher: zusätzlich in den Kalender exportieren.</p>
+  return `<p class="ds-hint">An. MyBox meldet sich einmal am Tag mit einer Zusammenfassung, z. B. „Arzttermin morgen · Rezept besorgen · 2 × Kündigungsfristen“ – ohne Namen oder Beträge. Geprüft wird bei jedem Öffnen der App${R.bg?' und ab und zu bei geschlossener App – wie oft, entscheidet Android':'. Bei geschlossener App nur, wenn sie auf dem Startbildschirm installiert ist'}. Ganz sicher: zusätzlich in den Kalender exportieren.</p>
     <div class="ds-lbl">So früh melden</div><div class="ds-seg" role="radiogroup" aria-label="So früh melden" style="margin:0 0 6px">${LEADS.map(k=>`<button type="button" role="radio" aria-checked="${(R.lead||14)===k}" data-m="rm-lead" data-v="${k}">${k} Tage</button>`).join('')}</div>
     <p class="ds-hint" style="font-size:13px">Gilt für Fristen, Vorsorge, Dokumente und Linsen-Vorrat. Arzttermine und Linsen-Wechsel kommen immer am Vortag und am Tag selbst.</p>
     ${P!=='granted'?`<div class="ds-box crit"><b>Benachrichtigungen sind ${P==='default'?'nicht erlaubt':'blockiert'}.</b> Darum kommt keine Meldung. ${P==='default'?'Tippe auf „Erlauben“.':'Erlaube sie in den Android-Einstellungen: Apps → MyBox (oder Chrome) → Benachrichtigungen → an. Falls dort alles an ist: in Chrome auf das Symbol neben der Adresse → Berechtigungen → Benachrichtigungen → zulassen.'}<div class="ds-acts"><button type="button" class="ds-btn" data-m="rm-perm">${P==='default'?'Erlauben':'Erneut prüfen'}</button></div></div>`:''}
@@ -942,7 +1198,8 @@ let ignorePop=false;
 addEventListener('popstate',()=>{if(ignorePop){ignorePop=false;return}
   if($('#dlg').open){$('#dlg').close();return}
   if(sheetOpen()){closeSheet(true);return}
-  if(curArea){curArea=null;$('#areas').classList.add('off');for(const f of Object.values(FR))f.classList.remove('on');renderDash()}});
+  if(curArea&&API[curArea]&&safe(()=>API[curArea].back&&API[curArea].back(),false)){history.pushState({mbx:'area'},'');return}
+  if(curArea){curArea=null;$('#areas').classList.add('off');for(const f of Object.values(FR))f.classList.remove('on');navSync();renderDash()}});
 
 /* ---------- Service Worker: offline nutzbar, Erinnerungen, neue Version ---------- */
 let swReg=null;
