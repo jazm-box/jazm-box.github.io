@@ -397,7 +397,7 @@ body.navon #toast{bottom:calc(env(safe-area-inset-bottom,0px) + 82px)}
 
 <script>
 'use strict';
-const APP_VERSION='0.5.0';
+const APP_VERSION='0.5.1';
 /* ---------- Bereiche ---------- */
 const AREAS=[
   {id:'smart',name:'Haus',app:'MySmartBox',path:'smart/',img:'boxen/smartbox.png',dir:'smartbox',host:'jazm-smartbox.github.io',def:{owner:'jazm-smartbox',repo:'smartbox-daten'}},
@@ -735,6 +735,10 @@ async function goRef(x){if(!x||!API[x.app])return;if(!await openAreaG(x.app))ret
 
 /* ---------- Blatt (Menü und Suche) ---------- */
 let SHMODE='menu',SHARG=null;const ACC=new Set();
+/* Nur ein Aufklappfenster je Gruppe: öffnet man eines, schließen sich die offenen daneben (nur bei eigenem Antippen, nicht beim Aufbau) */
+document.addEventListener('click',e=>{const s=e.target&&e.target.closest&&e.target.closest('summary');const d=s&&s.parentElement;
+  if(!d||d.tagName!=='DETAILS'||d.open||!d.parentElement)return;
+  for(const o of d.parentElement.querySelectorAll(':scope > details[open]'))if(o!==d)o.open=false},true);
 const SHT={share:'Geteilt – wohin damit?',search:'Suchen',new:'Neu anlegen',contacts:'Kontakte',contact:'Kontakt',year:'Jahresübersicht',pass:'Gerätepass'};
 const sheetOpen=()=>!$('#sheet').hidden;
 function openSheet(mode,arg){SHMODE=mode;if(arg!==undefined)SHARG=arg;const sh=$('#sheet');$('#sheetH').textContent=SHT[mode]||'Daten & Sicherheit';fillSheet();

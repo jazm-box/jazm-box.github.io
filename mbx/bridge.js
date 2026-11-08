@@ -3,6 +3,10 @@
    öffnet Links zu den anderen Boxen innerhalb von MyBox und stellt Daten fürs Dashboard bereit. */
 'use strict';
 window.MBX_EMBED=true; /* schaltet in den Apps den MyBox-Modus ein */
+/* Nur ein Aufklappfenster je Gruppe: öffnet man eines, schließen sich die offenen daneben (nur bei eigenem Antippen, nicht beim Aufbau) */
+document.addEventListener('click',e=>{const s=e.target&&e.target.closest&&e.target.closest('summary');const d=s&&s.parentElement;
+  if(!d||d.tagName!=='DETAILS'||d.open||!d.parentElement)return;
+  for(const o of d.parentElement.querySelectorAll(':scope > details[open]'))if(o!==d)o.open=false},true);
 (function(){
   const P=(()=>{try{return window.parent!==window&&window.parent.MBX?window.parent.MBX:null}catch(e){return null}})();
   if(!P){location.replace('../');return}
