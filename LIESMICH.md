@@ -1,4 +1,4 @@
-# MyBox 0.5.1
+# MyBox 0.6.0
 
 MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensicherung, ein gemeinsames Dashboard, eine Suche, ein Kalender und Erinnerungen für alles. Alle Daten bleiben verschlüsselt auf dem Handy (AES-256). Es gibt keinen Server.
 
@@ -8,6 +8,13 @@ MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensiche
 - **Bereiche** `smart/`, `gesund/` und `beleg/` sind die drei bisherigen Apps, unverändert in ihrer Bedienung. Sie werden mit dem MyBox-Passwort entsperrt. Was MyBox gemeinsam erledigt, blenden sie aus.
 - Der Knopf mit dem Würfel oben in jedem Bereich führt zurück zur MyBox-Übersicht.
 - Es wird nichts mehr zwischen Apps geteilt. Verknüpfte Einträge liegen zusammen in MyBox und zeigen sich gegenseitig an (siehe unten).
+
+## Neu in 0.6.0
+
+- **Vorsorge als Tabelle** (Gesundheit → Termine → Vorsorge): links die Untersuchungen, oben die Jahre, das aktuelle Jahr hervorgehoben. Zeichen: ✓ erledigt, Kalender = Termin steht, Ring = fällig (orange = bald), ! = überfällig, ? = noch nie eingetragen, kleiner Punkt = voraussichtlich wieder dran. Die Zahl darunter ist der Monat. Zur Seite wischen für frühere Jahre.
+- Antippen: leeres Feld in einem vergangenen Jahr → frühere Untersuchung nachtragen; ✓ → Datum ändern oder löschen; Ring/! → Termin anlegen; Kalender → zum Termin.
+- Frühere Untersuchungen bleiben jetzt erhalten: „Heute erledigt“ oder ein neueres „Zuletzt gemacht“ schiebt das alte Datum in den Verlauf, statt es zu überschreiben.
+- Ersetzt die bisherige 12-Monats-Leiste.
 
 ## Neu in 0.5.1
 

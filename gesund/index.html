@@ -359,23 +359,46 @@ svg.chart .zout{stroke:var(--card);stroke-width:2}
 .fqadd input{margin:0;flex:1;min-width:0}
 .fqadd .pri{width:auto;padding:0 16px;border-radius:12px;flex:none}
 .fqnext{margin-top:8px}
-/* Vorsorge-Jahresleiste */
-.vyear{position:relative;padding:12px 14px 10px;overflow:hidden}
-.vyhead,.vyrow{display:grid;grid-template-columns:minmax(70px,30%) 1fr;gap:8px;align-items:center}
-.vymons{display:grid;grid-template-columns:repeat(12,1fr);font-size:10px;color:var(--mu);text-align:center;letter-spacing:-.02em}
-.vymons .now{color:var(--pri);font-weight:700}
-.vyrow{all:unset;box-sizing:border-box;display:grid;grid-template-columns:minmax(70px,30%) 1fr;gap:8px;align-items:center;width:100%;padding:7px 0;cursor:pointer;border-top:1px solid var(--bd)}
-.vyn{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.vytrack{position:relative;height:16px;border-radius:8px;background:repeating-linear-gradient(90deg,var(--bg) 0 calc(100%/12 - 1px),var(--bd) calc(100%/12 - 1px) calc(100%/12))}
-.vydot{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 2px var(--card)}
-.vydot.or{background:var(--or)} .vydot.red{background:var(--red);animation:vyPulse 1.8s ease-in-out infinite} .vydot.plan{background:var(--pri)} .vydot.q{background:var(--mu)}
-.vydot.far{margin-left:-14px;border-radius:50% 4px 4px 50%}
-@keyframes vyPulse{50%{box-shadow:0 0 0 2px var(--card),0 0 0 6px color-mix(in srgb,var(--red) 30%,transparent)}}
-@media (prefers-reduced-motion:no-preference){.vyrow .vydot{animation-name:vyIn;animation-duration:.5s;animation-timing-function:cubic-bezier(.3,1.35,.5,1);animation-fill-mode:backwards}.vyrow .vydot.red{animation:vyIn .5s cubic-bezier(.3,1.35,.5,1) backwards,vyPulse 1.8s ease-in-out .5s infinite}}
-@keyframes vyIn{from{left:0;opacity:0}}
-.vylegend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11px;color:var(--mu);margin-top:8px}
-.vylegend span{display:inline-flex;align-items:center;gap:5px}
-.vylegend .vydot{position:static;margin:0;width:9px;height:9px;box-shadow:none;animation:none}
+/* Vorsorge-Tabelle: links die Untersuchung, oben die Jahre */
+.vtab{padding:12px 0 10px;overflow:hidden}
+.vtscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;padding:0 0 4px}
+.vtab table{border-collapse:separate;border-spacing:0;min-width:100%;font-size:13px}
+.vtab th,.vtab td{padding:0;text-align:center;border-bottom:1px solid var(--bd)}
+.vtab thead th{font-size:12px;font-weight:600;color:var(--mu);padding:0 2px 8px;border-bottom:1px solid var(--bd);font-variant-numeric:tabular-nums}
+.vtab thead th.now{color:var(--pri)}
+.vtab thead th.now span{display:inline-block;padding:2px 7px;border-radius:999px;background:var(--pri2)}
+.vtab td.now{background:color-mix(in srgb,var(--pri2) 55%,transparent)}
+.vtab tbody tr:last-child>*{border-bottom:0}
+.vtab .vtn{position:sticky;left:0;z-index:1;background:var(--card);text-align:left;width:118px;min-width:118px;max-width:118px;padding:0 8px 0 14px;box-shadow:6px 0 6px -6px rgb(0 0 0 / .18)}
+.vtab thead .vtn{padding-left:14px}
+.vtnb{all:unset;box-sizing:border-box;display:block;width:100%;padding:8px 0;cursor:pointer}
+.vtnb b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-weight:600;line-height:1.25;hyphens:auto;overflow-wrap:anywhere}
+.vtnb small{display:block;font-size:11px;color:var(--mu);font-weight:400}
+.vtab td{white-space:nowrap}
+.vc{all:unset;box-sizing:border-box;display:inline-flex;vertical-align:middle;align-items:center;justify-content:center;min-width:50px;width:100%;height:52px;cursor:pointer;border-radius:10px;-webkit-tap-highlight-color:transparent}
+.vc:focus-visible{outline:2px solid var(--pri);outline-offset:-3px}
+.vc.two{width:auto;min-width:36px;padding:0 1px}
+.vcm{display:flex;flex-direction:column;align-items:center;gap:2px}
+.vc:active{background:var(--pri2)}
+.vc i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font-style:normal;font-weight:700;font-size:13px;line-height:1}
+.vc small{font-size:10px;color:var(--mu);font-variant-numeric:tabular-nums;line-height:1.1}
+.vc svg{width:14px;height:14px}
+.vc.ok i{background:var(--ok);color:var(--card)}
+.vc.plan i{background:var(--pri);color:var(--on-pri);border-radius:7px}
+.vc.due i{box-shadow:inset 0 0 0 2px var(--ok);color:var(--ok)}
+.vc.or i{box-shadow:inset 0 0 0 2px var(--or);color:var(--or)}
+.vc.red i{background:var(--red);color:var(--card)}
+.vc.exp i{width:8px;height:8px;background:var(--bd)}
+.vc.emp i{width:6px;height:6px;background:transparent}
+.vc.add:hover i,.vc.emp:hover i{background:var(--bd)}
+.vtlegend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11px;color:var(--mu);margin:10px 14px 0}
+.vtlegend span{display:inline-flex;align-items:center;gap:6px}
+.vtlegend .vc{all:unset;display:inline-flex}
+.vtlegend .vc i{width:16px;height:16px;font-size:10px}
+.vtlegend .vc.exp i{width:8px;height:8px}
+.vthint{font-size:11px;color:var(--mu);margin:6px 14px 0}
+@media (prefers-reduced-motion:no-preference){.vc.red i{animation:vtPulse 1.8s ease-in-out infinite}}
+@keyframes vtPulse{50%{box-shadow:0 0 0 5px color-mix(in srgb,var(--red) 25%,transparent)}}
 #dlgForm>.ds-grab{flex:0 0 40px;margin:4px auto 12px}
 
 /* ds:end */
@@ -447,7 +470,7 @@ svg.chart .zout{stroke:var(--card);stroke-width:2}
 
 <script>
 'use strict';
-const APP_VERSION='2.8.0';
+const APP_VERSION='2.9.0';
 /* ---------- Helfer ---------- */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -801,7 +824,8 @@ function vMatches(t,v){
 }
 const vTermin=v=>D.termine.filter(t=>t.datum.slice(0,10)>=today()&&vMatches(t,v)).sort((a,b)=>a.datum.localeCompare(b.datum))[0];
 function vLetzte(v){ /* vergangener, ausdrücklich verknüpfter Termin zählt als „zuletzt gemacht“ */
-  let l=v.letzte||'';for(const t of D.termine)if(t.vorsorgeId===v.id){const d=t.datum.slice(0,10);if(d<today()&&d>l)l=d}return l;
+  let l=v.letzte||'';for(const t of D.termine)if(t.vorsorgeId===v.id){const d=t.datum.slice(0,10);if(d<today()&&d>l)l=d}
+  for(const h of v.hist||[])if(h<=today()&&h>l)l=h;return l;
 }
 function vStatus(v){
   const st=vStatus0(v);if(st.rank>2)return st;
@@ -1272,22 +1296,59 @@ function rAerzte(){
       return '<div>'+ds.slice(0,4).map(x=>`<button class="chipdoc" data-act="d-view" data-id="${x.id}">📎 ${esc(dokTitel(x))}</button>`).join('')+(ds.length>4?`<button class="chipdoc" data-act="a-docs" data-id="${a.id}">+ ${ds.length-4} weitere</button>`:'')+'</div>'})()}
     <div class="acts">${tel?`<a href="tel:${esc(tel)}">📞 Anrufen</a>`:''}${a.adresse?`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(a.adresse)}" target="_blank" rel="noopener noreferrer">🗺️ Route</a>`:''}${web?`<a href="${esc(web)}" target="_blank" rel="noopener noreferrer">🌐 Online-Termin</a>`:''}<button data-act="a-termin" data-id="${a.id}">➕ Termin</button><button data-act="a-dok" data-id="${a.id}">📎 Dokument</button><button data-act="a-edit" data-id="${a.id}">✏️</button></div></div>`}).join('');
 }
-/* Jahresleiste: wann welche Vorsorge in den nächsten 12 Monaten fällig ist */
-function vYear(){
-  const t0=new Date(today()+'T00:00'),mons=[...Array(12)].map((_,i)=>new Date(t0.getFullYear(),t0.getMonth()+i,1));
-  const end=new Date(t0.getFullYear(),t0.getMonth()+12,1),span=end-mons[0];
-  const pos=d=>Math.max(0,Math.min(100,(d-mons[0])/span*100));
-  const rows=D.vorsorge.map(v=>({v,s:vStatus(v)})).sort((x,y)=>(x.s.next||0)-(y.s.next||0)).map(({v,s})=>{
-    const d=s.next,late=!d||d<t0,far=d&&d>=end,p=late?0:far?100:pos(d),cls=!d?'q':late?'red':s.rank===2?'or':s.termin?'plan':'ok';
-    const tip=!d?'Unbekannt – planen':late?'Überfällig':(far?'Später als in 12 Monaten':d.toLocaleDateString('de-DE',{month:'long',year:'numeric'}));
-    return `<button class="vyrow" data-act="v-edit" data-id="${v.id}" title="${esc(v.name+' · '+tip)}"><span class="vyn">${esc(v.name)}</span><span class="vytrack"><i class="vydot ${cls}${far?' far':''}" style="left:${p.toFixed(1)}%"></i></span></button>`}).join('');
-  return `<div class="card vyear"><div class="vyhead"><span class="vyn"></span><span class="vymons">${mons.map((m,i)=>`<span${i===0?' class="now"':''}>${m.toLocaleDateString('de-DE',{month:'short'}).replace('.','')}</span>`).join('')}</span></div>${rows}
-    <div class="vylegend"><span><i class="vydot ok"></i>fällig</span><span><i class="vydot or"></i>bald</span><span><i class="vydot red"></i>überfällig</span><span><i class="vydot plan"></i>Termin steht</span></div>
-</div>`;
+/* Vorsorge-Tabelle: Zeilen = Untersuchungen, Spalten = Jahre.
+   ✓ erledigt (aus „Zuletzt gemacht“, früheren Einträgen und vergangenen Terminen), Kalender = Termin steht,
+   Ring = fällig, ! = überfällig, ? = unbekannt, Punkt = voraussichtlich wieder dran. Antippen trägt nach oder öffnet. */
+const vMon=d=>String(d).slice(5,7);
+function vDone(v){ /* alle Erledigt-Daten mit Herkunft, ohne Doppelte */
+  const td=today(),m=new Map();
+  for(const h of v.hist||[])if(h&&h<=td)m.set(h,{d:h,src:'h'});
+  for(const t of D.termine){const d=t.datum.slice(0,10);if(d<td&&vMatches(t,v)&&!m.has(d))m.set(d,{d,src:'t',id:t.id})}
+  if(v.letzte&&v.letzte<=td)m.set(v.letzte,{d:v.letzte,src:'l'});
+  return [...m.values()].sort((a,b)=>a.d.localeCompare(b.d));
+}
+function vTable(){
+  const Y=new Date().getFullYear(),list=D.vorsorge.map(v=>({v,s:vStatus(v),done:vDone(v),tm:vTermin(v)})).sort((x,y)=>x.s.rank-y.s.rank||(x.s.next||0)-(y.s.next||0));
+  let y0=Y-3,y1=Y+3;
+  for(const r of list){for(const x of r.done)y0=Math.min(y0,+x.d.slice(0,4));if(r.s.next)y1=Math.max(y1,r.s.next.getFullYear())}
+  y0=Math.max(y0,Y-8);y1=Math.min(y1,Y+6);
+  const yrs=[];for(let y=y0;y<=y1;y++)yrs.push(y);
+  const ic={cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>'};
+  const cell=(r,y)=>{const {v,s}=r,id=v.id,now=y===Y,M=[],tm=r.tm;
+    const add=(cls,inner,sub,lab,act)=>M.push({cls,inner,sub,lab,act});
+    const dn=r.done.filter(x=>+x.d.slice(0,4)===y);
+    if(dn.length)add('ok','✓',(dn.length>1?dn.length+'×':vMon(dn[0].d)),'erledigt '+dn.map(x=>fmtD(x.d)).join(', '),'vc-done');
+    if(tm&&+tm.datum.slice(0,4)===y)add('plan',ic.cal,vMon(tm.datum),'Termin am '+fmtD(tm.datum.slice(0,10)),'vc-termin');
+    else if(!s.next){if(now)add('red','?','','unbekannt – wann zuletzt gemacht?','vc-add')}
+    else{const ny=s.next.getFullYear(),iv=+v.intervall||12;
+      if(s.rank===1&&!tm){if(now)add('red','!','seit '+vMon(localD(s.next))+'/'+String(ny).slice(2),'überfällig seit '+s.next.toLocaleDateString('de-DE'),'vc-plan')}
+      else if(ny===y&&!tm)add(s.rank===2?'or':'due','',vMon(localD(s.next)),'fällig '+s.next.toLocaleDateString('de-DE',{month:'long',year:'numeric'}),'vc-plan');
+      /* voraussichtlich wieder dran: weitere Intervalle nach Termin bzw. nächster Fälligkeit */
+      const base=tm?tm.datum.slice(0,10):(s.rank===1?today():localD(s.next)),ex=[];
+      for(let k=1;k<=24;k++){const d=addMonths(base,iv*k);if(d.getFullYear()>y)break;if(d.getFullYear()===y&&localD(d)>today())ex.push(d)}
+      if(ex.length&&!M.some(m=>m.cls!=='ok'))add('exp','',ex.map(d=>vMon(localD(d))).join('·'),'voraussichtlich '+ex.map(d=>d.toLocaleDateString('de-DE',{month:'long',year:'numeric'})).join(', '),'vc-plan')}
+    const td=`<td${now?' class="now"':''}>`;
+    if(!M.length)return y<=Y?`${td}<button class="vc emp add" data-act="vc-add" data-id="${id}" data-y="${y}" aria-label="${esc(v.name+' '+y+': nachtragen')}" title="nachtragen"><span class="vcm"><i></i></span></button></td>`:`${td}</td>`;
+    return td+M.map(m=>`<button class="vc ${m.cls}${M.length>1?' two':''}" data-act="${m.act}" data-id="${id}" data-y="${y}" aria-label="${esc(v.name+' '+y+': '+m.lab)}" title="${esc(m.lab)}"><span class="vcm"><i>${m.inner}</i>${m.sub?`<small>${m.sub}</small>`:''}</span></button>`).join('')+'</td>'};
+  const rows=list.map(r=>`<tr><th class="vtn" scope="row"><button class="vtnb" data-act="v-edit" data-id="${r.v.id}"><b>${esc(r.v.name)}</b><small>alle ${esc(+r.v.intervall%12?r.v.intervall+' Mon.':(+r.v.intervall/12===1?'1 Jahr':(+r.v.intervall/12)+' Jahre'))}</small></button></th>${yrs.map(y=>cell(r,y)).join('')}</tr>`).join('');
+  setTimeout(()=>{const sc=document.querySelector('.vtscroll'),th=sc&&sc.querySelector('thead th.now');if(sc&&th){const e=th.nextElementSibling||th;sc.scrollLeft=Math.max(0,e.offsetLeft+e.offsetWidth-sc.clientWidth+6)}},0);
+  return `<div class="card vtab"><div class="vtscroll"><table><thead><tr><th class="vtn" scope="col">Vorsorge</th>${yrs.map(y=>`<th scope="col"${y===Y?' class="now"':''}><span>${y}</span></th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="vtlegend"><span><span class="vc ok"><i>✓</i></span>erledigt</span><span><span class="vc plan"><i>${ic.cal}</i></span>Termin steht</span><span><span class="vc due"><i></i></span>fällig</span><span><span class="vc or"><i></i></span>bald fällig</span><span><span class="vc red"><i>!</i></span>überfällig</span><span><span class="vc exp"><i></i></span>voraussichtlich</span></div>
+    <p class="vthint">Zahl unter dem Zeichen = Monat. Zur Seite wischen für frühere Jahre. Leeres Feld in einem vergangenen Jahr antippen, um eine frühere Untersuchung nachzutragen.</p></div>`;
+}
+/* Frühere Untersuchung nachtragen oder einen nachgetragenen Eintrag ändern */
+function vHistForm(v,y,old){
+  const td=today(),def=old||(String(y)===td.slice(0,4)?td:y+'-06-15');
+  openForm(old?'Untersuchung ändern':'Untersuchung nachtragen',[{k:'d',l:v.name+' – gemacht am',t:'date',req:true}],{d:def},async x=>{
+    if(!x.d||x.d>today()){toast('Bitte ein Datum bis heute wählen.');return false}
+    v.hist=(v.hist||[]).filter(h=>h!==old&&h!==x.d);if(x.d!==v.letzte)v.hist.push(x.d);v.hist.sort();
+    if(old&&old===v.letzte){v.letzte=x.d;v.hist=v.hist.filter(h=>h!==x.d)}
+    await save();toast('Eingetragen.')},
+    {win:true,html:old?'':'<p class="ds-hint">Der genaue Tag ist nicht wichtig – der Monat reicht.</p>',del:old?async()=>{v.hist=(v.hist||[]).filter(h=>h!==old);if(v.letzte===old)v.letzte='';await save()}:null});
 }
 function rVorsorge(){
   if(!D.vorsorge.length)return `<div class="empty">Noch keine Vorsorge-Einträge.<br><br><button class="pri" data-act="v-presets">Vorschläge hinzufügen</button><br><br><span class="meta">Die Intervalle sind nur Startwerte – bitte mit deinem Arzt abstimmen und anpassen.</span></div>`;
-  return vYear()+D.vorsorge.map(v=>({v,s:vStatus(v)})).sort((x,y)=>x.s.rank-y.s.rank||(x.s.next||0)-(y.s.next||0)).map(({v,s})=>{
+  return vTable()+D.vorsorge.map(v=>({v,s:vStatus(v)})).sort((x,y)=>x.s.rank-y.s.rank||(x.s.next||0)-(y.s.next||0)).map(({v,s})=>{
     const a=arzt(v.arztId);
     return `<div class="card"><h3>${esc(v.name)}</h3><span class="badge ${s.cls}">${esc(s.txt)}</span>
     <div class="meta" style="margin-top:6px">Alle ${esc(v.intervall)} Monate · zuletzt ${esc(fmtD(vLetzte(v)))}${a?' · '+esc(a.name):''}</div>
@@ -1419,7 +1480,7 @@ function editVorsorge(v){
   openForm(isNew?'Neue Vorsorge':'Vorsorge bearbeiten',[
     {k:'name',l:'Untersuchung',req:true},{k:'intervall',l:'Intervall (Monate)',t:'number',req:true},
     {k:'letzte',l:'Zuletzt gemacht',t:'date'},{k:'arztId',l:'Arzt',t:'select',opts:arztOpts()},{k:'notiz',l:'Notiz',t:'textarea'},
-  ],v,async x=>{Object.assign(v,x,{intervall:Math.max(1,+x.intervall||12)});if(isNew)D.vorsorge.push(v);await save()},
+  ],v,async x=>{const o=v.letzte;if(o&&x.letzte&&x.letzte>o){v.hist=(v.hist||[]).filter(h=>h!==o);v.hist.push(o)}Object.assign(v,x,{intervall:Math.max(1,+x.intervall||12)});if(isNew)D.vorsorge.push(v);await save()},
   {draft:{kind:'vorsorge',id:isNew?null:v.id},del:isNew?null:async()=>{D.vorsorge=D.vorsorge.filter(y=>y.id!==v.id);D.termine.forEach(t=>{if(t.vorsorgeId===v.id)t.vorsorgeId=''});await save()}});
 }
 function editWert(w){
@@ -2020,7 +2081,12 @@ async function onAct(e){
     case 'a-edit':editArzt(A());break;
     case 'a-termin':editTermin(null,{arztId:id,titel:A().fach?A().fach+' – Termin':'Termin'});break;
     case 'v-edit':editVorsorge(V());break;
-    case 'v-done':{const v=V();v.letzte=today();await save();render();DS.yay('Erledigt');toast('Erledigt – nächster Termin neu berechnet.');break}
+    case 'vc-done':{const v=V(),y=b.dataset.y,dn=vDone(v).filter(x=>x.d.startsWith(y)),l=dn[dn.length-1];if(!l)break;
+      if(l.src==='t')editTermin(D.termine.find(x=>x.id===l.id));else vHistForm(v,y,l.d);break}
+    case 'vc-add':vHistForm(V(),b.dataset.y);break;
+    case 'vc-termin':{const s=vStatus(V());if(s.termin)editTermin(s.termin);break}
+    case 'vc-plan':{const v=V();editTermin(null,{titel:v.name,arztId:v.arztId||'',vorsorgeId:v.id});break}
+    case 'v-done':{const v=V();if(v.letzte&&v.letzte!==today()){v.hist=(v.hist||[]).filter(h=>h!==v.letzte);v.hist.push(v.letzte)}v.letzte=today();await save();render();DS.yay('Erledigt');toast('Erledigt – nächster Termin neu berechnet.');break}
     case 'v-termin':{const v=V();editTermin(null,{titel:v.name,arztId:v.arztId||'',vorsorgeId:v.id});break}
     case 'v-ics':{const v=V(),s=vStatus(v);if(!s.next)break;const st=s.next<new Date()?new Date():s.next;
       download(`vorsorge-${localD(st)}.ics`,makeICS([{uid:v.id+'-'+localD(st),titel:'Vorsorge fällig: '+v.name,start:st,allDay:true,notiz:'Termin vereinbaren',alarms:['PT9H']}]),'text/calendar');break}
