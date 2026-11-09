@@ -1,4 +1,4 @@
-# MyBox 0.6.0
+# MyBox 0.7.0
 
 MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensicherung, ein gemeinsames Dashboard, eine Suche, ein Kalender und Erinnerungen für alles. Alle Daten bleiben verschlüsselt auf dem Handy (AES-256). Es gibt keinen Server.
 
@@ -8,6 +8,14 @@ MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensiche
 - **Bereiche** `smart/`, `gesund/` und `beleg/` sind die drei bisherigen Apps, unverändert in ihrer Bedienung. Sie werden mit dem MyBox-Passwort entsperrt. Was MyBox gemeinsam erledigt, blenden sie aus.
 - Der Knopf mit dem Würfel oben in jedem Bereich führt zurück zur MyBox-Übersicht.
 - Es wird nichts mehr zwischen Apps geteilt. Verknüpfte Einträge liegen zusammen in MyBox und zeigen sich gegenseitig an (siehe unten).
+
+## Neu in 0.7.0
+
+- **Rechnung zur Vorsorge** (Gesundheit → Vorsorge): neuer Knopf „📎 Rechnung“ an jeder Vorsorge. Foto oder PDF, Datum und Betrag; die Rechnung erscheint als Chip an der Vorsorge.
+- In der Vorsorge-Tabelle trägt ein ✓ mit Büroklammer eine Rechnung bzw. ein Dokument. ✓ antippen → „Rechnung zu dieser Untersuchung“ oder vorhandene öffnen.
+- Dokumente haben neu „Gehört zur Vorsorge“ und – bei Art „Rechnung“ – „Betrag in €“. Rechnungen an einem Termin zählen automatisch zur Vorsorge, wenn der Termin dazugehört.
+- Beträge von Rechnungen fließen in die Jahresübersicht (Krankheitskosten) – nicht doppelt, wenn beim Termin schon „Selbst bezahlt“ steht.
+- Fehler behoben: „Gehört zu (Augen)“ wurde beim Dokument nicht gespeichert.
 
 ## Neu in 0.6.0
 

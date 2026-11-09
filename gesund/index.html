@@ -388,6 +388,8 @@ svg.chart .zout{stroke:var(--card);stroke-width:2}
 .vc.due i{box-shadow:inset 0 0 0 2px var(--ok);color:var(--ok)}
 .vc.or i{box-shadow:inset 0 0 0 2px var(--or);color:var(--or)}
 .vc.red i{background:var(--red);color:var(--card)}
+.vc.doc i{position:relative}
+.vc.doc i::after{content:'';position:absolute;right:-5px;top:-5px;width:13px;height:13px;border-radius:50%;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f5a60' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.4 11.1l-9.2 9.2a6 6 0 01-8.5-8.5l9.2-9.2a4 4 0 015.7 5.7l-9.2 9.2a2 2 0 01-2.8-2.8l8.5-8.5'/%3E%3C/svg%3E") center/9px no-repeat;box-shadow:0 0 0 1px var(--bd)}
 .vc.exp i{width:8px;height:8px;background:var(--bd)}
 .vc.emp i{width:6px;height:6px;background:transparent}
 .vc.add:hover i,.vc.emp:hover i{background:var(--bd)}
@@ -470,7 +472,7 @@ svg.chart .zout{stroke:var(--card);stroke-width:2}
 
 <script>
 'use strict';
-const APP_VERSION='2.9.0';
+const APP_VERSION='2.10.0';
 /* ---------- Helfer ---------- */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -823,6 +825,8 @@ function vMatches(t,v){
   return vOverlap(vWords((a.fach||'')+' '+a.name),vw);
 }
 const vTermin=v=>D.termine.filter(t=>t.datum.slice(0,10)>=today()&&vMatches(t,v)).sort((a,b)=>a.datum.localeCompare(b.datum))[0];
+const vDocs=v=>D.dokumente.filter(d=>d.vorsorgeId===v.id||(!d.vorsorgeId&&d.terminId&&(()=>{const t=D.termine.find(x=>x.id===d.terminId);return t&&vMatches(t,v)})()));
+const fmtEur=x=>Number(x).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
 function vLetzte(v){ /* vergangener, ausdrücklich verknüpfter Termin zählt als „zuletzt gemacht“ */
   let l=v.letzte||'';for(const t of D.termine)if(t.vorsorgeId===v.id){const d=t.datum.slice(0,10);if(d<today()&&d>l)l=d}
   for(const h of v.hist||[])if(h<=today()&&h>l)l=h;return l;
@@ -1308,7 +1312,7 @@ function vDone(v){ /* alle Erledigt-Daten mit Herkunft, ohne Doppelte */
   return [...m.values()].sort((a,b)=>a.d.localeCompare(b.d));
 }
 function vTable(){
-  const Y=new Date().getFullYear(),list=D.vorsorge.map(v=>({v,s:vStatus(v),done:vDone(v),tm:vTermin(v)})).sort((x,y)=>x.s.rank-y.s.rank||(x.s.next||0)-(y.s.next||0));
+  const Y=new Date().getFullYear(),list=D.vorsorge.map(v=>({v,s:vStatus(v),done:vDone(v),tm:vTermin(v),docs:vDocs(v)})).sort((x,y)=>x.s.rank-y.s.rank||(x.s.next||0)-(y.s.next||0));
   let y0=Y-3,y1=Y+3;
   for(const r of list){for(const x of r.done)y0=Math.min(y0,+x.d.slice(0,4));if(r.s.next)y1=Math.max(y1,r.s.next.getFullYear())}
   y0=Math.max(y0,Y-8);y1=Math.min(y1,Y+6);
@@ -1317,7 +1321,8 @@ function vTable(){
   const cell=(r,y)=>{const {v,s}=r,id=v.id,now=y===Y,M=[],tm=r.tm;
     const add=(cls,inner,sub,lab,act)=>M.push({cls,inner,sub,lab,act});
     const dn=r.done.filter(x=>+x.d.slice(0,4)===y);
-    if(dn.length)add('ok','✓',(dn.length>1?dn.length+'×':vMon(dn[0].d)),'erledigt '+dn.map(x=>fmtD(x.d)).join(', '),'vc-done');
+    const dk=r.docs.filter(x=>String(x.datum).slice(0,4)===String(y));
+    if(dn.length)add('ok'+(dk.length?' doc':''),'✓',(dn.length>1?dn.length+'×':vMon(dn[0].d)),'erledigt '+dn.map(x=>fmtD(x.d)).join(', ')+(dk.length?' · '+dk.length+' Dokument'+(dk.length>1?'e':''):''),'vc-done');
     if(tm&&+tm.datum.slice(0,4)===y)add('plan',ic.cal,vMon(tm.datum),'Termin am '+fmtD(tm.datum.slice(0,10)),'vc-termin');
     else if(!s.next){if(now)add('red','?','','unbekannt – wann zuletzt gemacht?','vc-add')}
     else{const ny=s.next.getFullYear(),iv=+v.intervall||12;
@@ -1333,7 +1338,7 @@ function vTable(){
   const rows=list.map(r=>`<tr><th class="vtn" scope="row"><button class="vtnb" data-act="v-edit" data-id="${r.v.id}"><b>${esc(r.v.name)}</b><small>alle ${esc(+r.v.intervall%12?r.v.intervall+' Mon.':(+r.v.intervall/12===1?'1 Jahr':(+r.v.intervall/12)+' Jahre'))}</small></button></th>${yrs.map(y=>cell(r,y)).join('')}</tr>`).join('');
   setTimeout(()=>{const sc=document.querySelector('.vtscroll'),th=sc&&sc.querySelector('thead th.now');if(sc&&th){const e=th.nextElementSibling||th;sc.scrollLeft=Math.max(0,e.offsetLeft+e.offsetWidth-sc.clientWidth+6)}},0);
   return `<div class="card vtab"><div class="vtscroll"><table><thead><tr><th class="vtn" scope="col">Vorsorge</th>${yrs.map(y=>`<th scope="col"${y===Y?' class="now"':''}><span>${y}</span></th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>
-    <div class="vtlegend"><span><span class="vc ok"><i>✓</i></span>erledigt</span><span><span class="vc plan"><i>${ic.cal}</i></span>Termin steht</span><span><span class="vc due"><i></i></span>fällig</span><span><span class="vc or"><i></i></span>bald fällig</span><span><span class="vc red"><i>!</i></span>überfällig</span><span><span class="vc exp"><i></i></span>voraussichtlich</span></div>
+    <div class="vtlegend"><span><span class="vc ok"><i>✓</i></span>erledigt</span><span><span class="vc plan"><i>${ic.cal}</i></span>Termin steht</span><span><span class="vc due"><i></i></span>fällig</span><span><span class="vc or"><i></i></span>bald fällig</span><span><span class="vc red"><i>!</i></span>überfällig</span><span><span class="vc exp"><i></i></span>voraussichtlich</span><span><span class="vc ok doc"><i>✓</i></span>mit Rechnung/Dokument</span></div>
     <p class="vthint">Zahl unter dem Zeichen = Monat. Zur Seite wischen für frühere Jahre. Leeres Feld in einem vergangenen Jahr antippen, um eine frühere Untersuchung nachzutragen.</p></div>`;
 }
 /* Frühere Untersuchung nachtragen oder einen nachgetragenen Eintrag ändern */
@@ -1344,7 +1349,7 @@ function vHistForm(v,y,old){
     v.hist=(v.hist||[]).filter(h=>h!==old&&h!==x.d);if(x.d!==v.letzte)v.hist.push(x.d);v.hist.sort();
     if(old&&old===v.letzte){v.letzte=x.d;v.hist=v.hist.filter(h=>h!==x.d)}
     await save();toast('Eingetragen.')},
-    {win:true,html:old?'':'<p class="ds-hint">Der genaue Tag ist nicht wichtig – der Monat reicht.</p>',del:old?async()=>{v.hist=(v.hist||[]).filter(h=>h!==old);if(v.letzte===old)v.letzte='';await save()}:null});
+    {win:true,html:(old?'':'<p class="ds-hint">Der genaue Tag ist nicht wichtig – der Monat reicht.</p>')+(old?`<button type="button" class="ds-btn" id="vhDok" style="margin:0 0 12px">📎 Rechnung zu dieser Untersuchung</button>${(()=>{const l=vDocs(v).filter(x=>x.datum.slice(0,4)===old.slice(0,4));return l.length?'<div style="margin:0 0 14px">'+l.map(x=>`<button type="button" class="chipdoc" data-vd="${x.id}">📎 ${esc(dokTitel(x))}${x.betrag?' · '+fmtEur(x.betrag):''}</button>`).join('')+'</div>':''})()}`:''),onOpen:f=>{const bb=f.querySelector('#vhDok');if(bb)bb.onclick=()=>{closeDlg();setTimeout(()=>editDok(null,{typ:'rechnung',vorsorgeId:v.id,arztId:v.arztId||'',datum:old}),50)};f.querySelectorAll('[data-vd]').forEach(x=>x.onclick=()=>{closeDlg();const d=D.dokumente.find(y=>y.id===x.dataset.vd);if(d)setTimeout(()=>viewDok(d),50)})},del:old?async()=>{v.hist=(v.hist||[]).filter(h=>h!==old);if(v.letzte===old)v.letzte='';await save()}:null});
 }
 function rVorsorge(){
   if(!D.vorsorge.length)return `<div class="empty">Noch keine Vorsorge-Einträge.<br><br><button class="pri" data-act="v-presets">Vorschläge hinzufügen</button><br><br><span class="meta">Die Intervalle sind nur Startwerte – bitte mit deinem Arzt abstimmen und anpassen.</span></div>`;
@@ -1352,7 +1357,8 @@ function rVorsorge(){
     const a=arzt(v.arztId);
     return `<div class="card"><h3>${esc(v.name)}</h3><span class="badge ${s.cls}">${esc(s.txt)}</span>
     <div class="meta" style="margin-top:6px">Alle ${esc(v.intervall)} Monate · zuletzt ${esc(fmtD(vLetzte(v)))}${a?' · '+esc(a.name):''}</div>
-    <div class="acts"><button data-act="v-done" data-id="${v.id}">✅ Heute erledigt</button>${s.termin?`<button data-act="t-edit" data-id="${s.termin.id}">📅 Zum Termin</button>`:`<button data-act="v-termin" data-id="${v.id}">➕ Termin</button>`}${s.next?`<button data-act="v-ics" data-id="${v.id}">📅 Erinnerung</button>`:''}<button data-act="v-edit" data-id="${v.id}">✏️</button></div></div>`}).join('');
+    ${(()=>{const ds=vDocs(v).sort((x,y)=>y.datum.localeCompare(x.datum));return ds.length?'<div>'+ds.slice(0,4).map(x=>`<button class="chipdoc" data-act="d-view" data-id="${x.id}">📎 ${esc(fmtD(x.datum))} · ${esc(x.typ==='rechnung'?'Rechnung':(DOKTYP[x.typ]||'Dokument'))}${x.betrag?' · '+fmtEur(x.betrag):''}</button>`).join('')+(ds.length>4?`<span class="meta"> +${ds.length-4} weitere</span>`:'')+'</div>':''})()}
+    <div class="acts"><button data-act="v-done" data-id="${v.id}">✅ Heute erledigt</button>${s.termin?`<button data-act="t-edit" data-id="${s.termin.id}">📅 Zum Termin</button>`:`<button data-act="v-termin" data-id="${v.id}">➕ Termin</button>`}${s.next?`<button data-act="v-ics" data-id="${v.id}">📅 Erinnerung</button>`:''}<button data-act="v-dok" data-id="${v.id}">📎 Rechnung</button><button data-act="v-edit" data-id="${v.id}">✏️</button></div></div>`}).join('');
 }
 /* Zielbereiche: übliche Richtwerte für Messungen zu Hause, selbst änderbar (mit dem Arzt abstimmen) */
 const ZIEL_DEF={bp:{v1:[100,135],v2:[60,85]},puls:{v1:[50,100]},gewicht:{v1:null}};
@@ -1787,7 +1793,7 @@ function rDok(){
   if(!D.dokumente.length)return h+`<div class="empty">Noch keine Dokumente.<br>Tippe auf <b>+</b> und fotografiere z. B. eine Überweisung oder ein Rezept – oder teile ein PDF aus einer anderen App mit der MyGesundBox, etwa deinen Medikationsplan aus MyTherapy.<br><br>${mtBtn()}</div>`;
   return h+list.map(d=>{const a=arzt(d.arztId),t=D.termine.find(x=>x.id===d.terminId),n=(d.files||[]).length,pdf=(d.files||[]).some(f=>f.mime==='application/pdf');
     return `<div class="card"><div style="display:flex;gap:12px;align-items:flex-start"><div class="dicon">${pdf?'📄':'🖼️'}</div><div style="flex:1;min-width:0">
-      <h3>${esc(dokTitel(d))}</h3><div class="meta">${esc(DOKTYP[d.typ]||'')} · ${esc(fmtD(d.datum))}${a?' · '+esc(a.name):''} · ${n} ${n===1?'Datei':'Dateien'}${t?'<br>📅 '+esc(t.titel)+', '+esc(fmtD(t.datum.slice(0,10))):''}</div>
+      <h3>${esc(dokTitel(d))}</h3><div class="meta">${esc(DOKTYP[d.typ]||'')} · ${esc(fmtD(d.datum))}${a?' · '+esc(a.name):''} · ${n} ${n===1?'Datei':'Dateien'}${t?'<br>📅 '+esc(t.titel)+', '+esc(fmtD(t.datum.slice(0,10))):''}${(()=>{const v=D.vorsorge.find(x=>x.id===d.vorsorgeId);return v?'<br>🔁 Vorsorge: '+esc(v.name):''})()}${d.typ==='rechnung'&&d.betrag?'<br>💶 '+fmtEur(d.betrag):''}</div>
       ${dokBadge(d)}${d.notiz?`<div class="note">${esc(d.notiz)}</div>`:''}</div></div>
       <div class="acts"><button data-act="d-view" data-id="${d.id}">👁️ Ansehen</button><button data-act="d-edit" data-id="${d.id}">✏️ Bearbeiten</button>${d.typ==='medikationsplan'&&DTYP!=='medikationsplan'&&dokBadge(d).includes('b-mu')===false?mtBtn():''}</div></div>`}).join('');
 }
@@ -1809,15 +1815,18 @@ function editDok(d,preset,incoming,draftPages){
     {k:'gueltig',l:'Gültig bis (optional, z. B. bei Überweisungen)',t:'date'},
     {k:'arztId',l:'Arzt',t:'select',opts:arztOpts()},
     {k:'terminId',l:'Zu Termin',t:'select',opts:termOpts},
+    ...(D.vorsorge.length?[{k:'vorsorgeId',l:'Gehört zur Vorsorge',t:'select',opts:[['','– keine / über den Termin –'],...D.vorsorge.map(x=>[x.id,x.name])]}]:[]),
+    {k:'betrag',l:'Betrag in € (optional)',t:'decimal',ph:'z. B. 89,00'},
     ...(D.sehwerte.length||D.sehhilfen.length?[{k:'sehId',l:'Gehört zu (Augen)',t:'select',opts:sehDokOpts()}]:[]),
     {k:'notiz',l:'Notiz',t:'textarea'},
-  ],d,async v=>{
+  ],{...d,betrag:d.betrag!=null&&d.betrag!==''?String(d.betrag).replace('.',','):''},async(v,f)=>{
+    const bt=String(v.betrag||'').trim();if(bt&&(dnum(bt)==null||dnum(bt)<0))return ferr(f,'Bitte beim Betrag eine Zahl eintragen.');
     if(!pages.length){toast('Bitte mindestens ein Foto oder eine Datei hinzufügen.');return false}
     const keep=[];
     for(const p of pages){if(p.fid){keep.push({fid:p.fid,mime:p.mime,name:p.name,size:p.size});continue}
       try{keep.push({fid:await putFile(p.prep.buf),mime:p.mime,name:p.name,size:p.size})}catch{toast('Speichern fehlgeschlagen – Speicher voll?');return false}}
     for(const old of d.files||[])if(!keep.some(k=>k.fid===old.fid))await idb.del('f:'+old.fid).catch(()=>{});
-    Object.assign(d,{typ:v.typ,titel:v.titel.trim(),datum:v.datum,gueltig:v.gueltig,arztId:v.arztId,terminId:v.terminId,notiz:v.notiz,files:keep});
+    Object.assign(d,{typ:v.typ,titel:v.titel.trim(),datum:v.datum,gueltig:v.gueltig,arztId:v.arztId,terminId:v.terminId,notiz:v.notiz,files:keep,vorsorgeId:v.vorsorgeId||'',betrag:v.typ==='rechnung'&&bt?dnum(bt):''});if('sehId' in v)d.sehId=v.sehId;
     if(isNew)D.dokumente.push(d);await save();if(isNew&&TAB!=='termine'&&TAB!=='start')TAB='dok';toast('Dokument verschlüsselt gespeichert ✓');
   },{draft:{kind:'dok',id:isNew?null:d.id},
     draftExtra:async()=>{for(const p of pages)if(!p.fid&&p.prep){p.fid=await putFile(p.prep.buf);delete p.prep}return pages.map(p=>({fid:p.fid,mime:p.mime,name:p.name,size:p.size}))},
@@ -1825,6 +1834,7 @@ function editDok(d,preset,incoming,draftPages){
     html:`<label>Fotos & Dateien</label><div id="pgList">${pgHtml()}</div>
       <div class="acts" style="margin:6px 0 14px"><label class="btnlike">📷 Foto aufnehmen<input type="file" accept="image/*" capture="environment" hidden id="pgCam"></label><label class="btnlike">📎 Bild / PDF wählen<input type="file" accept="image/*,application/pdf" multiple hidden id="pgFile"></label></div>`,
     onOpen:f=>{
+      const ty=f.querySelector('[name=typ]'),bw=f.querySelector('[name=betrag]')?.parentElement,syncB=()=>{if(bw)bw.hidden=ty.value!=='rechnung'};if(ty){ty.addEventListener('change',syncB);syncB()}
       for(const id of ['pgCam','pgFile']){const inp=f.querySelector('#'+id);inp.onclick=()=>{pickingUntil=Date.now()+5*60e3};
         inp.onchange=async()=>{const l=[...inp.files];inp.value='';await addFiles(l,f)}}
       f.querySelector('#pgList').onclick=e=>{const b=e.target.closest('[data-rm]');if(b){pages.splice(+b.dataset.rm,1);f.querySelector('#pgList').innerHTML=pgHtml()}};
@@ -2084,6 +2094,7 @@ async function onAct(e){
     case 'vc-done':{const v=V(),y=b.dataset.y,dn=vDone(v).filter(x=>x.d.startsWith(y)),l=dn[dn.length-1];if(!l)break;
       if(l.src==='t')editTermin(D.termine.find(x=>x.id===l.id));else vHistForm(v,y,l.d);break}
     case 'vc-add':vHistForm(V(),b.dataset.y);break;
+    case 'v-dok':{const v=V(),l=vLetzte(v);editDok(null,{typ:'rechnung',vorsorgeId:v.id,arztId:v.arztId||'',datum:l||today()});break}
     case 'vc-termin':{const s=vStatus(V());if(s.termin)editTermin(s.termin);break}
     case 'vc-plan':{const v=V();editTermin(null,{titel:v.name,arztId:v.arztId||'',vorsorgeId:v.id});break}
     case 'v-done':{const v=V();if(v.letzte&&v.letzte!==today()){v.hist=(v.hist||[]).filter(h=>h!==v.letzte);v.hist.push(v.letzte)}v.letzte=today();await save();render();DS.yay('Erledigt');toast('Erledigt – nächster Termin neu berechnet.');break}

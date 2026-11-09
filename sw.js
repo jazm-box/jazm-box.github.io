@@ -1,6 +1,6 @@
 // MyBox Service Worker – Netzwerk zuerst, offline aus dem Cache. Gilt für MyBox und alle drei Bereiche.
 // Bei eingeschalteten Erinnerungen liegt zusätzlich eine Liste von Daten ohne Namen, Ärzte oder Beträge im Cache „sched-mybox“.
-const CACHE = 'mybox-0.6.0', SCHED = 'sched-mybox';
+const CACHE = 'mybox-0.7.0', SCHED = 'sched-mybox';
 const ASSETS = ["./",
   "./beleg/app.js",
   "./beleg/boxen/belegbox.png",

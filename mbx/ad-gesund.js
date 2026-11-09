@@ -89,6 +89,9 @@ A.api={
   /* Ausgaben eines Jahres (für Jahresübersicht und Steuer) */
   costs(y){const Y=String(y),r=[];const n=v=>{const x=typeof v==='number'?v:dnum(v);return x>0?x:0};
     D.termine.forEach(t=>{if(String(t.datum).slice(0,4)===Y&&n(t.kosten)){const a=arzt(t.arztId);r.push({d:t.datum.slice(0,10),title:t.titel+(a?' – '+a.name:''),amount:n(t.kosten),cat:'Arzt & Behandlung',tax:'krankheit',ref:{a:'t-edit',id:t.id}})}});
+    /* Rechnungen mit Betrag – nicht doppelt, wenn der zugehörige Termin schon „Selbst bezahlt“ hat */
+    D.dokumente.forEach(d=>{if(d.typ!=='rechnung'||String(d.datum).slice(0,4)!==Y||!n(d.betrag))return;const t=D.termine.find(x=>x.id===d.terminId);if(t&&n(t.kosten))return;
+      const a=arzt(d.arztId),v=D.vorsorge.find(x=>x.id===d.vorsorgeId);r.push({d:d.datum,title:(d.titel||(v?v.name:'Rechnung'))+(a?' – '+a.name:''),amount:n(d.betrag),cat:'Arzt & Behandlung',tax:'krankheit',ref:{a:'d-view',id:d.id}})});
     D.medis.forEach(m=>(m.packLog||[]).forEach(p=>{if(String(p.datum).slice(0,4)===Y&&n(p.zz))r.push({d:p.datum,title:m.name+' – Zuzahlung',amount:n(p.zz),cat:'Medikamente',tax:'krankheit',ref:{a:'goto-medis',id:m.id}})}));
     D.sehhilfen.forEach(x=>{if(String(x.gekauft||'').slice(0,4)===Y&&n(x.preis))r.push({d:x.gekauft,title:hilfeTitel(x)+(x.haendler?' – '+x.haendler:''),amount:n(x.preis),cat:'Brille & Kontaktlinsen',tax:'krankheit',ref:{a:'seh',id:x.id}})});
     return r},
