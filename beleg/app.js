@@ -1,5 +1,5 @@
 (function(){
-const APP_VERSION='0.12.0.0';
+const APP_VERSION='0.13.0.0';
 /* Eigener Speicher je Adresse: die Live-App unter / behält ihre Namen, eine Test-App unter /test/ bekommt eigene */
 const BASE=location.pathname.replace(/[^/]*$/,'');
 const NS=BASE==='/'?'':BASE.replace(/^\/|\/$/g,'').replace(/[^a-z0-9]+/gi,'-').toLowerCase()+'-';
@@ -1414,14 +1414,14 @@ function dsForm(title,fields,onSave,o={}){
   if(!d){d=document.createElement('dialog');d.id='dsdlg';d.className='dsdlg';d.innerHTML='<form autocomplete="off"></form>';document.body.appendChild(d)}
   const f=d.querySelector('form');
   f.innerHTML=`<h2>${esc(title)}</h2>${o.html||''}${fields.map((x,i)=>`<label for="dsf${i}">${esc(x.l)}</label><input id="dsf${i}" name="${x.k}" type="${x.t||'text'}" value="${esc(x.v||'')}"${x.req?' required':''} autocomplete="${x.ac||'off'}" autocapitalize="off" spellcheck="false">`).join('')}
-    <p class="ds-err" hidden></p><div class="dsrow"><button type="button" class="ds-btn" data-x="c">Abbrechen</button><button class="ds-btn pri">${esc(o.ok||'Speichern')}</button></div>`;
+    ${o.foot||''}<p class="ds-err" hidden></p><div class="dsrow"><button type="button" class="ds-btn" data-x="c">Abbrechen</button><button class="ds-btn pri">${esc(o.ok||'Speichern')}</button></div>`;
   const er=f.querySelector('.ds-err'),ok=f.querySelector('.ds-btn.pri');
   const fail=m=>{er.textContent=m;er.hidden=false;return false};
   f.querySelector('[data-x=c]').onclick=()=>d.close();
   f.onsubmit=async e=>{e.preventDefault();er.hidden=true;const v={};fields.forEach(x=>v[x.k]=f.elements[x.k].value);
     ok.disabled=true;const t=ok.textContent;ok.textContent='Prüfe …';
     try{const r=await onSave(v,fail);if(r!==false)d.close()}catch(x){fail(x&&x.message||'Das hat nicht geklappt.')}finally{ok.disabled=false;ok.textContent=t}};
-  if(!d.open)d.showModal();setTimeout(()=>{const i=f.querySelector('input');if(i)i.focus()},50);
+  if(!d.open)d.showModal();if(o.onOpen)o.onOpen(f,d);setTimeout(()=>{const i=f.querySelector('input');if(i)i.focus()},50);
 }
 
 /* ================= Neue Funktionen (0.7) ================= */
@@ -1439,14 +1439,31 @@ function wartBlock(d){const wi=wartInfo(d);if(!wi)return '';const w=d.wartung,lo
     <dl class="kv" style="margin:12px 0 0"><dt>Rhythmus</dt><dd>${esc((WINT.find(x=>x[0]===wi.monate)||[0,'alle '+wi.monate+' Monate'])[1])}</dd>
       <dt>Zuletzt</dt><dd>${wi.last?fmtD(wi.last):'noch nicht eingetragen'}</dd>
       ${w.firma||tel?`<dt>Firma</dt><dd>${esc(w.firma||'')}${tel?` · <a href="tel:${esc(tel)}">${esc(w.tel)}</a>`:''}</dd>`:''}</dl>
-    ${log.length?`<div class="wlog">${log.slice(0,5).map(x=>`<div><span>${fmtD(parse(x.datum))}</span><span>${x.kosten?eur(x.kosten):''}${x.notiz?' · '+esc(x.notiz):''}</span></div>`).join('')}${log.length>1?`<div class="wsum"><span>${log.length} Wartungen</span><span>${eur(log.reduce((a,x)=>a+(+x.kosten||0),0))}</span></div>`:''}</div>`:''}
+    ${log.length?`<div class="wlog">${log.slice(0,5).map(x=>`<div><span>${fmtD(parse(x.datum))}</span><span>${x.docs&&x.docs.length?'📎 ':''}${x.kosten?eur(x.kosten):''}${x.notiz?' · '+esc(x.notiz):''}</span></div>`).join('')}${log.length>1?`<div class="wsum"><span>${log.length} Wartungen</span><span>${eur(log.reduce((a,x)=>a+(+x.kosten||0),0))}</span></div>`:''}</div>`:''}
     <div class="actions" style="margin-top:12px"><button type="button" class="btn primary" id="wdone">Wartung erledigt</button></div></div>`}
-function wartDone(d){dsForm('Wartung erledigt',[{k:'datum',l:'Datum',t:'date',req:true,v:iso(T0)},{k:'kosten',l:'Kosten (€, optional)',v:''},{k:'notiz',l:'Notiz (optional)',v:''}],async(v,fail)=>{
+function wartDone(d){const add=[];
+  const foot=`<div class="wrg"><span class="wrgl">Rechnung (optional)</span><div class="wrgb">
+    <button type="button" class="ds-btn" data-wr="scan"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M7 12h10"/></svg>Scannen</button>
+    <button type="button" class="ds-btn" data-wr="pick">Datei wählen</button><input type="file" accept="application/pdf,.pdf,image/*" multiple hidden data-wr="file"></div><div class="wrgs"></div></div>`;
+  dsForm('Wartung erledigt',[{k:'datum',l:'Datum',t:'date',req:true,v:iso(T0)},{k:'kosten',l:'Kosten (€, optional)',v:''},{k:'notiz',l:'Notiz (optional)',v:''}],async(v,fail)=>{
     if(!/^\d{4}-\d{2}-\d{2}$/.test(v.datum))return fail('Bitte ein Datum wählen.');const k=parseFloat(String(v.kosten).replace(',','.'))||0;
-    d.wartLog=(d.wartLog||[]).concat([{datum:v.datum,kosten:k,notiz:String(v.notiz||'').slice(0,200)}]);
+    let ids=[];
+    if(add.length){const before=(d.docs||[]).length,dt=fmtD(parse(v.datum));
+      const files=add.map((f,i)=>new File([f],`Rechnung Wartung ${dt}${add.length>1?' ('+(i+1)+')':''}.${/pdf/i.test(f.type)||/\.pdf$/i.test(f.name)?'pdf':'jpg'}`,{type:f.type}));
+      const n=await attachFiles(d,files);ids=(d.docs||[]).slice(before).map(x=>x.id);if(n<add.length)toast('Nicht jede Datei konnte übernommen werden.')}
+    d.wartLog=(d.wartLog||[]).concat([{datum:v.datum,kosten:k,notiz:String(v.notiz||'').slice(0,200),...(ids.length?{docs:ids}:{})}]);
     if(!d.wartung.letzte||v.datum>d.wartung.letzte)d.wartung=Object.assign({},d.wartung,{letzte:v.datum});
     await save();closeSheet(false);render();setTimeout(()=>openDetail('d',d.id),motion()?320:0);celebrate('Wartung erledigt');
-    toast('Eingetragen. Nächste Wartung: '+fmtD(wartInfo(d).next)+'.')},{ok:'Eintragen',html:'<p class="ds-dlg-intro">Die nächste Wartung rechnet die App ab diesem Datum. Rechnungen kannst du unten als Dokument hinzufügen.</p>'})}
+    toast('Eingetragen. Nächste Wartung: '+fmtD(wartInfo(d).next)+'.')},
+    {ok:'Eintragen',html:'<p class="ds-dlg-intro">Die nächste Wartung rechnet die App ab diesem Datum.</p>',foot,
+     onOpen:(f,dlg)=>{const list=f.querySelector('.wrgs');
+       const draw=()=>{list.innerHTML=add.map((x,i)=>`<span class="wrgc">📎 ${esc(x.name)}<button type="button" data-wrx="${i}" aria-label="${esc(x.name)} entfernen">×</button></span>`).join('')};
+       f.querySelector('[data-wr=pick]').onclick=()=>{allowAway();f.querySelector('[data-wr=file]').click()};
+       f.querySelector('[data-wr=file]').onchange=e=>{add.push(...e.target.files);e.target.value='';draw()};
+       const sb=f.querySelector('[data-wr=scan]');
+       if(!docScanOk())sb.remove();else sb.onclick=async()=>{dlg.close();const b=await openDocScanner();dlg.showModal();
+         if(b===null){toast('Kein Kamerazugriff – nimm „Datei wählen“.');return}if(b){add.push(scanFile(b));draw()}};
+       list.onclick=e=>{const x=e.target.closest('[data-wrx]');if(x){add.splice(+x.dataset.wrx,1);draw()}}}})}
 function weiterOn(c){if(!c.weiter||c.status==='gekuendigt')return false;const i=contractInfo(c);return !i.offen&&c.weiter===iso(i.end)}
 
 /* ---------- Fristen der nächsten Tage (Vorlauf wählbar): Zähler am Icon und Erinnerungen ---------- */
@@ -2098,5 +2115,5 @@ function openLinkChooser(o,ext,tpl,cand,free){
 }
 /* Verknüpfung lösen (im Bearbeiten-Formular nicht nötig: über die Detailansicht) */
 /* MyBox: Kern für die Rahmen-App bereitstellen (nur eingebettet) */
-if(window.MBX_EMBED)window.__mbxB={get db(){return db},get saving(){return saving},get ghStat(){return ghStat},save:()=>save(),upcoming,monthly,rateInfo,eur,fmtD,parse,iso,days,openDetail:(k,id)=>openDetail(k,id),openExternal,inboxFiles,openInbox,get INBOX(){return INBOX},SHARE_T,contractInfo,deviceInfo,render:m=>render(m),wartInfo,openForm:(k,i,f)=>openForm(k,i,f),goTab:t=>goTab(t),closeSheet,schedItems,buildIcs,ghCfg,setGhStat,ghSync,ghQueue,ghRestore,restoreVault,readBackupFile,exportBackup,changePassword,newVid:()=>{vmeta=Object.assign({},vmeta,{vid:toB64(rnd(12))})}};
+if(window.MBX_EMBED)window.__mbxB={get db(){return db},openDoc:id=>openDoc(id),get saving(){return saving},get ghStat(){return ghStat},save:()=>save(),upcoming,monthly,rateInfo,eur,fmtD,parse,iso,days,openDetail:(k,id)=>openDetail(k,id),openExternal,inboxFiles,openInbox,get INBOX(){return INBOX},SHARE_T,contractInfo,deviceInfo,render:m=>render(m),wartInfo,openForm:(k,i,f)=>openForm(k,i,f),goTab:t=>goTab(t),closeSheet,schedItems,buildIcs,ghCfg,setGhStat,ghSync,ghQueue,ghRestore,restoreVault,readBackupFile,exportBackup,changePassword,newVid:()=>{vmeta=Object.assign({},vmeta,{vid:toB64(rnd(12))})}};
 })();

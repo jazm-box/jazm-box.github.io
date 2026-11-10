@@ -1,4 +1,4 @@
-# MyBox 0.8.1
+# MyBox 0.10.0
 
 MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensicherung, ein gemeinsames Dashboard, eine Suche, ein Kalender und Erinnerungen für alles. Alle Daten bleiben verschlüsselt auf dem Handy (AES-256). Es gibt keinen Server.
 
@@ -8,6 +8,16 @@ MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensiche
 - **Bereiche** `smart/`, `gesund/` und `beleg/` sind die drei bisherigen Apps, unverändert in ihrer Bedienung. Sie werden mit dem MyBox-Passwort entsperrt. Was MyBox gemeinsam erledigt, blenden sie aus.
 - Der Knopf mit dem Würfel oben in jedem Bereich führt zurück zur MyBox-Übersicht.
 - Es wird nichts mehr zwischen Apps geteilt. Verknüpfte Einträge liegen zusammen in MyBox und zeigen sich gegenseitig an (siehe unten).
+
+## Neu in 0.10.0
+
+- **Rechnung beim Abhaken einer Wartung** (Belege → Gerät → „Wartung erledigt“): „Scannen“ oder „Datei wählen“. Die Rechnung liegt beim Gerät und gehört genau zu dieser Wartung (📎 im Verlauf). Im Steuer-Paket landet dann genau diese Rechnung im Ordner „Handwerkerleistungen“; bei älteren Wartungen ohne Zuordnung weiter die Dokumente des Geräts aus dem Jahr.
+
+## Neu in 0.9.0
+
+- **Belege für die Steuer** (Übersicht → Karte „Ausgaben“ → „Belege für die Steuer (ZIP)“): ein Paket fürs gewählte Jahr mit Ordnern „1 Handwerkerleistungen“, „2 Krankheitskosten“, „3 Versicherungen“. Darin die hinterlegten Fotos/PDFs, benannt nach Datum, Beschreibung und Betrag, dazu „Übersicht JJJJ.html“ zum Ausdrucken (Summen je Abschnitt, Ausgaben ohne Beleg rot markiert) und dieselbe Liste als CSV.
+- Welche Belege dazugehören: Gesundheit – Dokumente am Termin, Rechnungen mit Betrag, Dokumente zur Brille/Linse. Belege – bei Wartungen die Dokumente des Geräts aus dem Jahr; bei Versicherungen die Dokumente des Vertrags aus dem Jahr (sonst alle).
+- Ist Gesundheit gesperrt, fragt MyBox vorher nach dem Passwort.
 
 ## Neu in 0.8.1
 

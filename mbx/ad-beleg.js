@@ -2,6 +2,7 @@
 'use strict';
 (function(){
 const A=window.MBXA,B=window.__mbxB;if(!A||!B)return;
+const fk=L=>L.map(f=>({id:f.id,name:f.name,mime:f.type}));
 const q=s=>document.querySelector(s);
 A.cfg={
   lockBtn:'#lockBtn',title:'Belege',brand:'header.top .brand h1',header:'header.top',nav:'nav.tabs',search:'#searchBtn',
@@ -83,14 +84,16 @@ A.api={
     d.contracts.forEach(c=>add(c.anbieter,{role:c.kategorie||'Vertrag',items:[{title:c.kategorie||'Vertrag',sub:B.eur(B.monthly(c))+' pro Monat'+(c.status==='gekuendigt'?' · gekündigt':'')+(c.kundennr?' · Kd.-Nr. '+c.kundennr:''),ref:{k:'c',id:c.id}}]}));
     return r},
   /* Ausgaben eines Jahres: Anschaffungen, Wartungen, Verträge (anteilig nach Monaten) */
+  /* Datei eines Belegs für das Steuer-Paket (entschlüsselt) */
+  fileData:f=>B.openDoc(f.id),
   costs(y){const d=db(),r=[],Y=+y,now=new Date(),lastM=Y===now.getFullYear()?now.getMonth():11;
     if(Y>now.getFullYear())return r;
     d.devices.forEach(x=>{if(String(x.kauf||'').slice(0,4)===String(Y)&&+x.preis>0)r.push({d:x.kauf,title:x.name+(x.haendler?' – '+x.haendler:''),amount:+x.preis,cat:'Anschaffungen',tax:null,ref:{k:'d',id:x.id}});
-      (x.wartLog||[]).forEach(l=>{if(String(l.datum).slice(0,4)===String(Y)&&+l.kosten>0)r.push({d:l.datum,title:'Wartung '+x.name+(x.wartung&&x.wartung.firma?' – '+x.wartung.firma:''),amount:+l.kosten,cat:'Wartung & Handwerk',tax:'handwerk',ref:{k:'d',id:x.id}})})});
+      (x.wartLog||[]).forEach(l=>{if(String(l.datum).slice(0,4)===String(Y)&&+l.kosten>0)r.push({d:l.datum,title:'Wartung '+x.name+(x.wartung&&x.wartung.firma?' – '+x.wartung.firma:''),amount:+l.kosten,cat:'Wartung & Handwerk',tax:'handwerk',ref:{k:'d',id:x.id},files:fk(l.docs&&l.docs.length?(x.docs||[]).filter(f=>l.docs.includes(f.id)):(x.docs||[]).filter(f=>String(f.added||'').slice(0,4)===String(Y)))})})});
     d.contracts.forEach(c=>{const m=B.monthly(c);if(!(m>0))return;const st=c.beginn?B.parse(c.beginn):null,en=c.status==='gekuendigt'&&c.ende?B.parse(c.ende):null;let k=0;
       for(let i=0;i<=lastM;i++){const a=new Date(Y,i,1),b=new Date(Y,i+1,0);if(st&&b<st)continue;if(en&&a>en)continue;k++}
       if(!k)return;const vers=/versicher/i.test(c.kategorie||'');
-      r.push({d:Y+'-'+String(lastM+1).padStart(2,'0')+'-01',title:c.anbieter+(c.kategorie?' – '+c.kategorie:''),amount:Math.round(m*k*100)/100,cat:vers?'Versicherungen':'Verträge & Abos',tax:vers?'vorsorge':null,sub:k+(k===1?' Monat':' Monate')+' × '+B.eur(m),ref:{k:'c',id:c.id}})});
+      r.push({d:Y+'-'+String(lastM+1).padStart(2,'0')+'-01',title:c.anbieter+(c.kategorie?' – '+c.kategorie:''),amount:Math.round(m*k*100)/100,cat:vers?'Versicherungen':'Verträge & Abos',tax:vers?'vorsorge':null,sub:k+(k===1?' Monat':' Monate')+' × '+B.eur(m),ref:{k:'c',id:c.id},files:vers?fk((()=>{const L=c.docs||[],y=L.filter(f=>String(f.added||'').slice(0,4)===String(Y));return y.length?y:L})()):[]})});
     return r},
   /* Gerätepass: alles aus den Belegen zu einem Gerät aus dem Bereich Haus */
   passInfo(ref){const d=db();if(!d)return null;const x=d.devices.find(v=>v.ext&&v.ext.ref===ref);if(!x)return null;const i=B.deviceInfo(x),wi=B.wartInfo(x);

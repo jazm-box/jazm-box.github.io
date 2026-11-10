@@ -2,6 +2,7 @@
 'use strict';
 (function(){
 const A=window.MBXA;if(!A)return;
+const fk=L=>L.flatMap(d=>(d.files||[]).map((f,i)=>({fid:f.fid,mime:f.mime,name:f.name||((d.titel||'Dokument')+((d.files.length>1)?' '+(i+1):''))})));
 const q=s=>document.querySelector(s);
 const hhmm=s=>{const d=new Date(s);return isNaN(d)?'':d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})};
 const act=(a,id)=>{const b=document.createElement('button');b.dataset.act=a;if(id!=null)b.dataset.id=id;onAct({target:b})};
@@ -87,13 +88,14 @@ A.api={
     for(const [k,L] of Object.entries(by))r.push({name:k,role:'Optiker',items:L.map(x=>({title:hilfeTitel(x),sub:(x.art==='brille'?'Brille':'Kontaktlinsen')+(x.gekauft?' · gekauft '+fmtD(x.gekauft):'')+(+x.preis?' · '+fmtNum(+x.preis,2)+' €':''),ref:{a:'seh',id:x.id}}))});
     return r},
   /* Ausgaben eines Jahres (für Jahresübersicht und Steuer) */
+  fileData:f=>getFile(f.fid),
   costs(y){const Y=String(y),r=[];const n=v=>{const x=typeof v==='number'?v:dnum(v);return x>0?x:0};
-    D.termine.forEach(t=>{if(String(t.datum).slice(0,4)===Y&&n(t.kosten)){const a=arzt(t.arztId);r.push({d:t.datum.slice(0,10),title:t.titel+(a?' – '+a.name:''),amount:n(t.kosten),cat:'Arzt & Behandlung',tax:'krankheit',ref:{a:'t-edit',id:t.id}})}});
+    D.termine.forEach(t=>{if(String(t.datum).slice(0,4)===Y&&n(t.kosten)){const a=arzt(t.arztId);r.push({d:t.datum.slice(0,10),title:t.titel+(a?' – '+a.name:''),amount:n(t.kosten),cat:'Arzt & Behandlung',tax:'krankheit',ref:{a:'t-edit',id:t.id},files:fk(D.dokumente.filter(d=>d.terminId===t.id))})}});
     /* Rechnungen mit Betrag – nicht doppelt, wenn der zugehörige Termin schon „Selbst bezahlt“ hat */
     D.dokumente.forEach(d=>{if(d.typ!=='rechnung'||String(d.datum).slice(0,4)!==Y||!n(d.betrag))return;const t=D.termine.find(x=>x.id===d.terminId);if(t&&n(t.kosten))return;
-      const a=arzt(d.arztId),v=D.vorsorge.find(x=>x.id===d.vorsorgeId);r.push({d:d.datum,title:(d.titel||(v?v.name:'Rechnung'))+(a?' – '+a.name:''),amount:n(d.betrag),cat:'Arzt & Behandlung',tax:'krankheit',ref:{a:'d-view',id:d.id}})});
-    D.medis.forEach(m=>(m.packLog||[]).forEach(p=>{if(String(p.datum).slice(0,4)===Y&&n(p.zz))r.push({d:p.datum,title:m.name+' – Zuzahlung',amount:n(p.zz),cat:'Medikamente',tax:'krankheit',ref:{a:'goto-medis',id:m.id}})}));
-    D.sehhilfen.forEach(x=>{if(String(x.gekauft||'').slice(0,4)===Y&&n(x.preis))r.push({d:x.gekauft,title:hilfeTitel(x)+(x.haendler?' – '+x.haendler:''),amount:n(x.preis),cat:'Brille & Kontaktlinsen',tax:'krankheit',ref:{a:'seh',id:x.id}})});
+      const a=arzt(d.arztId),v=D.vorsorge.find(x=>x.id===d.vorsorgeId);r.push({d:d.datum,title:(d.titel||(v?v.name:'Rechnung'))+(a?' – '+a.name:''),amount:n(d.betrag),cat:'Arzt & Behandlung',tax:'krankheit',ref:{a:'d-view',id:d.id},files:fk([d])})});
+    D.medis.forEach(m=>(m.packLog||[]).forEach(p=>{if(String(p.datum).slice(0,4)===Y&&n(p.zz))r.push({d:p.datum,title:m.name+' – Zuzahlung',amount:n(p.zz),cat:'Medikamente',tax:'krankheit',ref:{a:'goto-medis',id:m.id},files:[]})}));
+    D.sehhilfen.forEach(x=>{if(String(x.gekauft||'').slice(0,4)===Y&&n(x.preis))r.push({d:x.gekauft,title:hilfeTitel(x)+(x.haendler?' – '+x.haendler:''),amount:n(x.preis),cat:'Brille & Kontaktlinsen',tax:'krankheit',ref:{a:'seh',id:x.id},files:fk(D.dokumente.filter(d=>d.sehId===x.id))})});
     return r},
   /* Aus anderen Apps geteilt: wie in der MyGesundBox (Dokument, Termin aus Text, .ics, .csv, Samsung Health) */
   async share(files,title,text){try{closeSheet()}catch(e){}const fs=[];for(const f of files)fs.push({name:f.name||'',type:f.type||'',buf:await f.arrayBuffer()});
