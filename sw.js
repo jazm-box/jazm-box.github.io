@@ -1,6 +1,6 @@
 // MyBox Service Worker – Netzwerk zuerst, offline aus dem Cache. Gilt für MyBox und alle drei Bereiche.
 // Bei eingeschalteten Erinnerungen liegt zusätzlich eine Liste von Daten ohne Namen, Ärzte oder Beträge im Cache „sched-mybox“.
-const CACHE = 'mybox-0.8.0', SCHED = 'sched-mybox';
+const CACHE = 'mybox-0.8.1', SCHED = 'sched-mybox';
 const ASSETS = ["./",
   "./beleg/app.js",
   "./beleg/boxen/belegbox.png",
@@ -129,22 +129,31 @@ function digest(soon) {
   const by = {}; soon.forEach(x => (by[x.t] = by[x.t] || []).push(x));
   return Object.entries(by).sort((a, b) => a[1][0].n - b[1][0].n).map(([t, L]) => part(t, L));
 }
+/* Jede Erinnerung nur einmal: gemerkt wird Art + Datum. Neue Meldung nur, wenn etwas Neues dazukommt.
+   force (Test, Vorlauf geändert) zeigt alles Anstehende erneut. */
 async function remind(force) {
   const c = await caches.open(SCHED), r = await c.match('./__sched');
   const old = await self.registration.getNotifications({ tag: 'mybox-erinnerung' });
   if (!r) { old.forEach(n => n.close()); return; }
   const { items = [] } = await r.json().catch(() => ({}));
-  const t = new Date(); const today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
-  const soon = items.map(x => ({ t: x.t, n: diffDays(x.d, today), l: +x.l || 14 })).filter(x => x.n >= 0 && x.n <= x.l).sort((a, b) => a.n - b.n);
-  if (!soon.length) { old.forEach(n => n.close()); await c.delete('./__last'); return; }
-  const last = await c.match('./__last').then(x => x && x.json()).catch(() => null);
-  const key = dayIso(today) + '|' + soon.map(x => x.t + x.n).join(',');
-  if (!force && last && last.key === key) return;
-  const lines = digest(soon), heute = soon.filter(x => x.n === 0).length;
-  const title = heute ? 'MyBox · heute ' + (heute === 1 ? '1 Sache' : heute + ' Sachen') : 'MyBox · ' + (soon.length === 1 ? '1 Erinnerung' : soon.length + ' Erinnerungen');
+  const t = new Date(); const today = new Date(t.getFullYear(), t.getMonth(), t.getDate()), tIso = dayIso(today);
+  const soon = items.map(x => ({ t: x.t, d: x.d, n: diffDays(x.d, today), l: +x.l || 14 })).filter(x => x.n >= 0 && x.n <= x.l).sort((a, b) => a.n - b.n);
+  const id = x => x.t + '|' + x.d;
+  let seen = await c.match('./__seen').then(x => x && x.json()).catch(() => null);
+  if (!seen) { // Umstieg von der alten Tageslogik: was schon gemeldet wurde, nicht noch einmal melden
+    seen = {}; if (await c.match('./__last')) soon.forEach(x => { seen[id(x)] = x.d; });
+    await c.delete('./__last');
+  }
+  for (const k of Object.keys(seen)) if (seen[k] < tIso) delete seen[k];
+  const fresh = force ? soon : soon.filter(x => !seen[id(x)]);
+  soon.forEach(x => { seen[id(x)] = x.d; });
+  await c.put('./__seen', new Response(JSON.stringify(seen)));
+  if (!soon.length) { old.forEach(n => n.close()); return; }
+  if (!fresh.length) return;
+  const lines = digest(fresh), heute = fresh.filter(x => x.n === 0).length;
+  const title = heute ? 'MyBox · heute ' + (heute === 1 ? '1 Sache' : heute + ' Sachen') : 'MyBox · ' + (fresh.length === 1 ? '1 Erinnerung' : fresh.length + ' Erinnerungen');
   const body = lines.length === 1 ? lines[0] : lines.map(l => '• ' + l).join('\n');
   await self.registration.showNotification(title, { body, tag: 'mybox-erinnerung', renotify: true, icon: 'icons/mybox-192.png', badge: 'icons/mybox-badge-v2-96.png', data: { url: './' } });
-  await c.put('./__last', new Response(JSON.stringify({ key })));
 }
 self.addEventListener('notificationclick', e => {
   e.notification.close();

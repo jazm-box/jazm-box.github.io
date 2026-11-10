@@ -1,4 +1,4 @@
-# MyBox 0.8.0
+# MyBox 0.8.1
 
 MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensicherung, ein gemeinsames Dashboard, eine Suche, ein Kalender und Erinnerungen für alles. Alle Daten bleiben verschlüsselt auf dem Handy (AES-256). Es gibt keinen Server.
 
@@ -8,6 +8,11 @@ MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensiche
 - **Bereiche** `smart/`, `gesund/` und `beleg/` sind die drei bisherigen Apps, unverändert in ihrer Bedienung. Sie werden mit dem MyBox-Passwort entsperrt. Was MyBox gemeinsam erledigt, blenden sie aus.
 - Der Knopf mit dem Würfel oben in jedem Bereich führt zurück zur MyBox-Übersicht.
 - Es wird nichts mehr zwischen Apps geteilt. Verknüpfte Einträge liegen zusammen in MyBox und zeigen sich gegenseitig an (siehe unten).
+
+## Neu in 0.8.1
+
+- **Erinnerungen nur noch einmal**: Jede Sache (Termin, Frist, Wartung …) wird genau einmal gemeldet – nicht mehr bei jedem Öffnen oder jeden Tag neu. Eine neue Meldung gibt es nur, wenn etwas Neues dazukommt. Arzttermine und Linsen-Wechsel kommen am Vortag. Offenes bleibt auf der Übersicht und als Zahl am App-Symbol sichtbar.
+- Ursache des Mehrfach-Meldens: Die Liste änderte sich beim Öffnen, z. B. wenn Gesundheit gesperrt blieb, und galt dann als „neu“.
 
 ## Neu in 0.8.0
 

@@ -398,7 +398,7 @@ body.navon #toast{bottom:calc(env(safe-area-inset-bottom,0px) + 82px)}
 
 <script>
 'use strict';
-const APP_VERSION='0.8.0';
+const APP_VERSION='0.8.1';
 /* ---------- Bereiche ---------- */
 const AREAS=[
   {id:'smart',name:'Haus',app:'MySmartBox',path:'smart/',img:'boxen/smartbox.png',dir:'smartbox',host:'jazm-smartbox.github.io',def:{owner:'jazm-smartbox',repo:'smartbox-daten'}},
@@ -1139,12 +1139,12 @@ function remindNext(){const it=schedAll();if(!it.length)return 'Gerade steht nic
 function remindHtml(){
   if(!('Notification' in window&&'serviceWorker' in navigator))return '<p class="ds-hint">Dieser Browser kann keine Benachrichtigungen anzeigen.</p>';
   const R=CFG.remind||{};
-  if(!R.on)return `<p class="ds-hint">MyBox meldet sich einmal am Tag mit einer Zusammenfassung: <b>Arzttermine</b>, fällige <b>Vorsorgen</b>, ablaufende <b>Überweisungen</b>, <b>Rezepte</b> für Medikamente, <b>Kontaktlinsen</b>, <b>Kündigungsfristen</b>, <b>Garantie-Enden</b>, <b>Preisänderungen</b> und <b>Wartungen</b> – auch bei geschlossener App. Dafür liegen nur die <b>Daten ohne Namen, Ärzte oder Beträge</b> unverschlüsselt auf dem Handy.</p>
+  if(!R.on)return `<p class="ds-hint">MyBox erinnert dich an jede Sache <b>einmal</b> – mehrere zusammengefasst in einer Meldung: <b>Arzttermine</b>, fällige <b>Vorsorgen</b>, ablaufende <b>Überweisungen</b>, <b>Rezepte</b> für Medikamente, <b>Kontaktlinsen</b>, <b>Kündigungsfristen</b>, <b>Garantie-Enden</b>, <b>Preisänderungen</b> und <b>Wartungen</b> – auch bei geschlossener App. Dafür liegen nur die <b>Daten ohne Namen, Ärzte oder Beträge</b> unverschlüsselt auf dem Handy.</p>
     <div class="ds-acts"><button type="button" class="ds-btn pri" data-m="rm-on">Einschalten</button></div>`;
   const P=Notification.permission;
-  return `<p class="ds-hint">An. MyBox meldet sich einmal am Tag mit einer Zusammenfassung, z. B. „Arzttermin morgen · Rezept besorgen · 2 × Kündigungsfristen“ – ohne Namen oder Beträge. Geprüft wird bei jedem Öffnen der App${R.bg?' und ab und zu bei geschlossener App – wie oft, entscheidet Android':'. Bei geschlossener App nur, wenn sie auf dem Startbildschirm installiert ist'}. Ganz sicher: zusätzlich in den Kalender exportieren.</p>
+  return `<p class="ds-hint">An. MyBox erinnert an jede Sache nur <b>einmal</b>; kommt etwas Neues dazu, gibt es eine neue Meldung, z. B. „Arzttermin morgen · Rezept besorgen · 2 × Kündigungsfristen“ – ohne Namen oder Beträge. Was noch ansteht, siehst du jederzeit auf der Übersicht und an der Zahl am App-Symbol. Geprüft wird bei jedem Öffnen der App${R.bg?' und ab und zu bei geschlossener App – wie oft, entscheidet Android':'. Bei geschlossener App nur, wenn sie auf dem Startbildschirm installiert ist'}. Ganz sicher: zusätzlich in den Kalender exportieren.</p>
     <div class="ds-lbl">So früh melden</div><div class="ds-seg" role="radiogroup" aria-label="So früh melden" style="margin:0 0 6px">${LEADS.map(k=>`<button type="button" role="radio" aria-checked="${(R.lead||14)===k}" data-m="rm-lead" data-v="${k}">${k} Tage</button>`).join('')}</div>
-    <p class="ds-hint" style="font-size:13px">Gilt für Fristen, Vorsorge, Dokumente und Linsen-Vorrat. Arzttermine und Linsen-Wechsel kommen immer am Vortag und am Tag selbst.</p>
+    <p class="ds-hint" style="font-size:13px">Gilt für Fristen, Vorsorge, Dokumente und Linsen-Vorrat. Arzttermine und Linsen-Wechsel kommen am Vortag.</p>
     ${P!=='granted'?`<div class="ds-box crit"><b>Benachrichtigungen sind ${P==='default'?'nicht erlaubt':'blockiert'}.</b> Darum kommt keine Meldung. ${P==='default'?'Tippe auf „Erlauben“.':'Erlaube sie in den Android-Einstellungen: Apps → MyBox (oder Chrome) → Benachrichtigungen → an. Falls dort alles an ist: in Chrome auf das Symbol neben der Adresse → Berechtigungen → Benachrichtigungen → zulassen.'}<div class="ds-acts"><button type="button" class="ds-btn" data-m="rm-perm">${P==='default'?'Erlauben':'Erneut prüfen'}</button></div></div>`:''}
     <p class="ds-stat" style="display:block">${remindNext()}</p>
     <div class="ds-acts"><button type="button" class="ds-btn" data-m="rm-test">Test-Benachrichtigung</button><button type="button" class="ds-btn" data-m="rm-off">Ausschalten</button></div>`}
