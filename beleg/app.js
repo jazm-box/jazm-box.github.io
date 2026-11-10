@@ -1,5 +1,5 @@
 (function(){
-const APP_VERSION='0.11.0.1';
+const APP_VERSION='0.12.0.0';
 /* Eigener Speicher je Adresse: die Live-App unter / behält ihre Namen, eine Test-App unter /test/ bekommt eigene */
 const BASE=location.pathname.replace(/[^/]*$/,'');
 const NS=BASE==='/'?'':BASE.replace(/^\/|\/$/g,'').replace(/[^a-z0-9]+/gi,'-').toLowerCase()+'-';
@@ -462,7 +462,8 @@ function docSection(it){const ds=it.docs||[];if(!ds.length)return '';
   return `<div class="label" style="margin-bottom:8px">Belege & Dokumente</div><div class="doclist" style="margin-bottom:16px">${ds.map(d=>docRow(d,false)).join('')}</div>`}
 function bindDocs(s,it){s.querySelectorAll('[data-doc]').forEach(b=>b.onclick=()=>{const d=(it.docs||[]).find(x=>x.id===b.dataset.doc);if(d)openViewer(d)})}
 const DOCFIELD=`<div class="field"><span>Belege & Dokumente (PDF oder Bild, auch mehrere)</span><div class="doclist" id="docList"></div>
-  <label class="btn docadd"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Datei hinzufügen<input id="docIn" type="file" accept="application/pdf,.pdf,image/*" multiple hidden></label></div>`;
+  <label class="btn docadd"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Datei hinzufügen<input id="docIn" type="file" accept="application/pdf,.pdf,image/*" multiple hidden></label>
+  <button type="button" class="btn docadd" id="docScan"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M7 12h10"/></svg>Beleg scannen</button></div>`;
 function docEditor(s,docs,opt){
   let cover=opt&&opt.cover||null;const covOn=!!opt;
   const list=s.querySelector('#docList'),inp=s.querySelector('#docIn'),pending=new Map(),removed=[];let busy=0;
@@ -470,7 +471,11 @@ function docEditor(s,docs,opt){
     list.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{const id=b.dataset.rm;docs=docs.filter(x=>x.id!==id);
       if(pending.has(id))pending.delete(id);else removed.push(id);if(cover===id)cover=null;buzz(6);draw()});
     list.querySelectorAll('[data-cov]').forEach(b=>b.onclick=()=>{cover=cover===b.dataset.cov?null:b.dataset.cov;buzz(6);draw()})};
-  inp.addEventListener('change',async()=>{const files=[...inp.files];inp.value='';
+  const sb=s.querySelector('#docScan');
+  if(sb){if(!docScanOk())sb.remove();else sb.onclick=async()=>{const b=await openDocScanner();
+    if(b===null){toast('Kein Kamerazugriff – nimm „Datei hinzufügen“.');return}if(b&&list.isConnected)addFiles([scanFile(b)])}}
+  inp.addEventListener('change',()=>{const files=[...inp.files];inp.value='';addFiles(files)});
+  async function addFiles(files){
     for(const f of files){
       const isPdf=f.type==='application/pdf'||/\.pdf$/i.test(f.name);
       if(!isPdf&&!/^image\//.test(f.type)){toast(`„${f.name}“ ist weder PDF noch Bild.`);continue}
@@ -478,7 +483,8 @@ function docEditor(s,docs,opt){
       busy++;draw();
       try{const r=await prepDoc(f,isPdf);pending.set(r.meta.id,r.buf);docs.push(r.meta);buzz(8)}
       catch(x){toast(`„${f.name}“ konnte nicht gelesen werden.`)}
-      busy--;draw()}});
+      busy--;draw()}
+    inp.dispatchEvent(new CustomEvent('docs-added'))}
   draw();
   return {get docs(){return docs},get cover(){return cover&&docs.some(x=>x.id===cover)?cover:null},busy:()=>busy>0,
     async commit(){for(const [id,buf] of pending)await filePut(id,await sealFile(id,buf));pending.clear()},
@@ -912,7 +918,7 @@ function closeSheet(anim){
   sh.animate([{transform:from},{transform:'translateY(105%)'}],{duration:260,easing:'cubic-bezier(.4,0,.9,.6)',fill:'forwards'});
   layerClosed();setTimeout(()=>{if(tok===sheetTok)root.innerHTML=''},280);
 }
-document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!document.getElementById('viewer').hidden)closeViewer();else if(fanOpen)setFan(false);else if(root.firstElementChild)closeSheet()});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(docScanClose){docScanClose();return}{const sx=document.querySelector('.scanov .x');if(sx){sx.click();return}}if(!document.getElementById('viewer').hidden)closeViewer();else if(fanOpen)setFan(false);else if(root.firstElementChild)closeSheet()});
 const head=t=>`<div class="sheethead"><h2>${t}</h2><button type="button" class="icobtn" data-close aria-label="Schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`;
 
 function openDetail(kind,id,from){
@@ -1163,7 +1169,7 @@ function openForm(kind,item,camera,tpl){
       fi.addEventListener('change',()=>{ask.hidden=!(fi.files[0]&&na.value==='keiner');const f=fi.files[0];if(!f)return;
         const p=s.querySelector('#f_prev');if(p._u)URL.revokeObjectURL(p._u);p._u=URL.createObjectURL(f);p.src=p._u;p.hidden=false;
         s.querySelector('.fp-ic').hidden=true;s.querySelector('#f_ftxt').textContent='Anderes Foto wählen';const fd=s.querySelector('#f_fotoDel');if(fd)fd.checked=false;buzz(6)});
-      s.querySelector('#docIn').addEventListener('change',()=>{if(na.value==='keiner')ask.hidden=false});
+      s.querySelector('#docIn').addEventListener('docs-added',()=>{if(na.value==='keiner')ask.hidden=false});
       s.querySelector('#f_askYes').onclick=()=>{na.value='beleg';ask.hidden=true;buzz(6);toast('Kaufnachweis auf „Kassenbon / Rechnung“ gesetzt.')};
       s.querySelector('#f_askNo').onclick=()=>{ask.hidden=true;buzz(5)};
     }
@@ -1208,7 +1214,10 @@ function openForm(kind,item,camera,tpl){
       upd();
     }
     if(camera&&kind==='d'){ // „Beleg fotografieren“: Kamera direkt öffnen
-      const fi=s.querySelector('#f_foto');fi.setAttribute('capture','environment');allowAway();fi.click();
+      const fi=s.querySelector('#f_foto'),sys=()=>{fi.setAttribute('capture','environment');allowAway();fi.click()};
+      if(!docScanOk())sys();
+      else openDocScanner().then(b=>{if(b===null){toast('Kein Kamerazugriff – die Kamera-App wird geöffnet.');sys();return}
+        if(b&&fi.isConnected&&!setInputFile(fi,scanFile(b)))toast('Das Foto konnte nicht übernommen werden.')});
     }else{const first=s.querySelector('input');if(first)first.focus({preventScroll:true})}
   });
 }
@@ -1590,6 +1599,60 @@ function openClaim(d){
   });
 }
 
+/* ---------- Beleg-Scanner: Live-Kamera mit Rahmen (wie in der MyTankBox) ----------
+   Liefert ein Foto (Blob), auf den Rahmen zugeschnitten. Abbruch: undefined. Ohne Kamerazugriff: null → System-Kamera als Ausweg. */
+let docScanClose=null;
+const docScanOk=()=>!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
+function openDocScanner(){
+  return new Promise(async resolve=>{
+    let stream=null,track=null,torch=false,done=false;
+    const el=document.createElement('div');el.className='rscan';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','Beleg scannen');
+    el.innerHTML=`<video playsinline muted autoplay></video>
+      <div class="rsmask"><div class="rsframe"><i></i><i></i><i></i><i></i></div></div>
+      <div class="rstop"><button type="button" class="rsbtn" data-x aria-label="Abbrechen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        <span class="rstxt">Beleg in den Rahmen legen</span>
+        <button type="button" class="rsbtn" data-torch aria-label="Licht" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></button></div>
+      <div class="rsbot"><span class="rshint">Flach hinlegen, von oben, ohne Schatten. Lange Kassenbons dürfen über den Rahmen hinausgehen.</span>
+        <button type="button" class="rsshot" data-shot aria-label="Foto aufnehmen"><span></span></button></div>
+      <div class="rsflash"></div>`;
+    document.body.appendChild(el);document.body.style.overflow='hidden';layerOpened();allowAway();
+    const video=el.querySelector('video'),frame=el.querySelector('.rsframe');
+    const stop=()=>{if(stream)stream.getTracks().forEach(t=>t.stop());stream=null};
+    const finish=blob=>{if(done)return;done=true;stop();docScanClose=null;
+      if(motion())el.animate([{opacity:1},{opacity:0}],{duration:180}).onfinish=()=>el.remove();else el.remove();
+      if(!root.firstElementChild)document.body.style.overflow='';layerClosed();resolve(blob)};
+    docScanClose=()=>finish(undefined);
+    el.querySelector('[data-x]').onclick=()=>finish(undefined);
+    try{stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:3840},height:{ideal:2160}}})}
+    catch(e){finish(null);return}
+    if(done){stop();return}
+    video.srcObject=stream;track=stream.getVideoTracks()[0];
+    try{await video.play()}catch(e){}
+    // Dauerfokus und Taschenlampe, wo das Gerät es kann
+    try{const cap=track.getCapabilities?track.getCapabilities():{};
+      if(cap.focusMode&&cap.focusMode.includes('continuous'))track.applyConstraints({advanced:[{focusMode:'continuous'}]}).catch(()=>{});
+      if(cap.torch){const tb=el.querySelector('[data-torch]');tb.hidden=false;
+        tb.onclick=()=>{torch=!torch;track.applyConstraints({advanced:[{torch}]}).catch(()=>{});tb.classList.toggle('on',torch);buzz(4)}}}catch(e){}
+    el.querySelector('[data-shot]').onclick=async()=>{
+      if(done||!video.videoWidth)return;buzz(12);
+      const fl=el.querySelector('.rsflash');if(motion())fl.animate([{opacity:.85},{opacity:0}],{duration:260});
+      // Vollauflösung über ImageCapture, sonst Standbild aus dem Video
+      let bmp=null;
+      try{if(window.ImageCapture){const b=await new ImageCapture(track).takePhoto();bmp=await createImageBitmap(b)}}catch(e){bmp=null}
+      if(!bmp){try{bmp=await createImageBitmap(video)}catch(e){}}
+      if(!bmp){toast('Foto konnte nicht aufgenommen werden.');return}
+      // Rahmen (Bildschirm) → Bildkoordinaten; das Video füllt den Schirm „cover“
+      const vw=el.clientWidth,vh=el.clientHeight,iw=bmp.width,ih=bmp.height,sc=Math.max(vw/iw,vh/ih),ox=(vw-iw*sc)/2,oy=(vh-ih*sc)/2;
+      const r=frame.getBoundingClientRect(),m=.06;
+      let x=(r.left-ox)/sc,y=(r.top-oy)/sc,w=r.width/sc,h=r.height/sc;
+      x-=w*m;y-=h*m;w*=1+2*m;h*=1+2*m;x=Math.max(0,x);y=Math.max(0,y);w=Math.min(iw-x,w);h=Math.min(ih-y,h);
+      const c=document.createElement('canvas');c.width=Math.round(w);c.height=Math.round(h);c.getContext('2d').drawImage(bmp,x,y,w,h,0,0,c.width,c.height);
+      c.toBlob(b=>finish(b),'image/jpeg',.92)};
+  });
+}
+const scanFile=b=>new File([b],'Beleg '+new Date().toLocaleDateString('de-DE')+' '+new Date().toTimeString().slice(0,5).replace(':','-')+'.jpg',{type:'image/jpeg'});
+function setInputFile(inp,file){try{const dt=new DataTransfer();dt.items.add(file);inp.files=dt.files;inp.dispatchEvent(new Event('change',{bubbles:true}));return true}catch(e){return false}}
+
 /* ---------- Seriennummer per Kamera scannen (Barcode / QR) ---------- */
 const canScan=()=>'BarcodeDetector' in window&&!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
 async function openScanner(onPick){
@@ -1805,7 +1868,7 @@ function afterUnlock(){
 let histPushed=false,ignorePop=false;
 function topLayer(){
   const V=document.getElementById('viewer');if(V&&!V.hidden)return 'viewer';
-  if(document.querySelector('.scanov'))return 'scan';
+  if(document.querySelector('.scanov')||document.querySelector('.rscan'))return 'scan';
   if(document.querySelector('.story'))return 'story';
   if(document.querySelector('.pop'))return 'pop';
   const sc=root.firstElementChild;if(sc&&!sc.classList.contains('closing'))return 'sheet';
@@ -1816,6 +1879,7 @@ addEventListener('popstate',()=>{
   if(ignorePop){ignorePop=false;return}
   histPushed=false;const t=topLayer();
   if(t==='viewer')closeViewer();
+  else if(t==='scan'&&docScanClose)docScanClose();
   else if(t==='scan'||t==='story'){const el=document.querySelector(t==='scan'?'.scanov .x':'.story .sx');if(el)el.click()}
   else if(t==='pop')closePop();
   else if(t==='sheet')closeSheet();

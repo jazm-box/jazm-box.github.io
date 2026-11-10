@@ -1,4 +1,4 @@
-# MyBox 0.7.0
+# MyBox 0.8.0
 
 MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensicherung, ein gemeinsames Dashboard, eine Suche, ein Kalender und Erinnerungen für alles. Alle Daten bleiben verschlüsselt auf dem Handy (AES-256). Es gibt keinen Server.
 
@@ -8,6 +8,11 @@ MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensiche
 - **Bereiche** `smart/`, `gesund/` und `beleg/` sind die drei bisherigen Apps, unverändert in ihrer Bedienung. Sie werden mit dem MyBox-Passwort entsperrt. Was MyBox gemeinsam erledigt, blenden sie aus.
 - Der Knopf mit dem Würfel oben in jedem Bereich führt zurück zur MyBox-Übersicht.
 - Es wird nichts mehr zwischen Apps geteilt. Verknüpfte Einträge liegen zusammen in MyBox und zeigen sich gegenseitig an (siehe unten).
+
+## Neu in 0.8.0
+
+- **Beleg-Scanner** in Belege, wie in der MyTankBox: „Beleg fotografieren“ (Plus-Knopf, Verknüpfung am App-Symbol) öffnet eine Live-Kamera mit Rahmen, Dauerfokus und Taschenlampe; das Foto wird zugeschnitten. Im Formular unter „Belege & Dokumente“ neu: „Beleg scannen“. Ohne Kamerazugriff öffnet sich wie bisher die Kamera-App.
+- Während der Scanner offen ist, ist die Leiste unten ausgeblendet; Zurück schließt den Scanner.
 
 ## Neu in 0.7.0
 

@@ -5,7 +5,7 @@ const A=window.MBXA,B=window.__mbxB;if(!A||!B)return;
 const q=s=>document.querySelector(s);
 A.cfg={
   lockBtn:'#lockBtn',title:'Belege',brand:'header.top .brand h1',header:'header.top',nav:'nav.tabs',search:'#searchBtn',
-  overlay:()=>!!(q('#sheetRoot')&&q('#sheetRoot').firstElementChild)||!q('#viewer').hidden||!q('#fan').hidden,
+  overlay:()=>!!q('.rscan')||!!q('.scanov')||!!(q('#sheetRoot')&&q('#sheetRoot').firstElementChild)||!q('#viewer').hidden||!q('#fan').hidden,
   menuBtn:'#menuBtn',menuTitle:'Belege · Extras',fan:'#fan .fi button',fanOrder:['Beleg fotografieren','Abo / Vertrag','Gerät'],fanLabel:{'Beleg fotografieren':'Beleg-Foto'},
   locked:()=>document.body.classList.contains('locked')||!B.db,
   form:()=>q('#lf'),

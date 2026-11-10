@@ -76,6 +76,8 @@ document.addEventListener('click',e=>{const s=e.target&&e.target.closest&&e.targ
     finally{A.busy=false}};
   async function tick(){
     homeBtn();decorate();addApi();
+    /* Vollbild-Kamera eines Bereichs (Beleg-Scanner): Leiste unten ausblenden */
+    {const on=!!document.querySelector('.rscan');if(on!==!!A.full){A.full=on;try{window.parent.document.body.classList.toggle('mbxfull',on)}catch(e){}}}
     if(A.busy||!A.cfg||!P.unlocked())return;
     if(!A.cfg.locked()){if(!A.ready){A.ready=true;try{P.reg(APP,A.api)}catch(e){}}return}
     if(A.ready){A.ready=false;try{P.unreg(APP)}catch(e){}}

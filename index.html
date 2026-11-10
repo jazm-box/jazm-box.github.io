@@ -305,6 +305,7 @@ svg.ln{width:100%;height:auto;display:block;overflow:visible}
 #nav .nb:focus-visible,#nav .plus:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:12px}
 body.navon main{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 96px)}
 body.navon #areas{bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+body.mbxfull #nav{display:none!important}body.mbxfull #areas{bottom:0!important}
 body.navon #toast{bottom:calc(env(safe-area-inset-bottom,0px) + 82px)}
 /* Adressbuch, Jahresübersicht, Gerätepass */
 .sback{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:var(--accent);margin:0 0 10px}.sback svg{width:16px;height:16px;transform:rotate(180deg)}
@@ -397,7 +398,7 @@ body.navon #toast{bottom:calc(env(safe-area-inset-bottom,0px) + 82px)}
 
 <script>
 'use strict';
-const APP_VERSION='0.7.0';
+const APP_VERSION='0.8.0';
 /* ---------- Bereiche ---------- */
 const AREAS=[
   {id:'smart',name:'Haus',app:'MySmartBox',path:'smart/',img:'boxen/smartbox.png',dir:'smartbox',host:'jazm-smartbox.github.io',def:{owner:'jazm-smartbox',repo:'smartbox-daten'}},
