@@ -1,4 +1,4 @@
-# MyBox 0.10.0
+# MyBox 0.11.0
 
 MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensicherung, ein gemeinsames Dashboard, eine Suche, ein Kalender und Erinnerungen für alles. Alle Daten bleiben verschlüsselt auf dem Handy (AES-256). Es gibt keinen Server.
 
@@ -8,6 +8,10 @@ MySmartBox, MyGesundBox und MyBelegBox in einer App: ein Zugang, eine Datensiche
 - **Bereiche** `smart/`, `gesund/` und `beleg/` sind die drei bisherigen Apps, unverändert in ihrer Bedienung. Sie werden mit dem MyBox-Passwort entsperrt. Was MyBox gemeinsam erledigt, blenden sie aus.
 - Der Knopf mit dem Würfel oben in jedem Bereich führt zurück zur MyBox-Übersicht.
 - Es wird nichts mehr zwischen Apps geteilt. Verknüpfte Einträge liegen zusammen in MyBox und zeigen sich gegenseitig an (siehe unten).
+
+## Neu in 0.11.0
+
+- **Blutgruppe** (Gesundheit → Start, ganz oben): Karte mit Tropfen-Symbol, antippen zum Eintragen (0, A, B, AB jeweils Rh+ / Rh−). Optional ein Feld „Weitere Notfall-Infos“ für Allergien, Vorerkrankungen oder Notfallkontakt. Wird mit gesichert und wiederhergestellt.
 
 ## Neu in 0.10.0
 

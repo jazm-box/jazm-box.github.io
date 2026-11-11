@@ -150,6 +150,17 @@ svg.chart{width:100%;height:auto;background:var(--card);border:1px solid var(--b
 @keyframes flash{0%,40%{box-shadow:0 0 0 3px var(--pri)}100%{box-shadow:0 0 0 0 transparent}}
 .chipdoc{display:inline-block;font-size:13px;padding:4px 10px;border-radius:999px;background:var(--pri2);color:var(--pri);border:0;margin:6px 6px 0 0;cursor:pointer}
 .hello{font-size:22px;font-weight:700;margin:6px 0 2px}
+.nfcard{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;margin:12px 0 4px;padding:12px 14px;border-radius:16px;background:var(--card);border:1px solid var(--bd);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.nfcard:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.nfcard:active{transform:scale(.99)}
+.nfdrop{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:color-mix(in srgb,var(--red) 14%,transparent);color:var(--red)}
+.nfdrop svg{width:22px;height:22px}
+.nftx{flex:1;min-width:0;display:flex;flex-direction:column}
+.nftx small{font-size:12px;color:var(--mu)}
+.nftx b{font-size:20px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
+.nftx em{font-style:normal;font-size:12.5px;color:var(--mu);margin-top:2px;overflow-wrap:anywhere}
+.nfcard.empty b{font-size:16px;color:var(--pri)}
+.nfcard .chev{color:var(--mu);font-size:22px}
 .status{font-size:13px;color:var(--mu);margin-bottom:6px;background:none;border:0;padding:0;text-align:left;cursor:pointer}
 .status.bad{color:var(--red)}
 .next{background:var(--pri);color:#fff;border:0}
@@ -472,7 +483,7 @@ svg.chart .zout{stroke:var(--card);stroke-width:2}
 
 <script>
 'use strict';
-const APP_VERSION='2.10.0';
+const APP_VERSION='2.11.0';
 /* ---------- Helfer ---------- */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -550,7 +561,7 @@ function askPwThenBio(){
 
 let KEY=null,SALT=null,D=null,TAB='start',WTYP='bp';
 const empty=()=>({v:1,termine:[],aerzte:[],vorsorge:[],werte:[],dokumente:[],sehwerte:[],sehhilfen:[],fragen:[],medis:[],meta:{}});
-function normalize(o){const e=empty();for(const k of ['termine','aerzte','vorsorge','werte','dokumente','sehwerte','sehhilfen','fragen','medis'])e[k]=Array.isArray(o?.[k])?o[k]:[];if(typeof o?.fk==='string')e.fk=o.fk;if(o?.github?.token)e.github={token:String(o.github.token),repo:String(o.github.repo||defaultRepo())};e.meta=o?.meta&&typeof o.meta==='object'?o.meta:{};const g=o?.backupGh;if(g?.token&&g.owner&&g.repo){e.backupGh={owner:String(g.owner),repo:String(g.repo),token:String(g.token)};if(g.dir)e.backupGh.dir=String(g.dir)}return e}
+function normalize(o){const e=empty();for(const k of ['termine','aerzte','vorsorge','werte','dokumente','sehwerte','sehhilfen','fragen','medis'])e[k]=Array.isArray(o?.[k])?o[k]:[];if(typeof o?.fk==='string')e.fk=o.fk;if(o?.github?.token)e.github={token:String(o.github.token),repo:String(o.github.repo||defaultRepo())};e.meta=o?.meta&&typeof o.meta==='object'?o.meta:{};if(o?.profil&&typeof o.profil==='object')e.profil={blutgruppe:String(o.profil.blutgruppe||''),notfall:String(o.profil.notfall||'')};const g=o?.backupGh;if(g?.token&&g.owner&&g.repo){e.backupGh={owner:String(g.owner),repo:String(g.repo),token:String(g.token)};if(g.dir)e.backupGh.dir=String(g.dir)}return e}
 /* ---------- Speicher: Tresor doppelt (localStorage + IndexedDB) ---------- */
 const idb=(()=>{let p;const open=()=>p||(p=new Promise((res,rej)=>{const r=indexedDB.open('gesundbox',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
   const tx=(mode,fn)=>open().then(db=>new Promise((res,rej)=>{const t=db.transaction('kv',mode);const rq=fn(t.objectStore('kv'));t.oncomplete=()=>res(rq&&rq.result);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error)}));
@@ -1229,10 +1240,24 @@ function rRemind(){
 }
 /* Erinnerung an die Datensicherung: gemeinsamer Baustein in ds.js */
 const dsRemindHtml=(o,attr)=>DS.remindHtml(o,attr);
+/* Blutgruppe und Notfall-Infos */
+const BLUTGRUPPEN=['0 Rh+','0 Rh−','A Rh+','A Rh−','B Rh+','B Rh−','AB Rh+','AB Rh−'];
+function notfallCard(){const p=D.profil||{},bg=p.blutgruppe;
+  return `<button class="nfcard${bg?'':' empty'}" data-act="profil">
+    <span class="nfdrop" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.7c.3 0 .6.2.8.4C14.6 5.4 19 11 19 14.6A7 7 0 0 1 5 14.6C5 11 9.4 5.4 11.2 3.1c.2-.2.5-.4.8-.4z"/></svg></span>
+    <span class="nftx"><small>Blutgruppe</small><b>${bg?esc(bg.replace(' ','\u00a0')):'Eintragen'}</b>${p.notfall?`<em>${esc(p.notfall.length>70?p.notfall.slice(0,70)+' …':p.notfall)}</em>`:''}</span>
+    <span class="chev" aria-hidden="true">›</span></button>`}
+function editProfil(){const p=D.profil||{};
+  openForm('Blutgruppe & Notfall-Infos',[
+    {k:'blutgruppe',l:'Blutgruppe',t:'select',opts:[['','– unbekannt –'],...BLUTGRUPPEN.map(x=>[x,x])]},
+    {k:'notfall',l:'Weitere Notfall-Infos (optional)',t:'textarea',ph:'z. B. Allergien, Vorerkrankungen, Notfallkontakt'}],
+    {blutgruppe:p.blutgruppe||'',notfall:p.notfall||''},async v=>{D.profil={blutgruppe:v.blutgruppe||'',notfall:String(v.notfall||'').trim().slice(0,500)};await save();toast('Gespeichert.')},
+    {win:true,html:'<p class="ds-hint">Steht im Blutspende- oder Mutterpass, im Impfpass oder auf einem Laborbefund.</p>'});
+}
 function rStart(){
   const hr=new Date().getHours(),hello=hr<5?'Gute Nacht':hr<11?'Guten Morgen':hr<18?'Hallo':'Guten Abend';
   let h=dsRemindHtml(bkO(),'data-act="goto-bk"')
-    +`<div class="hello">${hello}</div>`;
+    +`<div class="hello">${hello}</div>`+notfallCard();
   /* Als Nächstes */
   const nt=D.termine.filter(t=>new Date(t.datum)>=Date.now()-2*3600e3).sort((a,b)=>a.datum.localeCompare(b.datum))[0];
   if(nt){const a=arzt(nt.arztId),n=daysUntil(nt.datum),tel=a?.tel?a.tel.replace(/[^\d+]/g,''):'',ort=nt.ort||a?.adresse||'';
@@ -2094,6 +2119,7 @@ async function onAct(e){
     case 'vc-done':{const v=V(),y=b.dataset.y,dn=vDone(v).filter(x=>x.d.startsWith(y)),l=dn[dn.length-1];if(!l)break;
       if(l.src==='t')editTermin(D.termine.find(x=>x.id===l.id));else vHistForm(v,y,l.d);break}
     case 'vc-add':vHistForm(V(),b.dataset.y);break;
+    case 'profil':editProfil();break;
     case 'v-dok':{const v=V(),l=vLetzte(v);editDok(null,{typ:'rechnung',vorsorgeId:v.id,arztId:v.arztId||'',datum:l||today()});break}
     case 'vc-termin':{const s=vStatus(V());if(s.termin)editTermin(s.termin);break}
     case 'vc-plan':{const v=V();editTermin(null,{titel:v.name,arztId:v.arztId||'',vorsorgeId:v.id});break}
